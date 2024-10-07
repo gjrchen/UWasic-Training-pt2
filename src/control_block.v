@@ -10,7 +10,7 @@ module tt_um_control_block (
     input clk,
     input resetn,
     input [3:0] opcode,
-    output [13: 0] out    
+    output [14: 0] out    
 );
 
 /* Supported Instructions' Opcodes */
@@ -25,12 +25,13 @@ localparam OP_JMP = 4'h7;
 
 
 /* Output Control Signals */
-localparam SIG_PC_INC = 13;             // C_P
-localparam SIG_PC_EN = 12;              // E_P
-localparam SIG_PC_LOAD = 11;            // L_P
-localparam SIG_MAR_ADDR_LOAD_N = 10;    // \L_M
-localparam SIG_MAR_MEM_LOAD_N = 9;      // \L_MD
-localparam SIG_RAM_EN_N = 8;            // \CE
+localparam SIG_PC_INC = 14;             // C_P
+localparam SIG_PC_EN = 13;              // E_P
+localparam SIG_PC_LOAD = 12;            // L_P
+localparam SIG_MAR_ADDR_LOAD_N = 11;    // \L_MA
+localparam SIG_MAR_MEM_LOAD_N = 10;     // \L_MD
+localparam SIG_RAM_EN_N = 9;            // \CE
+localparam SIG_RAM_LOAD_N = 8;          // \L_R
 localparam SIG_IR_LOAD_N = 7;           // \L_I
 localparam SIG_IR_EN_N = 6;             // \E_I
 localparam SIG_REGA_LOAD_N = 5;         // \L_A
@@ -42,7 +43,7 @@ localparam SIG_OUT_LOAD_N = 0;          // \L_O
 
 /* Internal Regs */
 reg [2:0] stage;
-reg [13:0] control_signals;
+reg [14:0] control_signals;
 
 /* Micro-Operation Stages */
 parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5;
@@ -59,7 +60,7 @@ end
 
 /* Micro-Operation Logic */
 always @(*) begin
-    control_signals = 14'b00011111100011; // All signals are deasserted
+    control_signals = 15'b000111111100011; // All signals are deasserted
 
     case(stage)
         T0: begin
@@ -117,6 +118,9 @@ always @(*) begin
                     control_signals[SIG_ADDER_SUB] = 1;
                     control_signals[SIG_REGB_EN] = 1;
                     control_signals[SIG_REGA_LOAD_N] = 0;
+                end
+                OP_STA: begin
+                    control_signals[SIG_RAM_LOAD_N] = 0;
                 end
             endcase
         end
