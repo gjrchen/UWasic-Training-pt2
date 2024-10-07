@@ -39,8 +39,7 @@ module testbench_control_block;
     
     resetn = 0; 	// Assert reset
     #30; 			// Wait some amount of time
-    resetn = 1;		// Deassert reset
-  	#20;			
+    resetn = 1;		// Deassert reset	
     
     opcode = 4'h1; 	// NOP
     #1000;			
