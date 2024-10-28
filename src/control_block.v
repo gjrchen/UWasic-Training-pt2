@@ -46,15 +46,20 @@ reg [2:0] stage;
 reg [14:0] control_signals;
 
 /* Micro-Operation Stages */
-parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5;
+parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5; 
 
 /* Stage Transition Logic */
 always @(negedge clk) begin
-    if (!resetn || stage == 6) begin
-        stage <= 0;
-    end 
-    else begin
-        stage <= stage + 1;
+    if (!resetn) begin           // Check if reset is asserted, if yes, put into a holding stage
+      stage <= 6;
+    end
+ 	else begin                   // If reset is not asserted, do the stages sequentially
+      if (stage == 6) begin        
+          stage <= 0;
+      end 
+      else begin
+          stage <= stage + 1;
+      end
     end
 end
 
