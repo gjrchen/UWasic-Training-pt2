@@ -10,8 +10,8 @@ module tt_um_control_block (
     input clk,
     input resetn,
     input [3:0] opcode,
-    output [14: 0] out    
-    input  wire       ena,      // always 1 when the design is powered, so you can ignore it
+    output [14: 0] out,    
+    input  wire ena,      // always 1 when the design is powered, so you can ignore it
 
 );
 
@@ -134,6 +134,7 @@ always @(*) begin
     endcase
 end
 
+    wire _unused = &{ena};
 assign out = control_signals;
 
 endmodule
