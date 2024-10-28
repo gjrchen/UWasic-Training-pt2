@@ -16,13 +16,12 @@ module tb ();
   /// Init registers 
   reg resetn;
   reg clk;
-  reg ena;
-  ena = 1;
-  
+  reg ena = 1;
+
   reg [3:0] opcode;
   wire [15:0] out_res; // disregard the first bit
   wire [7:0] uio_oe;
-  wire [7:0] uio_in
+   wire [7:0] uio_in;
   
   tt_um_control_block uut(
     .clk(clk), 
@@ -32,7 +31,7 @@ module tb ();
     .uio_out(out_res[7:0]),
     .uio_oe(uio_oe),
     .ena(ena),
-    .uio_in(uio_in),
+    .uio_in(uio_in)
   );
 
 endmodule
