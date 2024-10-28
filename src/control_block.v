@@ -11,7 +11,7 @@ module tt_um_control_block (
     input resetn,
     input [3:0] opcode,
     output [14: 0] out,    
-    input  wire ena,      // always 1 when the design is powered, so you can ignore it
+    // input  wire ena,      // always 1 when the design is powered, so you can ignore it
 
 );
 
