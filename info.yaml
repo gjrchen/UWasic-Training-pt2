@@ -40,6 +40,16 @@ pinout:
   uo[5]: "out_5"
   uo[6]: "out_6"
   uo[7]: "out_7"
+   
+   # Bidirectional pins
+  uio[0]: ""
+  uio[1]: ""
+  uio[2]: ""
+  uio[3]: ""
+  uio[4]: ""
+  uio[5]: ""
+  uio[6]: ""
+  uio[7]: ""
 
 # Do not change!
 yaml_version: 6
