@@ -4,7 +4,6 @@
  */
 
 `default_nettype none
-`timescale 1ns/1ps      // For simulation only
 
 module tt_um_control_block (
     input wire clk,
@@ -21,11 +20,11 @@ module tt_um_control_block (
 
 // Assign the inputs to wires
 wire [3:0] opcode = ui_in [3:0];
-assign uio_out = 8'h0;    // Configure the bidirectional pins to be all outputs
+assign uio_oe = 8'h0;    // Configure the bidirectional pins to be all outputs
 
 /* Supported Instructions' Opcodes */
 localparam OP_HLT = 4'h0;
-localparam OP_NOP = 4'h1;
+// localparam OP_NOP = 4'h1;  // Comment this out to avoid error with unused param.
 localparam OP_ADD = 4'h2;
 localparam OP_SUB = 4'h3;
 localparam OP_LDA = 4'h4;
@@ -105,6 +104,9 @@ always @(*) begin
                     control_signals[SIG_IR_EN_N] = 0;
                     control_signals[SIG_PC_LOAD] = 1;
                 end
+                default: begin
+                // Do nothing (leave control_signals unchanged)
+                end
             endcase
         end
         T4: begin
@@ -120,6 +122,9 @@ always @(*) begin
                 OP_STA: begin
                     control_signals[SIG_REGA_EN] = 1;
                     control_signals[SIG_MAR_MEM_LOAD_N] = 0;
+                end
+                default: begin
+                // Do nothing (leave control_signals unchanged)
                 end
             endcase
         end
@@ -137,12 +142,16 @@ always @(*) begin
                 OP_STA: begin
                     control_signals[SIG_RAM_LOAD_N] = 0;
                 end
+                default: begin
+                // Do nothing (leave control_signals unchanged)
+                end
             endcase
         end
     endcase
 end
 
-    wire _unused = &{ena, uio_in};
+    wire _unused = &{ena, uio_in,  ui_in[7:4]};
+    assign uo_out [7] = 0; // Assign this (not driving anything) to 0
     assign uo_out [6:0] = control_signals[14:8];
     assign uio_out [7:0] = control_signals[7:0];
 
