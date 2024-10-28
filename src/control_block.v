@@ -10,7 +10,7 @@ module tt_um_control_block (
     input wire clk,
     
     input  wire [7:0] ui_in,    // Dedicated inputs - only bits 0 to 3 are used
-    output wire [7:0] uo_out,   // Dedicated outputs - first half of the the output signals (only bits 0 to 5 used)
+    output wire [7:0] uo_out,   // Dedicated outputs - first half of the the output signals (only bits 0 to 6 used)
     output wire [7:0] uio_out,  // IOs: Output path
     output wire [7:0] uio_oe,   // IOs: Enable path (active high: 0=input, 1=output) - set to all outputs - lower half of the output signals
 
@@ -142,8 +142,8 @@ always @(*) begin
     endcase
 end
 
-    wire _unused = &{ena, uio_in, uo_out [7:6], ui_in[7:4]};
-    assign uo_out [5:0] = control_signals[14:8];
+    wire _unused = &{ena, uio_in};
+    assign uo_out [6:0] = control_signals[14:8];
     assign uio_out [7:0] = control_signals[7:0];
 
 endmodule
