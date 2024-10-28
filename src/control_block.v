@@ -7,13 +7,21 @@
 `timescale 1ns/1ps      // For simulation only
 
 module tt_um_control_block (
-    input clk,
-    input resetn,
-    input [3:0] opcode,
-    output [14: 0] out,    
-    // input  wire ena,      // always 1 when the design is powered, so you can ignore it
+    input wire clk,
+    
+    input  wire [7:0] ui_in,    // Dedicated inputs - only bits 0 to 3 are used
+    output wire [7:0] uo_out,   // Dedicated outputs - first half of the the output signals (only bits 0 to 5 used)
+    output wire [7:0] uio_out,  // IOs: Output path
+    output wire [7:0] uio_oe,   // IOs: Enable path (active high: 0=input, 1=output) - set to all outputs - lower half of the output signals
 
+    input  wire [7:0] uio_in,   // IOs: Input path - not used
+    input  wire ena,      // always 1 when the design is powered, so you can ignore it
+    input  wire rst_n     // reset_n - low to reset
 );
+
+// Assign the inputs to wires
+wire [3:0] opcode = ui_in [3:0];
+assign uio_out = 8'h0;    // Configure the bidirectional pins to be all outputs
 
 /* Supported Instructions' Opcodes */
 localparam OP_HLT = 4'h0;
@@ -52,7 +60,7 @@ parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5;
 
 /* Stage Transition Logic */
 always @(negedge clk) begin
-    if (!resetn) begin           // Check if reset is asserted, if yes, put into a holding stage
+    if (!rst_n) begin           // Check if reset is asserted, if yes, put into a holding stage
       stage <= 6;
     end
  	else begin                   // If reset is not asserted, do the stages sequentially
@@ -134,7 +142,8 @@ always @(*) begin
     endcase
 end
 
-    wire _unused = &{ena};
-assign out = control_signals;
+    wire _unused = &{ena, uio_in, uo_out [7:6], ui_in[7:4]};
+    assign uo_out [5:0] = control_signals[14:8];
+    assign uio_out [7:0] = control_signals[7:0];
 
 endmodule
