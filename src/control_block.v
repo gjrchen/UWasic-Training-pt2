@@ -74,7 +74,7 @@ end
 
 /* Micro-Operation Logic */
 always @(stage) begin
-    control_signals = 15'b000111111100011; // All signals are deasserted
+    control_signals <= 15'b000111111100011; // All signals are deasserted
 
     case(stage)
         T0: begin
