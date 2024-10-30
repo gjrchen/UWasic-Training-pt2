@@ -73,7 +73,7 @@ always @(negedge clk) begin
 end
 
 /* Micro-Operation Logic */
-always @(stage) begin
+always @(negedge clk) begin
     control_signals <= 15'b000111111100011; // All signals are deasserted
 
     case(stage)
