@@ -73,36 +73,36 @@ always @(negedge clk) begin
 end
 
 /* Micro-Operation Logic */
-always @(*) begin
+always @(stage) begin
     control_signals = 15'b000111111100011; // All signals are deasserted
 
     case(stage)
         T0: begin
-            control_signals[SIG_PC_EN] = 1;
-            control_signals[SIG_MAR_ADDR_LOAD_N] = 0;
+            control_signals[SIG_PC_EN] <= 1;
+            control_signals[SIG_MAR_ADDR_LOAD_N] <= 0;
         end 
         T1: begin
             if (opcode != OP_HLT) begin
-                control_signals[SIG_PC_INC] = 1;
+                control_signals[SIG_PC_INC] <= 1;
             end
         end
         T2: begin
-            control_signals[SIG_RAM_EN_N] = 0;
-            control_signals[SIG_IR_LOAD_N] = 0;
+            control_signals[SIG_RAM_EN_N] <= 0;
+            control_signals[SIG_IR_LOAD_N] <= 0;
         end
         T3: begin
             case (opcode)
                 OP_ADD, OP_SUB, OP_LDA, OP_STA: begin
-                    control_signals[SIG_IR_EN_N] = 0;
-                    control_signals[SIG_MAR_ADDR_LOAD_N] = 0;
+                    control_signals[SIG_IR_EN_N] <= 0;
+                    control_signals[SIG_MAR_ADDR_LOAD_N] <= 0;
                 end
                 OP_OUT: begin
-                    control_signals[SIG_REGA_EN] = 1;
-                    control_signals[SIG_OUT_LOAD_N] = 0;
+                    control_signals[SIG_REGA_EN] <= 1;
+                    control_signals[SIG_OUT_LOAD_N] <= 0;
                 end
                 OP_JMP: begin
-                    control_signals[SIG_IR_EN_N] = 0;
-                    control_signals[SIG_PC_LOAD] = 1;
+                    control_signals[SIG_IR_EN_N] <= 0;
+                    control_signals[SIG_PC_LOAD] <= 1;
                 end
                 default: begin
                 // Do nothing (leave control_signals unchanged)
@@ -112,16 +112,16 @@ always @(*) begin
         T4: begin
             case (opcode)
                 OP_ADD, OP_SUB: begin
-                    control_signals[SIG_RAM_EN_N] = 0;
-                    control_signals[SIG_REGB_LOAD_N] = 0;
+                    control_signals[SIG_RAM_EN_N] <= 0;
+                    control_signals[SIG_REGB_LOAD_N] <= 0;
                 end
                 OP_LDA: begin
-                    control_signals[SIG_RAM_EN_N] = 0;
-                    control_signals[SIG_REGA_LOAD_N] = 0;
+                    control_signals[SIG_RAM_EN_N] <= 0;
+                    control_signals[SIG_REGA_LOAD_N] <= 0;
                 end
                 OP_STA: begin
-                    control_signals[SIG_REGA_EN] = 1;
-                    control_signals[SIG_MAR_MEM_LOAD_N] = 0;
+                    control_signals[SIG_REGA_EN] <= 1;
+                    control_signals[SIG_MAR_MEM_LOAD_N] <= 0;
                 end
                 default: begin
                 // Do nothing (leave control_signals unchanged)
@@ -131,16 +131,16 @@ always @(*) begin
         T5: begin
             case (opcode)
                 OP_ADD: begin
-                    control_signals[SIG_REGB_EN] = 1;
-                    control_signals[SIG_REGA_LOAD_N] = 0;
+                    control_signals[SIG_REGB_EN] <= 1;
+                    control_signals[SIG_REGA_LOAD_N] <= 0;
                 end
                 OP_SUB: begin
-                    control_signals[SIG_ADDER_SUB] = 1;
-                    control_signals[SIG_REGB_EN] = 1;
-                    control_signals[SIG_REGA_LOAD_N] = 0;
+                    control_signals[SIG_ADDER_SUB] <= 1;
+                    control_signals[SIG_REGB_EN] <= 1;
+                    control_signals[SIG_REGA_LOAD_N] <= 0;
                 end
                 OP_STA: begin
-                    control_signals[SIG_RAM_LOAD_N] = 0;
+                    control_signals[SIG_RAM_LOAD_N] <= 0;
                 end
                 default: begin
                 // Do nothing (leave control_signals unchanged)
