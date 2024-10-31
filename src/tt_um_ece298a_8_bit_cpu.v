@@ -39,7 +39,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         clk,
         rst_n,
         bus[7:4],
-        control_signals
+        control_signals[14:0]
     );
 
     // Skip these for now
