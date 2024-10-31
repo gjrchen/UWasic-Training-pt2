@@ -19,7 +19,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     input  wire ena,            // always 1 when the design is powered, so you can ignore it
     input  wire rst_n           // reset_n - low to reset
 );
-    wire [7:0] bus;
+    wire [3:0] bus;                                        // temporarily make the bus 4 bits wide to not have the top 4 bits undriven
     wire [14:0] control_signals = 15'b000111111100011;
 
     ProgramCounter pc(
@@ -41,9 +41,6 @@ module tt_um_ece298a_8_bit_cpu_top (
         opcode[3:0],
         control_signals[14:0]
     );
-
-    // Drive these signals for now until they are hooked up to other modules
-    bus[7:4] = 4'b0000;
     
 
     // Skip these for now
