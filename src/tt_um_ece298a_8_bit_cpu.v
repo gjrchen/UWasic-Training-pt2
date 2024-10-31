@@ -20,7 +20,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     input  wire rst_n           // reset_n - low to reset
 );
     wire [3:0] bus;                                        // temporarily make the bus 4 bits wide to not have the top 4 bits undriven
-    wire [14:0] control_signals = 15'b000111111100011;
+    wire [14:0] control_signals;
 
     ProgramCounter pc(
         bus[3:0],
