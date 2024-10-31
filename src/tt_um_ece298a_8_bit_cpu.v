@@ -42,8 +42,12 @@ module tt_um_ece298a_8_bit_cpu_top (
         control_signals[14:0]
     );
 
+    // Drive these signals for now until they are hooked up to other modules
+    bus[7:4] = 4'b0000;
+    
+
     // Skip these for now
-    wire _unused = &{ui_in, uo_out, uio_in, ena, bus[7:4]};
+    wire _unused = &{ui_in, uo_out, uio_in, ena, control_signals[11:0};
     assign uo_out = 8'h00;
     assign uio_out = 8'h00;
     assign uio_oe = 8'h00;
