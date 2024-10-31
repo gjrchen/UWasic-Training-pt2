@@ -44,9 +44,9 @@ module tt_um_ece298a_8_bit_cpu_top (
 
     // Skip these for now
     wire _unused = &{ui_in, uo_out, uio_in, ena, bus[7:4]};
-    assign uo_out = 0x0;
-    assign uio_out = 0x0;
-    assign uio_oe = 0x0;
+    assign uo_out = 8'h00;
+    assign uio_out = 8'h00;
+    assign uio_oe = 8'h00;
     
   
 endmodule
