@@ -38,11 +38,15 @@ module tt_um_ece298a_8_bit_cpu_top (
     control_block cb(
         clk,
         rst_n,
-        bus[7:4],
+        opcode[3:0],
         control_signals[14:0]
     );
 
     // Skip these for now
-    wire _unused = &{ui_in, uo_out,  uio_out, uio_oe, uio_in, ena};
+    wire _unused = &{ui_in, uo_out, uio_in, ena, bus[7:4]};
+    assign uo_out = 0x0;
+    assign uio_out = 0x0;
+    assign uio_oe = 0x0;
+    
   
 endmodule
