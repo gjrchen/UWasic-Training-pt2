@@ -19,8 +19,8 @@ module tt_um_ece298a_8_bit_cpu_top (
     input  wire ena,            // always 1 when the design is powered, so you can ignore it
     input  wire rst_n           // reset_n - low to reset
 );
-    wire bus [7:0];
-    wire control_signals [14:0] = 15'b000111111100011;
+    wire [7:0] bus;
+    wire [14:0] control_signals = 15'b000111111100011;
 
     ProgramCounter pc(
         bus[3:0],
