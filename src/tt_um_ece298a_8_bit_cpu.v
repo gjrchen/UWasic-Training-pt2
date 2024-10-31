@@ -4,8 +4,8 @@
 
 `default_nettype none
 
-`include "control_block.v"
-`include "program_counter.v"
+//`include "control_block.v"
+//`include "program_counter.v"
 
 module tt_um_ece298a_8_bit_cpu_top (
     input wire clk,
