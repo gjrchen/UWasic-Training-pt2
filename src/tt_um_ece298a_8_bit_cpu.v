@@ -50,16 +50,20 @@ module tt_um_ece298a_8_bit_cpu_top (
     assign uio_out = 8'h00;
     assign uio_oe = 8'h00;
     
-    //assign inputs
+    //assign inputs  
     assign opcode[0] = ui_in[0];
     assign opcode[1] = ui_in[1];
     assign opcode[2] = ui_in[2];
     assign opcode[3] = ui_in[3];
+    assign bus[0] = ui_in[4];
+    assign bus[1] = ui_in[5];
+    assign bus[2] = ui_in[6];
+    assign bus[3] = ui_in[7];
     //Assign outputs
-    assign uo_out[0] = 0;
-    assign uo_out[1] = 0;
-    assign uo_out[2] = 0;
-    assign uo_out[3] = 0;
+    assign uo_out[0] = 0; //bus[0];
+    assign uo_out[1] = 0; //bus[1];
+    assign uo_out[2] = 0; //bus[2];
+    assign uo_out[3] = 0; //bus[3];
     assign uo_out[4] = control_signals[12];
     assign uo_out[5] = control_signals[13];
     assign uo_out[6] = control_signals[14];
