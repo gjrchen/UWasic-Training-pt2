@@ -6,10 +6,10 @@
 `default_nettype none
 
 module control_block (
-    input clk,
-    input resetn,
-    input [3:0] opcode,
-    output [14: 0] out    
+    input wire clk,
+    input wire resetn,
+    input wire [3:0] opcode,
+    output wire [14: 0] out    
 );
 
 /* Supported Instructions' Opcodes */
@@ -146,6 +146,8 @@ always @(negedge clk) begin
     endcase
 end
 
-assign out = control_signals;
+always @(*) begin
+    out <= control_signals;
+end
 
 endmodule
