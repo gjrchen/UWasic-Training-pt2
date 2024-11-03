@@ -22,32 +22,32 @@ async def test_project(dut):
 
     dut._log.info("Test NOP")
     dut.ui_in.value = 1
-    await ClockCycles(dut.clk, 1000)
+    await ClockCycles(dut.clk, 6)
 
     dut._log.info("Test ADD")
     dut.ui_in.value = 2
-    await ClockCycles(dut.clk, 1000)
+    await ClockCycles(dut.clk, 6)
 
     dut._log.info("Test SUB")
     dut.ui_in.value = 3
-    await ClockCycles(dut.clk, 1000)
+    await ClockCycles(dut.clk, 6)
 
     dut._log.info("Test LDA")
     dut.ui_in.value = 4
-    await ClockCycles(dut.clk, 1000)
+    await ClockCycles(dut.clk, 6)
 
     dut._log.info("Test OUT")
     dut.ui_in.value = 5
-    await ClockCycles(dut.clk, 1000)
+    await ClockCycles(dut.clk, 6)
 
     dut._log.info("Test STA")
     dut.ui_in.value = 6
-    await ClockCycles(dut.clk, 1000)
+    await ClockCycles(dut.clk, 6)
 
     dut._log.info("Test JMP")
     dut.ui_in.value = 7
-    await ClockCycles(dut.clk, 1000)
+    await ClockCycles(dut.clk, 6)
 
     dut._log.info("Test HLT")
     dut.ui_in.value = 0
-    await ClockCycles(dut.clk, 1000) 
+    await ClockCycles(dut.clk, 6) 
