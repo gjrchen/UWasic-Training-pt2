@@ -7,7 +7,7 @@
 
 module control_block (
     input clk,
-    input resetn,
+    input rst_n,
     input [3:0] opcode,
     output [14: 0] out    
 );

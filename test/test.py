@@ -15,7 +15,7 @@ async def test_project(dut):
     cocotb.start_soon(clock.start())
 
     # Reset
-    dut.rst_n.vaue = 0
+    dut.rst_n.value = 0
     dut._log.info("Reset")
     await ClockCycles(dut.clk, 30)
     dut.rst_n.value = 1
@@ -45,7 +45,7 @@ async def test_project(dut):
     await ClockCycles(dut.clk, 6)
 
     dut._log.info("Test JMP")
-    dut.ui_in.value = 7
+    dut.ui_in.value = 7 | (2 << 4)
     await ClockCycles(dut.clk, 6)
 
     dut._log.info("Test HLT")

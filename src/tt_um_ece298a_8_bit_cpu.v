@@ -38,7 +38,7 @@ module tt_um_ece298a_8_bit_cpu_top (
 
     control_block cb(
         .clk(clk),
-        .resetn(rst_n),
+        .rst_n(rst_n),
         .opcode(opcode[3:0]),
         .out(control_signals[14:0])
     );
@@ -55,10 +55,10 @@ module tt_um_ece298a_8_bit_cpu_top (
     assign opcode[1] = ui_in[1];
     assign opcode[2] = ui_in[2];
     assign opcode[3] = ui_in[3];
-    assign bus[0] = ui_in[4];
-    assign bus[1] = ui_in[5];
-    assign bus[2] = ui_in[6];
-    assign bus[3] = ui_in[7];
+    assign bus[0] = control_signals[12] ? ui_in[4] : 1'bZ;
+    assign bus[1] = control_signals[12] ? ui_in[5] : 1'bZ;
+    assign bus[2] = control_signals[12] ? ui_in[6] : 1'bZ;
+    assign bus[3] = control_signals[12] ? ui_in[7] : 1'bZ;
     //Assign outputs
     assign uo_out[0] = 0;
     assign uo_out[1] = 0;
