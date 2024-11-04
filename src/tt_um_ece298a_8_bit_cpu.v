@@ -84,25 +84,25 @@ module tt_um_ece298a_8_bit_cpu_top (
     );
 
     alu alu_object(
-        .clk(clk),      // Clock (Falling edge) (needed for storing CF and ZF)
-        .Eu(Eu),        // Enable ALU output to the bus (ACTIVE-HIGH)
-        .regA(regA),    // Register A
-        .regB(regB),    // Register B
-        .sub(sub),      // Perform addition when 0, perform subtraction when 1
-        .bus(bus),      // Bus
-        .CF(CF),        // Carry Flag
-        .ZF(ZF)         // Zero Flag
+        .clk(clk),            // Clock (Rising edge) (needed for storing CF and ZF)
+        .enable_output(Eu),   // Enable ALU output to the bus (ACTIVE-HIGH)
+        .reg_a(regA),         // Register A (8 bits)
+        .reg_b(regB),         // Register B (8 bits)
+        .sub(sub),            // Perform addition when 0, perform subtraction when 1
+        .bus(bus),            // Bus (8 bits)
+        .CF(CF),              // Carry Flag
+        .ZF(ZF)               // Zero Flag
     );
-
-    accumulator_register accumulator_object(
-        .clk(clk),      // Clock (Falling edge)
-        .bus(bus),      // Bus
-        .nLa(nLa),      // Enable Accumulator Register load from bus (ACTIVE-LOW)
-        .Ea(Ea),        // Enable Accumulator Register output to the bus (ACTIVE-HIGH)
-        .regA(regA),    // Register A
-        .rst_n(rst_n)   // Reset
-    )
-    
+    // Accumulator Register //
+    accumulator_register accumulator_object((
+        .clk(clk),            // Clock (Rising edge)
+        .bus(bus),            // Bus (8 bits)
+        .load(nLa),           // Enable Accumulator Register load from bus (ACTIVE-LOW)
+        .enable_output(Ea),   // Enable Accumulator Register output to the bus (ACTIVE-HIGH)
+        .regA(regA),          // Register A (8 bits)
+        .rst_n(rst_n)         // Reset (ACTIVE-LOW)
+    );
+        
 
     // Skip these for now
     //wire _unused = &{ui_in, uo_out, uio_in, ena, control_signals[11:0]};
