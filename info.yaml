@@ -20,6 +20,11 @@ project:
     - "tt_um_ece298a_8_bit_cpu.v"
     - "control_block.v"
     - "program_counter.v"
+    - "accumulator_register.v"
+    - "add_sub_8bit.v"
+    - "alu.v"
+    - "onebitfa.v"
+
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:
