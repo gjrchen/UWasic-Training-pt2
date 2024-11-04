@@ -1,6 +1,6 @@
 module instruction_register(
   input clk, clear, n_load, n_enable,
-  inout [7:0] bus,
+  input [7:0] bus,
   output [3:0] opcode
 );
   reg [7:0] instruction;
@@ -14,4 +14,3 @@ module instruction_register(
   end
 
 endmodule
-

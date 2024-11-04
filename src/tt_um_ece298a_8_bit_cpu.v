@@ -28,8 +28,8 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire [14:0] control_signals;
 
     // Wires //
-    wire [7:0] ram_data             // data from MAR to RAM
-    wire [3:0] ram_addr             // address from MAR to RAM
+    wire [7:0] ram_data;             // data from MAR to RAM
+    wire [3:0] ram_addr;             // address from MAR to RAM
     wire [3:0] opcode;              // opcode from IR to Control
     wire [7:0] reg_a;               // value from Accumulator Register to ALU
     wire [7:0] reg_b;               // value from B Register to ALU
@@ -150,11 +150,6 @@ module tt_um_ece298a_8_bit_cpu_top (
     // assign uio_out = 8'h00;
     assign uio_oe = 8'h00;
     
-    //assign inputs
-    assign opcode[0] = ui_in[0];
-    assign opcode[1] = ui_in[1];
-    assign opcode[2] = ui_in[2];
-    assign opcode[3] = ui_in[3];
     //Assign outputs
     assign uio_out[0] = 0;
     assign uio_out[1] = 0;
