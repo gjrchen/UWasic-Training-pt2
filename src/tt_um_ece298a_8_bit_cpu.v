@@ -18,19 +18,58 @@ module tt_um_ece298a_8_bit_cpu_top (
     input  wire ena,            // always 1 when the design is powered, so you can ignore it
     input  wire rst_n           // reset_n - low to reset
 );
-    
-    wire [3:0] bus;                                        // temporarily make the bus 4 bits wide to not have the top 4 bits undriven
+
+
+    wire [7:0] bus;                                        // temporarily make the bus 4 bits wide to not have the top 4 bits undriven
+    wire [3:0] bus4bit;
+    assign bus4bit = bus[3:0];
+
     wire [14:0] control_signals;
 
+    wire [7:0] regA;
+    wire [7:0] regB;
+
+    wire CF;
+    wire ZF;
+
+    // Control Signals for the Program Counter //
+    alias Cp = control_signals[14];
+    alias Ep = control_signals[13];
+    alias Lp = control_signals[12];
+
+    // Control Signals for the RAM //
+    alias nLma = control_signals[11];
+    alias nLmd = control_signals[10];
+    alias nCE = control_signals[9];
+    alias nLr = control_signals[8];
+
+    // Control Signals for the Instruction Register //
+    alias nLi = control_signals[7];
+    alias Ei = control_signals[6];
+
+    // Control Signals for the Accumulator Register //
+    alias nLa = control_signals[5];
+    alias Ea = control_signals[4];
+
+    // Control Signals for the ALU //
+    alias sub = control_signals[3];
+    alias Eu = control_signals[2];
+
+    // Control Signals for the B Register //
+    alias nLb = control_signals[1];
+
+    // Control Signals for the Output Register //
+    alias nLo = control_signals[0];
+    
     // Program Counter //
     ProgramCounter pc(
-        .bits_in(bus[3:0]),
-        .bits_out(bus[3:0]),
+        .bits_in(bus4bit),
+        .bits_out(bus4bit),
         .clk(clk),
         .clr_n(rst_n),
-        .lp(control_signals[12]),
-        .cp(control_signals[14]),
-        .ep(control_signals[13])
+        .lp(Lp),
+        .cp(Cp),
+        .ep(Ep)
     );
 
     wire [3:0] opcode;
@@ -42,6 +81,26 @@ module tt_um_ece298a_8_bit_cpu_top (
         .opcode(opcode[3:0]),
         .out(control_signals[14:0])
     );
+
+    alu alu_object(
+        .clk(clk),
+        .Eu(Eu),
+        .regA(regA),
+        .regB(regB),
+        .sub(sub),
+        .bus(bus),
+        .CF(CF),
+        .ZF(ZF)
+    );
+
+    accumulator_register accumulator_object(
+        .clk(clk),
+        .bus(bus),
+        .nLa(nLa),
+        .Ea(Ea),
+        .regA(regA),
+        .rst_n(rst_n)
+    )
     
 
     // Skip these for now
