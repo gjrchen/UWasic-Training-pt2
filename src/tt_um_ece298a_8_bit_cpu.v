@@ -28,8 +28,6 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire [14:0] control_signals;
 
     // Wires //
-    wire [7:0] ram_data;             // data from MAR to RAM
-    wire [3:0] ram_addr;             // address from MAR to RAM
     wire [3:0] opcode;              // opcode from IR to Control
     wire [7:0] reg_a;               // value from Accumulator Register to ALU
     wire [7:0] reg_b;               // value from B Register to ALU
@@ -38,6 +36,9 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire CF;                        // Carry Flag
     wire ZF;                        // Zero Flag
 
+    // Wire between MAR and RAM //
+    wire [7:0] mar_to_ram_data;
+    wire [3:0] mar_to_ram_addr;
 
     // Control Signals for the Program Counter //
     alias Cp = control_signals[14];     // 
@@ -114,8 +115,8 @@ module tt_um_ece298a_8_bit_cpu_top (
         .n_load_data(nLmd),
         .n_load_addr(nLma),
         .bus(bus),
-        .data(ram_data),
-        .addr(ram_addr)
+        .data(mar_to_ram_data),
+        .addr(mar_to_ram_addr)
     );
 
     // Instruction Register //
@@ -142,6 +143,17 @@ module tt_um_ece298a_8_bit_cpu_top (
         .n_load(nLo),
         .bus(bus),
         .value(uo_out)
+    // RAM //
+    tt_um_dff_mem #(
+    .RAM_BYTES(16)   // Set the RAM size to 16 bytes
+    ) ram (
+        .addr(mar_to_ram_addr),     
+        .data_in(mar_to_ram_data), 
+        .data_out(bus), 
+        .lr_n(nLr),     
+        .ce_n(nCE),     // Connect the chip enable signal
+        .clk(clk),       // Connect the clock signal
+        .rst_n(rst_n)    // Connect the reset signal
     );
 
     // Skip these for now
