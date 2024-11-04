@@ -20,46 +20,47 @@ module tt_um_ece298a_8_bit_cpu_top (
 );
 
 
-    wire [7:0] bus;                                        // temporarily make the bus 4 bits wide to not have the top 4 bits undriven
-    wire [3:0] bus4bit;
-    assign bus4bit = bus[3:0];
+    wire [7:0] bus;                 // Bus (8-bit) (High impedance when not in use)
+    wire [3:0] bus4bit;             // 4-bit Bus (lower 4 bits of the 8-bit Bus) (High impedance when not in use)
+    assign bus4bit = bus[3:0];      // Assign 4-bit Bus to the lower 4 bits of the 8-bit Bus 
 
     wire [14:0] control_signals;
 
-    wire [7:0] regA;
-    wire [7:0] regB;
+    wire [7:0] regA;                // Accumulator Register
+    wire [7:0] regB;                // B Register
 
-    wire CF;
-    wire ZF;
+    // ALU Flags //
+    wire CF;                        // Carry Flag
+    wire ZF;                        // Zero Flag
 
     // Control Signals for the Program Counter //
-    alias Cp = control_signals[14];
-    alias Ep = control_signals[13];
-    alias Lp = control_signals[12];
+    alias Cp = control_signals[14];     // 
+    alias Ep = control_signals[13];     // 
+    alias Lp = control_signals[12];     // 
 
     // Control Signals for the RAM //
-    alias nLma = control_signals[11];
-    alias nLmd = control_signals[10];
-    alias nCE = control_signals[9];
-    alias nLr = control_signals[8];
+    alias nLma = control_signals[11];   // 
+    alias nLmd = control_signals[10];   // 
+    alias nCE = control_signals[9];     // 
+    alias nLr = control_signals[8];     // 
 
     // Control Signals for the Instruction Register //
-    alias nLi = control_signals[7];
-    alias Ei = control_signals[6];
+    alias nLi = control_signals[7];     // enable Instruction Register load from bus (ACTIVE-LOW)
+    alias Ei = control_signals[6];      // enable Instruction Register output to the bus (ACTIVE-HIGH)
 
     // Control Signals for the Accumulator Register //
-    alias nLa = control_signals[5];
-    alias Ea = control_signals[4];
+    alias nLa = control_signals[5];     // enable Accumulator Register load from bus (ACTIVE-LOW)
+    alias Ea = control_signals[4];      // enable Accumulator Register output to the bus (ACTIVE-HIGH)
 
     // Control Signals for the ALU //
-    alias sub = control_signals[3];
-    alias Eu = control_signals[2];
+    alias sub = control_signals[3];     // perform addition when 0, perform subtraction when 1
+    alias Eu = control_signals[2];      // enable ALU output to the bus (ACTIVE-HIGH)
 
     // Control Signals for the B Register //
-    alias nLb = control_signals[1];
+    alias nLb = control_signals[1];     // enable B Register load from bus (ACTIVE-LOW)
 
     // Control Signals for the Output Register //
-    alias nLo = control_signals[0];
+    alias nLo = control_signals[0];     // 
     
     // Program Counter //
     ProgramCounter pc(
@@ -83,23 +84,23 @@ module tt_um_ece298a_8_bit_cpu_top (
     );
 
     alu alu_object(
-        .clk(clk),
-        .Eu(Eu),
-        .regA(regA),
-        .regB(regB),
-        .sub(sub),
-        .bus(bus),
-        .CF(CF),
-        .ZF(ZF)
+        .clk(clk),      // Clock (Falling edge) (needed for storing CF and ZF)
+        .Eu(Eu),        // Enable ALU output to the bus (ACTIVE-HIGH)
+        .regA(regA),    // Register A
+        .regB(regB),    // Register B
+        .sub(sub),      // Perform addition when 0, perform subtraction when 1
+        .bus(bus),      // Bus
+        .CF(CF),        // Carry Flag
+        .ZF(ZF)         // Zero Flag
     );
 
     accumulator_register accumulator_object(
-        .clk(clk),
-        .bus(bus),
-        .nLa(nLa),
-        .Ea(Ea),
-        .regA(regA),
-        .rst_n(rst_n)
+        .clk(clk),      // Clock (Falling edge)
+        .bus(bus),      // Bus
+        .nLa(nLa),      // Enable Accumulator Register load from bus (ACTIVE-LOW)
+        .Ea(Ea),        // Enable Accumulator Register output to the bus (ACTIVE-HIGH)
+        .regA(regA),    // Register A
+        .rst_n(rst_n)   // Reset
     )
     
 
