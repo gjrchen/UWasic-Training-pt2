@@ -52,7 +52,7 @@ module tt_um_ece298a_8_bit_cpu_top (
 
     // Control Signals for the Instruction Register //
     alias nLi = control_signals[7];     // enable Instruction Register load from bus (ACTIVE-LOW)
-    alias nEi = control_signals[6];      // enable Instruction Register output to the bus (ACTIVE-HIGH)
+    alias nEi = control_signals[6];      // enable Instruction Register output to the bus (ACTIVE-LOW)
 
     // Control Signals for the Accumulator Register //
     alias nLa = control_signals[5];     // enable Accumulator Register load from bus (ACTIVE-LOW)
