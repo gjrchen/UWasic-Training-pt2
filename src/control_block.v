@@ -147,10 +147,9 @@ always @(negedge clk) begin
     endcase
 end
 
-// Does this need to be a procedural block? - Damir
-// assign out = control_signals;
-always @(*) begin
-    out <= control_signals;
-end
+assign out = control_signals;
+//always @(*) begin
+  //  out <= control_signals;
+//end
 
 endmodule
