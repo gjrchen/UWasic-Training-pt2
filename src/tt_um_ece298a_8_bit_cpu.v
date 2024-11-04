@@ -92,20 +92,20 @@ module tt_um_ece298a_8_bit_cpu_top (
     alu alu_object(
         .clk(clk),            // Clock (Rising edge) (needed for storing CF and ZF)
         .enable_output(Eu),   // Enable ALU output to the bus (ACTIVE-HIGH)
-        .reg_a(reg_a),         // Register A (8 bits)
-        .reg_b(reg_b),         // Register B (8 bits)
+        .reg_a(reg_a),        // Register A (8 bits)
+        .reg_b(reg_b),        // Register B (8 bits)
         .sub(sub),            // Perform addition when 0, perform subtraction when 1
         .bus(bus),            // Bus (8 bits)
         .CF(CF),              // Carry Flag
         .ZF(ZF)               // Zero Flag
     );
     // Accumulator Register //
-    accumulator_register accumulator_object((
+    accumulator_register accumulator_object(
         .clk(clk),            // Clock (Rising edge)
         .bus(bus),            // Bus (8 bits)
         .load(nLa),           // Enable Accumulator Register load from bus (ACTIVE-LOW)
         .enable_output(Ea),   // Enable Accumulator Register output to the bus (ACTIVE-HIGH)
-        .regA(reg_a),          // Register A (8 bits)
+        .regA(reg_a),         // Register A (8 bits)
         .rst_n(rst_n)         // Reset (ACTIVE-LOW)
     );
 
