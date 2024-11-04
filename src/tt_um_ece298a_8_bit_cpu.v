@@ -41,33 +41,33 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire [3:0] mar_to_ram_addr;
 
     // Control Signals for the Program Counter //
-    alias Cp = control_signals[14];     // 
-    alias Ep = control_signals[13];     // 
-    alias Lp = control_signals[12];     // 
+    wire Cp = control_signals[14];     // 
+    wire Ep = control_signals[13];     // 
+    wire Lp = control_signals[12];     // 
 
     // Control Signals for the RAM //
-    alias nLma = control_signals[11];   // 
-    alias nLmd = control_signals[10];   // 
-    alias nCE = control_signals[9];     // 
-    alias nLr = control_signals[8];     // 
+    wire nLma = control_signals[11];   // 
+    wire nLmd = control_signals[10];   // 
+    wire nCE = control_signals[9];     // 
+    wire nLr = control_signals[8];     // 
 
     // Control Signals for the Instruction Register //
-    alias nLi = control_signals[7];     // enable Instruction Register load from bus (ACTIVE-LOW)
-    alias nEi = control_signals[6];      // enable Instruction Register output to the bus (ACTIVE-LOW)
+    wire nLi = control_signals[7];     // enable Instruction Register load from bus (ACTIVE-LOW)
+    wire nEi = control_signals[6];      // enable Instruction Register output to the bus (ACTIVE-LOW)
 
     // Control Signals for the Accumulator Register //
-    alias nLa = control_signals[5];     // enable Accumulator Register load from bus (ACTIVE-LOW)
-    alias Ea = control_signals[4];      // enable Accumulator Register output to the bus (ACTIVE-HIGH)
+    wire nLa = control_signals[5];     // enable Accumulator Register load from bus (ACTIVE-LOW)
+    wire Ea = control_signals[4];      // enable Accumulator Register output to the bus (ACTIVE-HIGH)
 
     // Control Signals for the ALU //
-    alias sub = control_signals[3];     // perform addition when 0, perform subtraction when 1
-    alias Eu = control_signals[2];      // enable ALU output to the bus (ACTIVE-HIGH)
+    wire sub = control_signals[3];     // perform addition when 0, perform subtraction when 1
+    wire Eu = control_signals[2];      // enable ALU output to the bus (ACTIVE-HIGH)
 
     // Control Signals for the B Register //
-    alias nLb = control_signals[1];     // enable B Register load from bus (ACTIVE-LOW)
+    wire nLb = control_signals[1];     // enable B Register load from bus (ACTIVE-LOW)
 
     // Control Signals for the Output Register //
-    alias nLo = control_signals[0];     // 
+    wire nLo = control_signals[0];     // 
     
     
     // Program Counter //
