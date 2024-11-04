@@ -99,6 +99,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .CF(CF),              // Carry Flag
         .ZF(ZF)               // Zero Flag
     );
+    
     // Accumulator Register //
     accumulator_register accumulator_object(
         .clk(clk),            // Clock (Rising edge)
