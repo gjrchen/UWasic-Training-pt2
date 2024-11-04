@@ -85,6 +85,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .out(control_signals[14:0])
     );
 
+    // ALU //
     alu alu_object(
         .clk(clk),            // Clock (Rising edge) (needed for storing CF and ZF)
         .enable_output(Eu),   // Enable ALU output to the bus (ACTIVE-HIGH)
