@@ -27,9 +27,11 @@ module tt_um_ece298a_8_bit_cpu_top (
     // Control Signals //
     wire [14:0] control_signals;
 
-    // Registers //
-    wire [7:0] regA;                // Accumulator Register
-    wire [7:0] regB;                // B Register
+    // Wires //
+    wire [3:0] opcode;              // opcode from IR to Control
+    wire [7:0] reg_a;               // value from Accumulator Register to ALU
+    wire [7:0] reg_b;               // value from B Register to ALU
+    
     // ALU Flags //
     wire CF;                        // Carry Flag
     wire ZF;                        // Zero Flag
@@ -67,6 +69,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     // Control Signals for the Output Register //
     alias nLo = control_signals[0];     // 
     
+    
     // Program Counter //
     ProgramCounter pc(
         .bits_in(bus4bit),
@@ -77,9 +80,6 @@ module tt_um_ece298a_8_bit_cpu_top (
         .cp(Cp),
         .ep(Ep)
     );
-
-    wire [3:0] opcode;
-    //assign opcode = 4'h2; // Supposed to come from IR, hardcoded for now
 
     control_block cb(
         .clk(clk),
@@ -92,8 +92,8 @@ module tt_um_ece298a_8_bit_cpu_top (
     alu alu_object(
         .clk(clk),            // Clock (Rising edge) (needed for storing CF and ZF)
         .enable_output(Eu),   // Enable ALU output to the bus (ACTIVE-HIGH)
-        .reg_a(regA),         // Register A (8 bits)
-        .reg_b(regB),         // Register B (8 bits)
+        .reg_a(reg_a),         // Register A (8 bits)
+        .reg_b(reg_b),         // Register B (8 bits)
         .sub(sub),            // Perform addition when 0, perform subtraction when 1
         .bus(bus),            // Bus (8 bits)
         .CF(CF),              // Carry Flag
@@ -105,10 +105,44 @@ module tt_um_ece298a_8_bit_cpu_top (
         .bus(bus),            // Bus (8 bits)
         .load(nLa),           // Enable Accumulator Register load from bus (ACTIVE-LOW)
         .enable_output(Ea),   // Enable Accumulator Register output to the bus (ACTIVE-HIGH)
-        .regA(regA),          // Register A (8 bits)
+        .regA(reg_a),          // Register A (8 bits)
         .rst_n(rst_n)         // Reset (ACTIVE-LOW)
     );
 
+    // Input and MAR Register //
+    input_mar_register input_mar_regiser(
+        .clk(clk),
+        .n_load_data(nLmd),
+        .n_load_addr(nLma),
+        .bus(bus),
+        .data(mar_to_ram_data),
+        .addr(mar_to_ram_addr)
+    );
+
+    // Instruction Register //
+    instruction_register instruction_register(
+        .clk(clk),
+        .clear(~rst_n),
+        .n_load(nLi),
+        .n_enable(nEi),
+        .bus(bus),
+        .opcode(opcode)
+    );
+
+    // B Register //
+    b_register register(
+        .clk(clk),
+        .n_load(nLb),
+        .bus(bus),
+        .value(reg_b)
+    );
+    
+    // Output Register //
+    output_register register(
+        .clk(clk),
+        .n_load(nLo),
+        .bus(bus),
+        .value(uo_out)
     // RAM //
     tt_um_dff_mem #(
     .RAM_BYTES(16)   // Set the RAM size to 16 bytes
@@ -124,23 +158,18 @@ module tt_um_ece298a_8_bit_cpu_top (
 
     // Skip these for now
     //wire _unused = &{ui_in, uo_out, uio_in, ena, control_signals[11:0]};
-    //assign uo_out = 8'h00;
-    assign uio_out = 8'h00;
+    // assign uo_out = 8'h00;
+    // assign uio_out = 8'h00;
     assign uio_oe = 8'h00;
     
-    //assign inputs
-    assign opcode[0] = ui_in[0];
-    assign opcode[1] = ui_in[1];
-    assign opcode[2] = ui_in[2];
-    assign opcode[3] = ui_in[3];
     //Assign outputs
-    assign uo_out[0] = 0;
-    assign uo_out[1] = 0;
-    assign uo_out[2] = 0;
-    assign uo_out[3] = 0;
-    assign uo_out[4] = control_signals[12];
-    assign uo_out[5] = control_signals[13];
-    assign uo_out[6] = control_signals[14];
-    assign uo_out[7] = 0;
+    assign uio_out[0] = 0;
+    assign uio_out[1] = 0;
+    assign uio_out[2] = 0;
+    assign uio_out[3] = 0;
+    assign uio_out[4] = control_signals[12];
+    assign uio_out[5] = control_signals[13];
+    assign uio_out[6] = control_signals[14];
+    assign uio_out[7] = 0;
 
 endmodule

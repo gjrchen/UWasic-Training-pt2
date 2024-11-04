@@ -24,6 +24,9 @@ project:
     - "add_sub_8bit.v"
     - "alu.v"
     - "onebitfa.v"
+    - "register.v"
+    - "input_mar_register.v"
+    - "instruction_register.v"
     - "dff_mem.v"
 
 
