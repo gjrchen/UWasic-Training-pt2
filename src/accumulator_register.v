@@ -7,7 +7,7 @@ module accumulator_register (
     input  wire       rst_n           // Reset (ACTIVE-LOW)
 );
   // Accumulator Register //
-  always @(posedge clk or negedge rst_n) begin // Update on Clock (Rising edge) or Reset (Fallling edge)
+  always @(posedge clk) begin // Update on Clock (Rising edge) or Reset (Fallling edge)
       if (!rst_n)                              // Reset regA to 0 when rst_n is low
         regA <= 8'b00000000;
       else if (!load)                          // Load regA from the bus when load is low (ACTIVE-LOW)                         
