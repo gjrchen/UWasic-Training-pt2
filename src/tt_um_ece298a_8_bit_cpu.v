@@ -19,19 +19,21 @@ module tt_um_ece298a_8_bit_cpu_top (
     input  wire rst_n           // reset_n - low to reset
 );
 
-
+    // Bus //
     wire [7:0] bus;                 // Bus (8-bit) (High impedance when not in use)
     wire [3:0] bus4bit;             // 4-bit Bus (lower 4 bits of the 8-bit Bus) (High impedance when not in use)
     assign bus4bit = bus[3:0];      // Assign 4-bit Bus to the lower 4 bits of the 8-bit Bus 
 
+    // Control Signals //
     wire [14:0] control_signals;
 
+    // Registers //
     wire [7:0] regA;                // Accumulator Register
     wire [7:0] regB;                // B Register
-
     // ALU Flags //
     wire CF;                        // Carry Flag
     wire ZF;                        // Zero Flag
+
 
     // Control Signals for the Program Counter //
     alias Cp = control_signals[14];     // 
