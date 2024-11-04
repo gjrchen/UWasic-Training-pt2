@@ -1,6 +1,6 @@
 module instruction_register(
   input clk, clear, n_load, n_enable,
-  input [7:0] bus,
+  input [7:0] bus, // Might need to change this to inout instead of input - Damir
   output [3:0] opcode
 );
   reg [7:0] instruction;
