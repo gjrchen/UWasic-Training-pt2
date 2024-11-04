@@ -110,7 +110,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     );
 
     // Input and MAR Register //
-    input_mar_register input_mar_regiser(
+    input_mar_register input_mar_register(
         .clk(clk),
         .n_load_data(nLmd),
         .n_load_addr(nLma),
@@ -130,7 +130,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     );
 
     // B Register //
-    b_register register(
+    register b_register(
         .clk(clk),
         .n_load(nLb),
         .bus(bus),
@@ -138,11 +138,13 @@ module tt_um_ece298a_8_bit_cpu_top (
     );
     
     // Output Register //
-    output_register register(
+    register output_register(
         .clk(clk),
         .n_load(nLo),
         .bus(bus),
         .value(uo_out)
+    );
+
     // RAM //
     tt_um_dff_mem #(
     .RAM_BYTES(16)   // Set the RAM size to 16 bytes
