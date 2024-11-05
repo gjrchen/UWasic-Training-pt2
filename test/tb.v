@@ -38,7 +38,7 @@ module tb ();
     .uio_oe(uio_oe),
     .ena(ena),
     .clk(clk), 
-    .rst_n(st_n)
+    .rst_n(rst_n)
   );
 
 endmodule
