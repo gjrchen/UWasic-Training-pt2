@@ -22,10 +22,10 @@ module tt_um_ece298a_8_bit_cpu_top (
     // assign bus4bit = bus[3:0];      // Assign 4-bit Bus to the lower 4 bits of the 8-bit Bus 
 
     // // // Control Signals //
-    // wire [14:0] control_signals;
+    wire [14:0] control_signals;
 
     // // // Wires //
-    // wire [3:0] opcode;              // opcode from IR to Control
+    wire [3:0] opcode;              // opcode from IR to Control
     // wire [7:0] reg_a;               // value from Accumulator Register to ALU
     // wire [7:0] reg_b;               // value from B Register to ALU
     
@@ -78,12 +78,12 @@ module tt_um_ece298a_8_bit_cpu_top (
     //     .ep(Ep)
     // );
 
-    // control_block cb(
-    //     .clk(clk),
-    //     .resetn(rst_n),
-    //     .opcode(opcode[3:0]),
-    //     .out(control_signals[14:0])
-    // );
+    control_block cb(
+        .clk(clk),
+        .resetn(rst_n),
+        .opcode(opcode[3:0]),
+        .out(control_signals[14:0])
+    );
 
     // // ALU //
     // alu alu_object(
