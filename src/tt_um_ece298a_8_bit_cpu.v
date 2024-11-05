@@ -69,7 +69,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     // // Control Signals for the Output Register //
     wire nLo = control_signals[0];     // 
     
-    assign bus[7:4] = 1;
+    //assign bus[7:4] = 1;
 
     // Program Counter //
      ProgramCounter pc(
