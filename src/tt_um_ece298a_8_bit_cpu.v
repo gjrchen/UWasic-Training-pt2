@@ -20,7 +20,7 @@ module tt_um_ece298a_8_bit_cpu_top (
 );
 
     // Bus //
-    //wire [7:0] bus;                 // Bus (8-bit) (High impedance when not in use)
+    wire [7:0] bus;                 // Bus (8-bit) (High impedance when not in use)
     // wire [3:0] bus4bit;             // 4-bit Bus (lower 4 bits of the 8-bit Bus) (High impedance when not in use)
     // assign bus4bit = bus[3:0];      // Assign 4-bit Bus to the lower 4 bits of the 8-bit Bus 
 
@@ -41,9 +41,9 @@ module tt_um_ece298a_8_bit_cpu_top (
     // wire [3:0] mar_to_ram_addr;
 
     // // Control Signals for the Program Counter //
-    // wire Cp = control_signals[14];     // 
-    // wire Ep = control_signals[13];     // 
-    // wire Lp = control_signals[12];     // 
+    wire Cp = control_signals[14];     // 
+    wire Ep = control_signals[13];     // 
+    wire Lp = control_signals[12];     // 
 
     // // Control Signals for the RAM //
     // wire nLma = control_signals[11];   // 
@@ -71,15 +71,15 @@ module tt_um_ece298a_8_bit_cpu_top (
     
     
     // Program Counter //
-    // ProgramCounter pc(
-    //     .bits_in(bus4bit),
-    //     .bits_out(bus4bit),
-    //     .clk(clk),
-    //     .clr_n(rst_n),
-    //     .lp(Lp),
-    //     .cp(Cp),
-    //     .ep(Ep)
-    // );
+     ProgramCounter pc(
+         .bits_in(bus[3:0]),
+         .bits_out(bus[3:0]),
+         .clk(clk),
+         .clr_n(rst_n),
+         .lp(Lp),
+         .cp(Cp),
+         .ep(Ep)
+     );
 
     control_block cb(
         .clk(clk),
