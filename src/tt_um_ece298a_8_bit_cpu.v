@@ -23,6 +23,9 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire [3:0] bus4bit;             // 4-bit Bus (lower 4 bits of the 8-bit Bus) (High impedance when not in use)
     assign bus4bit = bus[3:0];      // Assign 4-bit Bus to the lower 4 bits of the 8-bit Bus 
 
+    // If any of the enable signals are asserted, allow the bus to be driven by the other components (put ot to high z), if none are, then drive to idle 0
+    assign bus[7:0] = (Ep | !nCE | !nEi | Ea | Eu) ? 8'bZZZZZZZZ : 8'b0;        
+
     // Control Signals //
     wire [14:0] control_signals;
     wire not_outputting_to_bus;
@@ -162,10 +165,8 @@ module tt_um_ece298a_8_bit_cpu_top (
         .clk(clk),       // Connect the clock signal
         .rst_n(rst_n)    // Connect the reset signal
     );
-
     // Tri-state buffer to initialize the bus with a known value //
     assign bus = (not_outputting_to_bus) ? 8'b00000000 : 8'bZZZZZZZZ; // Initialize the bus with a known value if nothing is outputting to the bus
-
     // Wires //
     assign uio_out = 8'h00;
     assign uio_oe = 8'h00;
