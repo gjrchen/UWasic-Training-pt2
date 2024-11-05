@@ -87,6 +87,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .opcode(opcode[3:0]),
         .out(control_signals[14:0])
     );
+    */
 
     // ALU //
     alu alu_object(
@@ -110,6 +111,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .rst_n(rst_n)         // Reset (ACTIVE-LOW)
     );
 
+    /*
     // Input and MAR Register //
     input_mar_register input_mar_register(
         .clk(clk),
