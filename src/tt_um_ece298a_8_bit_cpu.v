@@ -144,7 +144,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     //     .n_load(nLo),
     //     .bus(bus),
     //     .value(uo_out)
-    / );
+    // );
 
     // RAM //
     // tt_um_dff_mem #(
