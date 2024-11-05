@@ -159,6 +159,10 @@ module tt_um_ece298a_8_bit_cpu_top (
         .rst_n(rst_n)    // Connect the reset signal
     );
 
-    wire _unused = &{ui_in, uio_in, uio_out, uio_oe, ena, ZF, CF}; // Avoid unused variable warning
+    // Wires //
+    assign uio_out = 8'h00;
+    assign uio_oe = 8'h00;
+
+    wire _unused = &{ui_in, uio_in, ena, ZF, CF}; // Avoid unused variable warning
 
 endmodule
