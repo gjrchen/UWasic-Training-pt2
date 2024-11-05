@@ -9,7 +9,7 @@ module control_block (
     input wire clk,
     input wire resetn,
     input wire [3:0] opcode,
-    output wire [14: 0] out    
+    output wire [14:0] out    
 );
 
 /* Supported Instructions' Opcodes */
