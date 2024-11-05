@@ -30,7 +30,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     // Wires //
     wire [3:0] opcode;              // opcode from IR to Control
     // wire [7:0] reg_a;               // value from Accumulator Register to ALU
-    // wire [7:0] reg_b;               // value from B Register to ALU
+    wire [7:0] reg_b;               // value from B Register to ALU
     
     // // ALU Flags //
     // wire CF;                        // Carry Flag
@@ -64,7 +64,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     // wire Eu = control_signals[2];      // enable ALU output to the bus (ACTIVE-HIGH)
 
     // // Control Signals for the B Register //
-    // wire nLb = control_signals[1];     // enable B Register load from bus (ACTIVE-LOW)
+    wire nLb = control_signals[1];     // enable B Register load from bus (ACTIVE-LOW)
 
     // // Control Signals for the Output Register //
     // wire nLo = control_signals[0];     // 
@@ -131,12 +131,12 @@ module tt_um_ece298a_8_bit_cpu_top (
     // );
 
     // B Register //
-    // register b_register(
-    //     .clk(clk),
-    //     .n_load(nLb),
-    //     .bus(bus),
-    //     .value(reg_b)
-    // );
+    register b_register(
+         .clk(clk),
+         .n_load(nLb),
+         .bus(bus),
+         .value(reg_b)
+    );
     
     // // Output Register //
     // register output_register(
@@ -144,7 +144,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     //     .n_load(nLo),
     //     .bus(bus),
     //     .value(uo_out)
-    // );
+    / );
 
     // RAM //
     // tt_um_dff_mem #(
