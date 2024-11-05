@@ -59,6 +59,8 @@ async def init(dut):
     cocotb.start_soon(clock.start())
 
     dut._log.info("Reset")
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
     dut.rst_n.value = 0
     await RisingEdge(dut.clk)
     assert dut.rst_n.value == 0, f"Reset is not 0, rst_n={dut.rst_n.value}"
