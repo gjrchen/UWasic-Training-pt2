@@ -27,15 +27,15 @@ module tt_um_ece298a_8_bit_cpu_top (
     // // // Wires //
     // wire [3:0] opcode;              // opcode from IR to Control
     // wire [7:0] reg_a;               // value from Accumulator Register to ALU
-    // wire [7:0] reg_b;               // value from B Register to ALU
+    wire [7:0] reg_b;               // value from B Register to ALU
     
     // // // ALU Flags //
     // wire CF;                        // Carry Flag
     // wire ZF;                        // Zero Flag
 
     // // Wire between MAR and RAM //
-    wire [7:0] mar_to_ram_data;
-    wire [3:0] mar_to_ram_addr;
+    // wire [7:0] mar_to_ram_data;
+    // wire [3:0] mar_to_ram_addr;
 
     // // Control Signals for the Program Counter //
     // wire Cp = control_signals[14];     // 
@@ -45,8 +45,8 @@ module tt_um_ece298a_8_bit_cpu_top (
     // // Control Signals for the RAM //
     // wire nLma = control_signals[11];   // 
     // wire nLmd = control_signals[10];   // 
-    wire nCE = control_signals[9];     // 
-    wire nLr = control_signals[8];     // 
+    // wire nCE = control_signals[9];     // 
+    // wire nLr = control_signals[8];     // 
 
     // // Control Signals for the Instruction Register //
     // wire nLi = control_signals[7];     // enable Instruction Register load from bus (ACTIVE-LOW)
@@ -61,7 +61,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     // wire Eu = control_signals[2];      // enable ALU output to the bus (ACTIVE-HIGH)
 
     // // Control Signals for the B Register //
-    // wire nLb = control_signals[1];     // enable B Register load from bus (ACTIVE-LOW)
+    wire nLb = control_signals[1];     // enable B Register load from bus (ACTIVE-LOW)
 
     // // Control Signals for the Output Register //
     // wire nLo = control_signals[0];     // 
@@ -128,12 +128,12 @@ module tt_um_ece298a_8_bit_cpu_top (
     // );
 
     // // B Register //
-    // register b_register(
-    //     .clk(clk),
-    //     .n_load(nLb),
-    //     .bus(bus),
-    //     .value(reg_b)
-    // );
+    register b_register(
+        .clk(clk),
+        .n_load(nLb),
+        .bus(bus),
+        .value(reg_b)
+    );
     
     // // Output Register //
     // register output_register(
@@ -144,17 +144,17 @@ module tt_um_ece298a_8_bit_cpu_top (
     // );
 
     // // RAM //
-    tt_um_dff_mem #(
-    .RAM_BYTES(16)   // Set the RAM size to 16 bytes
-    ) ram (
-        .addr(mar_to_ram_addr),     
-        .data_in(mar_to_ram_data), 
-        .data_out(bus), 
-        .lr_n(nLr),     
-        .ce_n(nCE),     // Connect the chip enable signal
-        .clk(clk),       // Connect the clock signal
-        .rst_n(rst_n)    // Connect the reset signal
-    );
+    // tt_um_dff_mem #(
+    // .RAM_BYTES(16)   // Set the RAM size to 16 bytes
+    // ) ram (
+    //     .addr(mar_to_ram_addr),     
+    //     .data_in(mar_to_ram_data), 
+    //     .data_out(bus), 
+    //     .lr_n(nLr),     
+    //     .ce_n(nCE),     // Connect the chip enable signal
+    //     .clk(clk),       // Connect the clock signal
+    //     .rst_n(rst_n)    // Connect the reset signal
+    // );
 
 // //   All output pins must be assigned. If not used, assign to 0.
 //   assign uio_out = 0;
