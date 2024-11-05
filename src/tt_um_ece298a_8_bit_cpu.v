@@ -28,7 +28,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire [14:0] control_signals;
 
     // Wires //
-    //wire [3:0] opcode;              // opcode from IR to Control
+    wire [3:0] opcode;              // opcode from IR to Control
     // wire [7:0] reg_a;               // value from Accumulator Register to ALU
     // wire [7:0] reg_b;               // value from B Register to ALU
     
