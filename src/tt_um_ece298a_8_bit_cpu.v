@@ -34,19 +34,19 @@ module tt_um_ece298a_8_bit_cpu_top (
     // wire ZF;                        // Zero Flag
 
     // // Wire between MAR and RAM //
-    // wire [7:0] mar_to_ram_data;
-    // wire [3:0] mar_to_ram_addr;
+    wire [7:0] mar_to_ram_data;
+    wire [3:0] mar_to_ram_addr;
 
     // // Control Signals for the Program Counter //
-    wire Cp = control_signals[14];     // 
-    wire Ep = control_signals[13];     // 
-    wire Lp = control_signals[12];     // 
+    // wire Cp = control_signals[14];     // 
+    // wire Ep = control_signals[13];     // 
+    // wire Lp = control_signals[12];     // 
 
     // // Control Signals for the RAM //
     // wire nLma = control_signals[11];   // 
     // wire nLmd = control_signals[10];   // 
-    // wire nCE = control_signals[9];     // 
-    // wire nLr = control_signals[8];     // 
+    wire nCE = control_signals[9];     // 
+    wire nLr = control_signals[8];     // 
 
     // // Control Signals for the Instruction Register //
     // wire nLi = control_signals[7];     // enable Instruction Register load from bus (ACTIVE-LOW)
@@ -68,15 +68,15 @@ module tt_um_ece298a_8_bit_cpu_top (
     
     
     // // Program Counter //
-    ProgramCounter pc(
-        .bits_in(bus4bit),
-        .bits_out(bus4bit),
-        .clk(clk),
-        .clr_n(rst_n),
-        .lp(Lp),
-        .cp(Cp),
-        .ep(Ep)
-    );
+    // ProgramCounter pc(
+    //     .bits_in(bus4bit),
+    //     .bits_out(bus4bit),
+    //     .clk(clk),
+    //     .clr_n(rst_n),
+    //     .lp(Lp),
+    //     .cp(Cp),
+    //     .ep(Ep)
+    // );
 
     // control_block cb(
     //     .clk(clk),
@@ -144,17 +144,17 @@ module tt_um_ece298a_8_bit_cpu_top (
     // );
 
     // // RAM //
-    // tt_um_dff_mem #(
-    // .RAM_BYTES(16)   // Set the RAM size to 16 bytes
-    // ) ram (
-    //     .addr(mar_to_ram_addr),     
-    //     .data_in(mar_to_ram_data), 
-    //     .data_out(bus), 
-    //     .lr_n(nLr),     
-    //     .ce_n(nCE),     // Connect the chip enable signal
-    //     .clk(clk),       // Connect the clock signal
-    //     .rst_n(rst_n)    // Connect the reset signal
-    // );
+    tt_um_dff_mem #(
+    .RAM_BYTES(16)   // Set the RAM size to 16 bytes
+    ) ram (
+        .addr(mar_to_ram_addr),     
+        .data_in(mar_to_ram_data), 
+        .data_out(bus), 
+        .lr_n(nLr),     
+        .ce_n(nCE),     // Connect the chip enable signal
+        .clk(clk),       // Connect the clock signal
+        .rst_n(rst_n)    // Connect the reset signal
+    );
 
 // //   All output pins must be assigned. If not used, assign to 0.
 //   assign uio_out = 0;
