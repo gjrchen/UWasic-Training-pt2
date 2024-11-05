@@ -63,6 +63,7 @@ async def init(dut):
     await RisingEdge(dut.clk)
     dut.rst_n.value = 0
     await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
     assert dut.rst_n.value == 0, f"Reset is not 0, rst_n={dut.rst_n.value}"
     dut.rst_n.value = 1
     await RisingEdge(dut.clk)
