@@ -67,10 +67,10 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire nLb = control_signals[1];     // enable B Register load from bus (ACTIVE-LOW)
 
     // // Control Signals for the Output Register //
-    // wire nLo = control_signals[0];     // 
+    wire nLo = control_signals[0];     // 
     
     assign bus[7:4] = 1;
-    
+
     // Program Counter //
      ProgramCounter pc(
          .bits_in(bus[3:0]),
@@ -140,12 +140,12 @@ module tt_um_ece298a_8_bit_cpu_top (
     );
     
     // // Output Register //
-    // register output_register(
-    //     .clk(clk),
-    //     .n_load(nLo),
-    //     .bus(bus),
-    //     .value(uo_out)
-    // );
+     register output_register(
+         .clk(clk),
+         .n_load(nLo),
+         .bus(bus),
+         .value(uo_out)
+     );
 
     // RAM //
     // tt_um_dff_mem #(
@@ -161,7 +161,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     // );
 
     assign opcode = ui_in[3:0];
-    assign uo_out[7:0] = control_signals[7:0];
+    //assign uo_out[7:0] = control_signals[7:0];
     //assign uo_out[7:4] = 0;
 
     // Wires //
