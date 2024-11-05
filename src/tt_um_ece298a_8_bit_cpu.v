@@ -18,14 +18,14 @@ module tt_um_ece298a_8_bit_cpu_top (
 
     // // Bus //
     wire [7:0] bus;                 // Bus (8-bit) (High impedance when not in use)
-    wire [3:0] bus4bit;             // 4-bit Bus (lower 4 bits of the 8-bit Bus) (High impedance when not in use)
-    assign bus4bit = bus[3:0];      // Assign 4-bit Bus to the lower 4 bits of the 8-bit Bus 
+    // wire [3:0] bus4bit;             // 4-bit Bus (lower 4 bits of the 8-bit Bus) (High impedance when not in use)
+    // assign bus4bit = bus[3:0];      // Assign 4-bit Bus to the lower 4 bits of the 8-bit Bus 
 
     // // // Control Signals //
-    wire [14:0] control_signals;
+    // wire [14:0] control_signals;
 
     // // // Wires //
-    wire [3:0] opcode;              // opcode from IR to Control
+    // wire [3:0] opcode;              // opcode from IR to Control
     // wire [7:0] reg_a;               // value from Accumulator Register to ALU
     wire [7:0] reg_b;               // value from B Register to ALU
     
@@ -34,8 +34,8 @@ module tt_um_ece298a_8_bit_cpu_top (
     // wire ZF;                        // Zero Flag
 
     // // Wire between MAR and RAM //
-    wire [7:0] mar_to_ram_data;
-    wire [3:0] mar_to_ram_addr;
+    // wire [7:0] mar_to_ram_data;
+    // wire [3:0] mar_to_ram_addr;
 
     // // Control Signals for the Program Counter //
     // wire Cp = control_signals[14];     // 
@@ -43,14 +43,14 @@ module tt_um_ece298a_8_bit_cpu_top (
     // wire Lp = control_signals[12];     // 
 
     // // Control Signals for the RAM //
-    wire nLma = control_signals[11];   // 
-    wire nLmd = control_signals[10];   // 
+    // wire nLma = control_signals[11];   // 
+    // wire nLmd = control_signals[10];   // 
     // wire nCE = control_signals[9];     // 
     // wire nLr = control_signals[8];     // 
 
     // // Control Signals for the Instruction Register //
-    wire nLi = control_signals[7];     // enable Instruction Register load from bus (ACTIVE-LOW)
-    wire nEi = control_signals[6];      // enable Instruction Register output to the bus (ACTIVE-LOW)
+    // wire nLi = control_signals[7];     // enable Instruction Register load from bus (ACTIVE-LOW)
+    // wire nEi = control_signals[6];      // enable Instruction Register output to the bus (ACTIVE-LOW)
 
     // // Control Signals for the Accumulator Register //
     // wire nLa = control_signals[5];     // enable Accumulator Register load from bus (ACTIVE-LOW)
@@ -64,7 +64,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire nLb = control_signals[1];     // enable B Register load from bus (ACTIVE-LOW)
 
     // // Control Signals for the Output Register //
-    wire nLo = control_signals[0];     // 
+    // wire nLo = control_signals[0];     // 
     
     
     // // Program Counter //
@@ -107,25 +107,25 @@ module tt_um_ece298a_8_bit_cpu_top (
     //     .rst_n(rst_n)         // Reset (ACTIVE-LOW)
     // );
 
-    // Input and MAR Register //
-    input_mar_register input_mar_register(
-        .clk(clk),
-        .n_load_data(nLmd),
-        .n_load_addr(nLma),
-        .bus(bus),
-        .data(mar_to_ram_data),
-        .addr(mar_to_ram_addr)
-    );
+    // // Input and MAR Register //
+    // input_mar_register input_mar_register(
+    //     .clk(clk),
+    //     .n_load_data(nLmd),
+    //     .n_load_addr(nLma),
+    //     .bus(bus),
+    //     .data(mar_to_ram_data),
+    //     .addr(mar_to_ram_addr)
+    // );
 
-    // Instruction Register //
-    instruction_register instruction_register(
-        .clk(clk),
-        .clear(~rst_n),
-        .n_load(nLi),
-        .n_enable(nEi),
-        .bus(bus),
-        .opcode(opcode)
-    );
+    // // Instruction Register //
+    // instruction_register instruction_register(
+    //     .clk(clk),
+    //     .clear(~rst_n),
+    //     .n_load(nLi),
+    //     .n_enable(nEi),
+    //     .bus(bus),
+    //     .opcode(opcode)
+    // );
 
     // B Register //
     register b_register(
@@ -135,13 +135,13 @@ module tt_um_ece298a_8_bit_cpu_top (
         .value(reg_b)
     );
     
-    // Output Register //
-    register output_register(
-        .clk(clk),
-        .n_load(nLo),
-        .bus(bus),
-        .value(uo_out)
-    );
+    // // Output Register //
+    // register output_register(
+    //     .clk(clk),
+    //     .n_load(nLo),
+    //     .bus(bus),
+    //     .value(uo_out)
+    // );
 
     // // RAM //
     // tt_um_dff_mem #(
@@ -162,6 +162,6 @@ module tt_um_ece298a_8_bit_cpu_top (
   assign uio_oe  = 0;
 
   // List all unused inputs to prevent warnings
-  wire _unused = &{ena, clk, 1'b0};
+  wire _unused = &{ena, rst_n, uio_in[7:1], 1'b0};
 
 endmodule
