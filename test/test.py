@@ -10,6 +10,8 @@ from cocotb.types.logic_array import LogicArray
 from random import randint, shuffle
 
 CLOCK_PERIOD = 10  # 100 MHz
+CLOCK_UNITS = "ns"
+
 GLTEST = False
 signal_dict = {'nLo': 0, 'nLb': 1, 'Eu': 2, 'sub': 3, 'Ea': 4, 'nLa' : 5, 'nEi': 6, 'nLi' : 7, 'nLr' : 8, 'nCE' : 9, 'nLmd' : 10, 'nLma' : 11, 'Lp' : 12, 'Ep' : 13, 'Cp' : 14}
 
@@ -44,11 +46,15 @@ async def log_control_signals(dut):
         dut._log.info(result_string)
 
 async def init(dut):
+    # Need to coordinate how we initialize
     await determine_gltest(dut)
     if (GLTEST):
         dut._log.info("GLTEST is TRUE")
     else:
         dut._log.info("GLTEST is FALSE")
+    
+    dut._log.info(f"Initialize clock with period={CLOCK_PERIOD} {CLOCK_UNITS}")
+    clock = Clock(dut.clk, CLOCK_PERIOD, units=CLOCK_UNITS)
 
 @cocotb.test()
 async def check_gl_test(dut):
