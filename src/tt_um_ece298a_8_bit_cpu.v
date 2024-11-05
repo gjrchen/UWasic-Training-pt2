@@ -29,7 +29,7 @@ module tt_um_ece298a_8_bit_cpu_top (
 
     // Wires //
     wire [3:0] opcode;              // opcode from IR to Control
-    // wire [7:0] reg_a;               // value from Accumulator Register to ALU
+    wire [7:0] reg_a;               // value from Accumulator Register to ALU
     wire [7:0] reg_b;               // value from B Register to ALU
     
     // // ALU Flags //
@@ -56,8 +56,8 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire nEi = control_signals[6];      // enable Instruction Register output to the bus (ACTIVE-LOW)
 
     // // Control Signals for the Accumulator Register //
-    // wire nLa = control_signals[5];     // enable Accumulator Register load from bus (ACTIVE-LOW)
-    // wire Ea = control_signals[4];      // enable Accumulator Register output to the bus (ACTIVE-HIGH)
+    wire nLa = control_signals[5];     // enable Accumulator Register load from bus (ACTIVE-LOW)
+    wire Ea = control_signals[4];      // enable Accumulator Register output to the bus (ACTIVE-HIGH)
 
     // // Control Signals for the ALU //
     // wire sub = control_signals[3];     // perform addition when 0, perform subtraction when 1
@@ -102,14 +102,14 @@ module tt_um_ece298a_8_bit_cpu_top (
     // );
     
     // Accumulator Register //
-    // accumulator_register accumulator_object(
-    //     .clk(clk),            // Clock (Rising edge)
-    //     .bus(bus),            // Bus (8 bits)
-    //     .load(nLa),           // Enable Accumulator Register load from bus (ACTIVE-LOW)
-    //     .enable_output(Ea),   // Enable Accumulator Register output to the bus (ACTIVE-HIGH)
-    //     .regA(reg_a),         // Register A (8 bits)
-    //     .rst_n(rst_n)         // Reset (ACTIVE-LOW)
-    // );
+     accumulator_register accumulator_object(
+         .clk(clk),            // Clock (Rising edge)
+         .bus(bus),            // Bus (8 bits)
+         .load(nLa),           // Enable Accumulator Register load from bus (ACTIVE-LOW)
+         .enable_output(Ea),   // Enable Accumulator Register output to the bus (ACTIVE-HIGH)
+         .regA(reg_a),         // Register A (8 bits)
+         .rst_n(rst_n)         // Reset (ACTIVE-LOW)
+     );
 
     // Input and MAR Register //
     // input_mar_register input_mar_register(
@@ -122,14 +122,14 @@ module tt_um_ece298a_8_bit_cpu_top (
     // );
 
     // Instruction Register //
-    instruction_register instruction_register(
-         .clk(clk),
-         .clear(~rst_n),
-         .n_load(nLi),
-         .n_enable(nEi),
-         .bus(bus),
-         .opcode(opcode)
-     );
+    // instruction_register instruction_register(
+    //      .clk(clk),
+    //      .clear(~rst_n),
+    //      .n_load(nLi),
+    //      .n_enable(nEi),
+    //      .bus(bus),
+    //      .opcode(opcode)
+    //  );
 
     // B Register //
     register b_register(
