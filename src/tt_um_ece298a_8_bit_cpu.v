@@ -78,12 +78,12 @@ module tt_um_ece298a_8_bit_cpu_top (
     //     .ep(Ep)
     // );
 
-    control_block cb(
-        .clk(clk),
-        .resetn(rst_n),
-        .opcode(opcode[3:0]),
-        .out(control_signals[14:0])
-    );
+    // control_block cb(
+    //     .clk(clk),
+    //     .resetn(rst_n),
+    //     .opcode(opcode[3:0]),
+    //     .out(control_signals[14:0])
+    // );
 
     // // ALU //
     // alu alu_object(
