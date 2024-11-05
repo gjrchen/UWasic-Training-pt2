@@ -22,7 +22,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     // assign bus4bit = bus[3:0];      // Assign 4-bit Bus to the lower 4 bits of the 8-bit Bus 
 
     // // // Control Signals //
-    // wire [14:0] control_signals;
+    wire [14:0] control_signals;
 
     // // // Wires //
     // wire [3:0] opcode;              // opcode from IR to Control
@@ -127,6 +127,8 @@ module tt_um_ece298a_8_bit_cpu_top (
     //     .opcode(opcode)
     // );
 
+    bus = ui_in;
+    
     // B Register //
     register b_register(
         .clk(clk),
@@ -134,6 +136,8 @@ module tt_um_ece298a_8_bit_cpu_top (
         .bus(bus),
         .value(reg_b)
     );
+
+    uo_out = reg_b;
     
     // // Output Register //
     // register output_register(
