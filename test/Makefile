@@ -5,12 +5,12 @@
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
-PROJECT_SOURCES = control_block.v
+PROJECT_SOURCES = tt_um_ece298a_8_bit_cpu.v accumulator_register.v alu.v add_sub_8bit.v onebitfa.v control_block.v dff_mem.v input_mar_register.v instruction_register.v program_counter.v register.v
 
 ifneq ($(GATES),yes)
 
 # RTL simulation:
-SIM_BUILD				= sim_build/rtl
+SIM_BUILD		= sim_build/rtl
 VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
 COMPILE_ARGS 		+= -I$(SRC_DIR)
 

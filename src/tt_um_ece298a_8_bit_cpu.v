@@ -25,7 +25,8 @@ module tt_um_ece298a_8_bit_cpu_top (
 
     // Control Signals //
     wire [14:0] control_signals;
-
+    wire loading_onto_bus;
+    
     // Wires //
     wire [3:0] opcode;              // opcode from IR to Control
     wire [7:0] reg_a;               // value from Accumulator Register to ALU
@@ -160,7 +161,6 @@ module tt_um_ece298a_8_bit_cpu_top (
     );
     // Tri-state buffer to connect ui_in to the bus //
     assign bus = (loading_onto_bus) ? ui_in : 8'bZZZZZZZZ;
-    wire loading_onto_bus;
     assign loading_onto_bus = uio_in[0];
     // Wires //
     assign uio_out = 8'h00;
