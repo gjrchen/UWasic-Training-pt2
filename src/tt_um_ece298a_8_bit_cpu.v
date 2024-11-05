@@ -62,10 +62,10 @@ module tt_um_ece298a_8_bit_cpu_top (
     // Control Signals for the ALU //
     wire sub = control_signals[3];     // perform addition when 0, perform subtraction when 1
     wire Eu = control_signals[2];      // enable ALU output to the bus (ACTIVE-HIGH)
-    /*
+    
     // Control Signals for the B Register //
     wire nLb = control_signals[1];     // enable B Register load from bus (ACTIVE-LOW)
-
+    /*
     // Control Signals for the Output Register //
     wire nLo = control_signals[0];     // 
     */
