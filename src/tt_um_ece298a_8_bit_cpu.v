@@ -64,10 +64,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire nLb = control_signals[1];     // enable B Register load from bus (ACTIVE-LOW)
 
     // // Control Signals for the Output Register //
-    wire nLo = control_signals[0];     // 
-
-    assign control_signal = 0'h00;
-    
+    wire nLo = control_signals[0];     //     
     
     // Program Counter //
     ProgramCounter pc(
@@ -83,8 +80,8 @@ module tt_um_ece298a_8_bit_cpu_top (
     control_block cb(
         .clk(clk),
         .resetn(rst_n),
-        .opcode(opcode[3:0]),
-        .out(control_signals[14:0])
+        .opcode(opcode),
+        .out(control_signals)
     );
 
     // ALU //
