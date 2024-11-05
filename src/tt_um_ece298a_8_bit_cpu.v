@@ -17,16 +17,16 @@ module tt_um_ece298a_8_bit_cpu_top (
 );
 
     // // Bus //
-    // wire [7:0] bus;                 // Bus (8-bit) (High impedance when not in use)
+    wire [7:0] bus;                 // Bus (8-bit) (High impedance when not in use)
     // wire [3:0] bus4bit;             // 4-bit Bus (lower 4 bits of the 8-bit Bus) (High impedance when not in use)
     // assign bus4bit = bus[3:0];      // Assign 4-bit Bus to the lower 4 bits of the 8-bit Bus 
 
     // // // Control Signals //
-    // wire [14:0] control_signals;
+    wire [14:0] control_signals;
 
     // // // Wires //
     // wire [3:0] opcode;              // opcode from IR to Control
-    // wire [7:0] reg_a;               // value from Accumulator Register to ALU
+    wire [7:0] reg_a;               // value from Accumulator Register to ALU
     // wire [7:0] reg_b;               // value from B Register to ALU
     
     // // // ALU Flags //
@@ -61,7 +61,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     // wire Eu = control_signals[2];      // enable ALU output to the bus (ACTIVE-HIGH)
 
     // // Control Signals for the B Register //
-    // wire nLb = control_signals[1];     // enable B Register load from bus (ACTIVE-LOW)
+    wire nLb = control_signals[1];     // enable B Register load from bus (ACTIVE-LOW)
 
     // // Control Signals for the Output Register //
     // wire nLo = control_signals[0];     // 
@@ -126,13 +126,17 @@ module tt_um_ece298a_8_bit_cpu_top (
     //     .bus(bus),
     //     .opcode(opcode)
     // );
+
+    assign bus = ui_in;
+    assign uo_out = reg_a;
+    assign control_signals[1] = uio_in [0];
     
     // B Register //
     register b_register(
         .clk(clk),
-        .n_load(uio_in [0]),
-        .bus(ui_in),
-        .value(uo_out)
+        .n_load(nLb),
+        .bus(bus),
+        .value(reg_a)
     );
     
     // // Output Register //
