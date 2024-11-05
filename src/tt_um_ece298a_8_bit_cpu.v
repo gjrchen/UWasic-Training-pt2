@@ -21,8 +21,6 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire [3:0] bus4bit;             // 4-bit Bus (lower 4 bits of the 8-bit Bus) (High impedance when not in use)
     assign bus4bit = bus[3:0];      // Assign 4-bit Bus to the lower 4 bits of the 8-bit Bus 
 
-    assign bus = 0'h00;
-
     // // // Control Signals //
     wire [14:0] control_signals;
 
@@ -67,6 +65,8 @@ module tt_um_ece298a_8_bit_cpu_top (
 
     // // Control Signals for the Output Register //
     wire nLo = control_signals[0];     // 
+
+    assign control_signal = 0'h00;
     
     
     // Program Counter //
