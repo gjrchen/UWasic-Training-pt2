@@ -4,9 +4,6 @@
 
 `default_nettype none
 
-//`include "control_block.v"
-//`include "program_counter.v"
-
 module tt_um_ece298a_8_bit_cpu_top (
     input  wire [7:0] ui_in,    // Dedicated inputs 
     output wire [7:0] uo_out,   // Dedicated outputs 
@@ -159,10 +156,11 @@ module tt_um_ece298a_8_bit_cpu_top (
         .rst_n(rst_n)    // Connect the reset signal
     );
 
-    // Wires //
-    assign uio_out = 8'h00;
-    assign uio_oe = 8'hFF;
+  // All output pins must be assigned. If not used, assign to 0.
+  assign uio_out = 0;
+  assign uio_oe  = 0;
 
-    wire _unused = &{uio_in, ena, ZF, CF}; // Avoid unused variable warning
+  // List all unused inputs to prevent warnings
+  wire _unused = &{ui_in, uio_in, ena, clk, rst_n, ZF, CF, 3'b0};
 
 endmodule
