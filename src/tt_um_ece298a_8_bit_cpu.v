@@ -156,9 +156,10 @@ module tt_um_ece298a_8_bit_cpu_top (
     //     .rst_n(rst_n)    // Connect the reset signal
     // );
 
-  // All output pins must be assigned. If not used, assign to 0.
-//   assign uio_out = 0;
-//   assign uio_oe  = 0;
+//   All output pins must be assigned. If not used, assign to 0.
+  assign uio_out = 0;
+  assign uio_oe  = 8'hFF;
+  assign uo_out  = 8'hFF;
 
 //   // List all unused inputs to prevent warnings
 //   wire _unused = &{ui_in, uio_in, ena, clk, rst_n};
