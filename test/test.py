@@ -46,6 +46,7 @@ async def log_control_signals(dut):
         dut._log.info(result_string)
 
 async def init(dut):
+    dut._log.info("Beginning Initialization")
     # Need to coordinate how we initialize
     await determine_gltest(dut)
     if (GLTEST):
@@ -53,10 +54,29 @@ async def init(dut):
     else:
         dut._log.info("GLTEST is FALSE")
     
-    dut._log.info(f"Initialize clock with period={CLOCK_PERIOD} {CLOCK_UNITS}")
+    dut._log.info(f"Initialize clock with period={CLOCK_PERIOD}{CLOCK_UNITS}")
     clock = Clock(dut.clk, CLOCK_PERIOD, units=CLOCK_UNITS)
+    cocotb.start_soon(clock.start())
+
+    dut._log.info("Reset")
+    dut.rst_n.value = 0
+    await RisingEdge(dut.clk)
+    assert dut.rst_n.value == 0, f"Reset is not 0, rst_n={dut.rst_n.value}"
+    dut.rst_n.value = 1
+    await RisingEdge(dut.clk)
+
+    dut._log.info("Initialization Complete")
 
 @cocotb.test()
 async def check_gl_test(dut):
     dut._log.info("Checking if the test is being run for GLTEST")
     await determine_gltest(dut)
+
+@cocotb.test()
+async def test1(dut):
+    dut._log.info("Test 1")
+    await init(dut)
+    await log_control_signals(dut)
+    await RisingEdge(dut.clk)
+    await ClockCycles(dut.clk, 10)
+    dut._log.info("Test 1 Complete")
