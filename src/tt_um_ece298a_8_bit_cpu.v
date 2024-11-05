@@ -169,7 +169,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     // Tri-state buffer to connect ui_in to the bus //
     assign bus = (loading_onto_bus) ? ui_in_buf : 8'bZZZZZZZZ;
     wire loading_onto_bus;
-    assign loading_onto_bus = 0;
+    assign loading_onto_bus = uio_out[0];
     // Wires //
     assign uio_out = 8'h00;
     assign uio_oe = 8'h00;
