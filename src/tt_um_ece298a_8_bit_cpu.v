@@ -72,15 +72,15 @@ module tt_um_ece298a_8_bit_cpu_top (
     //assign bus[7:4] = 1;
 
     // Program Counter //
-    //  ProgramCounter pc(
-    //      .bits_in(bus[3:0]),
-    //      .bits_out(bus[3:0]),
-    //      .clk(clk),
-    //      .clr_n(rst_n),
-    //      .lp(Lp),
-    //      .cp(Cp),
-    //      .ep(Ep)
-    //  );
+     ProgramCounter pc(
+         .bits_in(bus[3:0]),
+         .bits_out(bus[3:0]),
+         .clk(clk),
+         .clr_n(rst_n),
+         .lp(Lp),
+         .cp(Cp),
+         .ep(Ep)
+     );
 
     control_block cb(
         .clk(clk),
@@ -122,14 +122,14 @@ module tt_um_ece298a_8_bit_cpu_top (
     // );
 
     // Instruction Register //
-    instruction_register instruction_register(
-         .clk(clk),
-         .clear(~rst_n),
-         .n_load(nLi),
-         .n_enable(nEi),
-         .bus(bus),
-         .opcode(opcode)
-     );
+    // instruction_register instruction_register(
+    //      .clk(clk),
+    //      .clear(~rst_n),
+    //      .n_load(nLi),
+    //      .n_enable(nEi),
+    //      .bus(bus),
+    //      .opcode(opcode)
+    //  );
 
     // B Register //
     register b_register(
