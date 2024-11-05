@@ -20,7 +20,7 @@ module tt_um_ece298a_8_bit_cpu_top (
 );
 
     // Bus //
-    wire [7:0] bus;                 // Bus (8-bit) (High impedance when not in use)
+    //wire [7:0] bus;                 // Bus (8-bit) (High impedance when not in use)
     // wire [3:0] bus4bit;             // 4-bit Bus (lower 4 bits of the 8-bit Bus) (High impedance when not in use)
     // assign bus4bit = bus[3:0];      // Assign 4-bit Bus to the lower 4 bits of the 8-bit Bus 
 
@@ -28,7 +28,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire [14:0] control_signals;
 
     // Wires //
-    wire [3:0] opcode;              // opcode from IR to Control
+    //wire [3:0] opcode;              // opcode from IR to Control
     // wire [7:0] reg_a;               // value from Accumulator Register to ALU
     // wire [7:0] reg_b;               // value from B Register to ALU
     
@@ -160,8 +160,8 @@ module tt_um_ece298a_8_bit_cpu_top (
     // );
 
     assign opcode = ui_in[3:0];
-    assign uo_out[3:0] = 0;
-    assign uo_out[7:4] = 0;
+    assign uo_out[7:0] = control_signals[7:0];
+    //assign uo_out[7:4] = 0;
 
     // Wires //
     //assign uio_out = 8'h00;
