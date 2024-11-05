@@ -22,13 +22,15 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire [7:0] bus;                 // Bus (8-bit) (High impedance when not in use)
     wire [3:0] bus4bit;             // 4-bit Bus (lower 4 bits of the 8-bit Bus) (High impedance when not in use)
     assign bus4bit = bus[3:0];      // Assign 4-bit Bus to the lower 4 bits of the 8-bit Bus 
+    wire outputting_to_bus;     // Signal to determine when nothing is outputting to the bus
 
-    // If any of the enable signals are asserted, allow the bus to be driven by the other components (put ot to high z), if none are, then drive to idle 0
-    assign bus[7:0] = (Ep | !nCE | !nEi | Ea | Eu) ? 8'bZZZZZZZZ : 8'b0;        
+    // Tri-state buffer to initialize the bus with a known value //
+    assign bus = (outputting_to_bus) ? 8'bZZZZZZZZ : 8'b00000000; // Initialize the bus with a known value if nothing is outputting to the bus
+   
 
     // Control Signals //
     wire [14:0] control_signals;
-    
+
     // Wires //
     wire [3:0] opcode;              // opcode from IR to Control
     wire [7:0] reg_a;               // value from Accumulator Register to ALU
@@ -70,6 +72,9 @@ module tt_um_ece298a_8_bit_cpu_top (
     
     // Control Signals for the Output Register //
     wire nLo = control_signals[0];     // 
+
+    // Control Signals for the Bus Initialization //
+    assign outputting_to_bus = (Ep | (!nCE) | (!nEi) | Ea | Eu); // Figure out when nothing is outputting to the bus   
 
     // Program Counter //
     ProgramCounter pc(
