@@ -157,10 +157,10 @@ module tt_um_ece298a_8_bit_cpu_top (
     // );
 
   // All output pins must be assigned. If not used, assign to 0.
-  assign uio_out = 0;
-  assign uio_oe  = 0;
+//   assign uio_out = 0;
+//   assign uio_oe  = 0;
 
-  // List all unused inputs to prevent warnings
-  wire _unused = &{ui_in, uio_in, ena, clk, rst_n, ZF, CF, 3'b0};
+//   // List all unused inputs to prevent warnings
+//   wire _unused = &{ui_in, uio_in, ena, clk, rst_n};
 
 endmodule
