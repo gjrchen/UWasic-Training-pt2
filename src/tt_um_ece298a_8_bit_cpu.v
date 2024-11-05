@@ -170,7 +170,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     assign bus = (loading_onto_bus) ? ui_in_buf : 8'bZZZZZZZZ;
     reg [7:0] ui_in_buf;
     wire loading_onto_bus;
-    loading_onto_bus = 0;
+    assign loading_onto_bus = 0;
     // Wires //
     assign uio_out = 8'h00;
     assign uo_out = 8'h00;
