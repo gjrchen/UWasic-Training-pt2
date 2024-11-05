@@ -160,10 +160,11 @@ module tt_um_ece298a_8_bit_cpu_top (
     //     .rst_n(rst_n)    // Connect the reset signal
     // );
 
-    assign opcode = ui_in[3:0];
+    //assign opcode = ui_in[3:0];
     //assign uo_out[7:0] = control_signals[7:0];
     //assign uo_out[7:4] = 0;
-
+    reg asdasda[3:0];
+    assign asdasda = ui_in[3:0];
     // Wires //
     assign uio_out = 8'h00;
     assign uio_oe = 8'hff;
