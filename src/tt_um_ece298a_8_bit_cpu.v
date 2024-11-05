@@ -54,7 +54,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     // Control Signals for the Instruction Register //
     wire nLi = control_signals[7];     // enable Instruction Register load from bus (ACTIVE-LOW)
     wire nEi = control_signals[6];      // enable Instruction Register output to the bus (ACTIVE-LOW)
-    */
+    */ 
     // Control Signals for the Accumulator Register //
     wire nLa = control_signals[5];     // enable Accumulator Register load from bus (ACTIVE-LOW)
     wire Ea = control_signals[4];      // enable Accumulator Register output to the bus (ACTIVE-HIGH)
@@ -80,14 +80,14 @@ module tt_um_ece298a_8_bit_cpu_top (
         .cp(Cp),
         .ep(Ep)
     );
-
+    */
     control_block cb(
         .clk(clk),
         .resetn(rst_n),
         .opcode(opcode[3:0]),
         .out(control_signals[14:0])
     );
-    */
+    
 
     // ALU //
     alu alu_object(
@@ -131,7 +131,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .bus(bus),
         .opcode(opcode)
     );
-
+    */
     // B Register //
     register b_register(
         .clk(clk),
@@ -139,7 +139,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .bus(bus),
         .value(reg_b)
     );
-    
+    /*
     // Output Register //
     register output_register(
         .clk(clk),
@@ -163,8 +163,9 @@ module tt_um_ece298a_8_bit_cpu_top (
 */
     // Wires //
     assign uio_out = 8'h00;
-    assign uio_oe = 8'hFF;
+    assign uo_out = 8'h00;
+    assign uio_oe = 8'h00;
 
-    wire _unused = &{uio_in, ena, ZF, CF}; // Avoid unused variable warning
+    wire _unused = &{uio_in, ui_in, ena, ZF, CF}; // Avoid unused variable warning
 
 endmodule
