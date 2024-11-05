@@ -131,7 +131,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .clk(clk),
         .n_load(nLb),
         .bus(bus),
-        .value(reg_a)
+        .value(reg_b)
     );
     
     // Output Register //
