@@ -69,7 +69,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     // Control Signals for the Output Register //
     wire nLo = control_signals[0];     // 
     
-    
+    /*
     // Program Counter //
     ProgramCounter pc(
         .bits_in(bus4bit),
@@ -158,6 +158,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .clk(clk),       // Connect the clock signal
         .rst_n(rst_n)    // Connect the reset signal
     );
+    */
 
     // Wires //
     assign uio_out = 8'h00;
