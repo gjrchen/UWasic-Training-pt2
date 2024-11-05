@@ -162,6 +162,6 @@ module tt_um_ece298a_8_bit_cpu_top (
   assign uo_out  = 8'hFF;
 
 //   // List all unused inputs to prevent warnings
-//   wire _unused = &{ui_in, uio_in, ena, clk, rst_n};
+wire _unused = &{ui_in, uio_in, ena, clk, rst_n};
 
 endmodule
