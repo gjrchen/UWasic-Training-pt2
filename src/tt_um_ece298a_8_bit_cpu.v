@@ -52,8 +52,8 @@ module tt_um_ece298a_8_bit_cpu_top (
     // wire nLr = control_signals[8];     // 
 
     // // Control Signals for the Instruction Register //
-    // wire nLi = control_signals[7];     // enable Instruction Register load from bus (ACTIVE-LOW)
-    // wire nEi = control_signals[6];      // enable Instruction Register output to the bus (ACTIVE-LOW)
+    wire nLi = control_signals[7];     // enable Instruction Register load from bus (ACTIVE-LOW)
+    wire nEi = control_signals[6];      // enable Instruction Register output to the bus (ACTIVE-LOW)
 
     // // Control Signals for the Accumulator Register //
     // wire nLa = control_signals[5];     // enable Accumulator Register load from bus (ACTIVE-LOW)
@@ -122,14 +122,14 @@ module tt_um_ece298a_8_bit_cpu_top (
     // );
 
     // Instruction Register //
-    // instruction_register instruction_register(
-    //     .clk(clk),
-    //     .clear(~rst_n),
-    //     .n_load(nLi),
-    //     .n_enable(nEi),
-    //     .bus(bus),
-    //     .opcode(opcode)
-    // );
+    instruction_register instruction_register(
+         .clk(clk),
+         .clear(~rst_n),
+         .n_load(nLi),
+         .n_enable(nEi),
+         .bus(bus),
+         .opcode(opcode)
+     );
 
     // B Register //
     register b_register(
