@@ -160,19 +160,8 @@ module tt_um_ece298a_8_bit_cpu_top (
     );
 
     // Skip these for now
-    //wire _unused = &{ui_in, uo_out, uio_in, ena, control_signals[11:0]};
+    wire _unused = &{uio_in, ena, control_signals[11:0]};
     // assign uo_out = 8'h00;
-    // assign uio_out = 8'h00;
-    assign uio_oe = 8'h00;
-    
-    //Assign outputs
-    assign uio_out[0] = 0;
-    assign uio_out[1] = 0;
-    assign uio_out[2] = 0;
-    assign uio_out[3] = 0;
-    assign uio_out[4] = control_signals[12];
-    assign uio_out[5] = control_signals[13];
-    assign uio_out[6] = control_signals[14];
-    assign uio_out[7] = 0;
-
+    assign uio_out = 8'h00;
+    assign uio_oe = 8'hff;
 endmodule
