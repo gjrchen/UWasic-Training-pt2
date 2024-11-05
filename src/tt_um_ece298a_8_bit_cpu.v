@@ -1,75 +1,50 @@
-/*
- * SPDX-License-Identifier: Apache-2.0
- */
-
 `default_nettype none
 
 module tt_um_ece298a_8_bit_cpu_top (
-    input  wire [7:0] ui_in,    // Dedicated inputs 
-    output wire [7:0] uo_out,   // Dedicated outputs 
-    output wire [7:0] uio_out,  // IOs: Output path
-    input  wire [7:0] uio_in,   // IOs: Input path - not used
-    output wire [7:0] uio_oe,   // IOs: Enable path 
-    
+    input  wire [7:0] ui_in,
+    output wire [7:0] uo_out,
+    output wire [7:0] uio_out,
+    input  wire [7:0] uio_in,
+    output wire [7:0] uio_oe,
     input wire clk,
-    input  wire ena,            // always 1 when the design is powered, so you can ignore it
-    input  wire rst_n           // reset_n - low to reset
+    input  wire ena,
+    input  wire rst_n
 );
 
-    // // Bus //
-    wire [7:0] bus;                 // Bus (8-bit) (High impedance when not in use)
-    wire [3:0] bus4bit;             // 4-bit Bus (lower 4 bits of the 8-bit Bus) (High impedance when not in use)
-    assign bus4bit = bus[3:0];      // Assign 4-bit Bus to the lower 4 bits of the 8-bit Bus 
+    wire [7:0] bus;
+    wire [3:0] pc_in;
+    wire [3:0] pc_out;
+    assign pc_in = bus[3:0];
 
-    // // // Control Signals //
     wire [14:0] control_signals;
+    wire [3:0] opcode;
+    wire [7:0] reg_a;
+    wire [7:0] reg_b;
+    wire CF;
+    wire ZF;
 
-    // // // Wires //
-    wire [3:0] opcode;              // opcode from IR to Control
-    wire [7:0] reg_a;               // value from Accumulator Register to ALU
-    wire [7:0] reg_b;               // value from B Register to ALU
-    
-    // // // ALU Flags //
-    wire CF;                        // Carry Flag
-    wire ZF;                        // Zero Flag
-
-    // // Wire between MAR and RAM //
     wire [7:0] mar_to_ram_data;
     wire [3:0] mar_to_ram_addr;
 
-    // // Control Signals for the Program Counter //
-    wire Cp = control_signals[14];     // 
-    wire Ep = control_signals[13];     // 
-    wire Lp = control_signals[12];     // 
+    wire Cp = control_signals[14];
+    wire Ep = control_signals[13];
+    wire Lp = control_signals[12];
+    wire nLma = control_signals[11];
+    wire nLmd = control_signals[10];
+    wire nCE = control_signals[9];
+    wire nLr = control_signals[8];
+    wire nLi = control_signals[7];
+    wire nEi = control_signals[6];
+    wire nLa = control_signals[5];
+    wire Ea = control_signals[4];
+    wire sub = control_signals[3];
+    wire Eu = control_signals[2];
+    wire nLb = control_signals[1];
+    wire nLo = control_signals[0];
 
-    // // Control Signals for the RAM //
-    wire nLma = control_signals[11];   // 
-    wire nLmd = control_signals[10];   // 
-    wire nCE = control_signals[9];     // 
-    wire nLr = control_signals[8];     // 
-
-    // // Control Signals for the Instruction Register //
-    wire nLi = control_signals[7];     // enable Instruction Register load from bus (ACTIVE-LOW)
-    wire nEi = control_signals[6];      // enable Instruction Register output to the bus (ACTIVE-LOW)
-
-    // // Control Signals for the Accumulator Register //
-    wire nLa = control_signals[5];     // enable Accumulator Register load from bus (ACTIVE-LOW)
-    wire Ea = control_signals[4];      // enable Accumulator Register output to the bus (ACTIVE-HIGH)
-
-    // // Control Signals for the ALU //
-    wire sub = control_signals[3];     // perform addition when 0, perform subtraction when 1
-    wire Eu = control_signals[2];      // enable ALU output to the bus (ACTIVE-HIGH)
-
-    // // Control Signals for the B Register //
-    wire nLb = control_signals[1];     // enable B Register load from bus (ACTIVE-LOW)
-
-    // // Control Signals for the Output Register //
-    wire nLo = control_signals[0];     //     
-    
-    // Program Counter //
     ProgramCounter pc(
-        .bits_in(bus4bit),
-        .bits_out(bus4bit),
+        .bits_in(pc_in),
+        .bits_out(pc_out),
         .clk(clk),
         .clr_n(rst_n),
         .lp(Lp),
@@ -84,29 +59,26 @@ module tt_um_ece298a_8_bit_cpu_top (
         .out(control_signals)
     );
 
-    // ALU //
     alu alu_object(
-        .clk(clk),            // Clock (Rising edge) (needed for storing CF and ZF)
-        .enable_output(Eu),   // Enable ALU output to the bus (ACTIVE-HIGH)
-        .reg_a(reg_a),        // Register A (8 bits)
-        .reg_b(reg_b),        // Register B (8 bits)
-        .sub(sub),            // Perform addition when 0, perform subtraction when 1
-        .bus(bus),            // Bus (8 bits)
-        .CF(CF),              // Carry Flag
-        .ZF(ZF)               // Zero Flag
-    );
-    
-    // Accumulator Register //
-    accumulator_register accumulator_object(
-        .clk(clk),            // Clock (Rising edge)
-        .bus(bus),            // Bus (8 bits)
-        .load(nLa),           // Enable Accumulator Register load from bus (ACTIVE-LOW)
-        .enable_output(Ea),   // Enable Accumulator Register output to the bus (ACTIVE-HIGH)
-        .regA(reg_a),         // Register A (8 bits)
-        .rst_n(rst_n)         // Reset (ACTIVE-LOW)
+        .clk(clk),
+        .enable_output(Eu),
+        .reg_a(reg_a),
+        .reg_b(reg_b),
+        .sub(sub),
+        .bus(bus),
+        .CF(CF),
+        .ZF(ZF)
     );
 
-    // Input and MAR Register //
+    accumulator_register accumulator_object(
+        .clk(clk),
+        .bus(bus),
+        .load(nLa),
+        .enable_output(Ea),
+        .regA(reg_a),
+        .rst_n(rst_n)
+    );
+
     input_mar_register input_mar_register(
         .clk(clk),
         .n_load_data(nLmd),
@@ -116,7 +88,6 @@ module tt_um_ece298a_8_bit_cpu_top (
         .addr(mar_to_ram_addr)
     );
 
-    // Instruction Register //
     instruction_register instruction_register(
         .clk(clk),
         .clear(~rst_n),
@@ -125,16 +96,14 @@ module tt_um_ece298a_8_bit_cpu_top (
         .bus(bus),
         .opcode(opcode)
     );
-    
-    // B Register //
+
     register b_register(
         .clk(clk),
         .n_load(nLb),
         .bus(bus),
         .value(reg_b)
     );
-    
-    // Output Register //
+
     register output_register(
         .clk(clk),
         .n_load(nLo),
@@ -142,25 +111,22 @@ module tt_um_ece298a_8_bit_cpu_top (
         .value(uo_out)
     );
 
-    // RAM //
     tt_um_dff_mem #(
-    .RAM_BYTES(16)   // Set the RAM size to 16 bytes
+    .RAM_BYTES(16)
     ) ram (
         .addr(mar_to_ram_addr),     
         .data_in(mar_to_ram_data), 
         .data_out(bus), 
         .lr_n(nLr),     
-        .ce_n(nCE),     // Connect the chip enable signal
-        .clk(clk),       // Connect the clock signal
-        .rst_n(rst_n)    // Connect the reset signal
+        .ce_n(nCE),     
+        .clk(clk),       
+        .rst_n(rst_n)    
     );
 
-  // All output pins must be assigned. If not used, assign to 0.
-  // assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
-  assign uio_out = 0;
-  assign uio_oe  = 0;
+    assign uio_out = 0;
+    assign uio_oe  = 0;
 
-  // List all unused inputs to prevent warnings
-  // wire _unused = &{ena, uio_in};
+    wire _unused = &{ena, CF, ZF, ui_in, uio_in};
 
 endmodule
+
