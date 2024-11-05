@@ -127,7 +127,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     //     .opcode(opcode)
     // );
 
-    bus = ui_in;
+    assign bus = ui_in;
     
     // B Register //
     register b_register(
@@ -137,7 +137,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .value(reg_b)
     );
 
-    uo_out = reg_b;
+    assign uo_out = reg_b;
     
     // // Output Register //
     // register output_register(
