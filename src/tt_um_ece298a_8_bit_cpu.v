@@ -18,7 +18,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     input  wire ena,            // always 1 when the design is powered, so you can ignore it
     input  wire rst_n           // reset_n - low to reset
 );
-
+    reg [7:0] ui_in_buf;
     // Bus //
     wire [7:0] bus;                 // Bus (8-bit) (High impedance when not in use)
     wire [3:0] bus4bit;             // 4-bit Bus (lower 4 bits of the 8-bit Bus) (High impedance when not in use)
@@ -35,7 +35,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     // ALU Flags //
     wire CF;                        // Carry Flag
     wire ZF;                        // Zero Flag
-
+    
     // Wire between MAR and RAM //
     wire [7:0] mar_to_ram_data;
     wire [3:0] mar_to_ram_addr;
@@ -54,7 +54,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     // Control Signals for the Instruction Register //
     wire nLi = control_signals[7];     // enable Instruction Register load from bus (ACTIVE-LOW)
     wire nEi = control_signals[6];      // enable Instruction Register output to the bus (ACTIVE-LOW)
-
+    
     // Control Signals for the Accumulator Register //
     wire nLa = control_signals[5];     // enable Accumulator Register load from bus (ACTIVE-LOW)
     wire Ea = control_signals[4];      // enable Accumulator Register output to the bus (ACTIVE-HIGH)
@@ -62,14 +62,13 @@ module tt_um_ece298a_8_bit_cpu_top (
     // Control Signals for the ALU //
     wire sub = control_signals[3];     // perform addition when 0, perform subtraction when 1
     wire Eu = control_signals[2];      // enable ALU output to the bus (ACTIVE-HIGH)
-
+    
     // Control Signals for the B Register //
     wire nLb = control_signals[1];     // enable B Register load from bus (ACTIVE-LOW)
-
+    
     // Control Signals for the Output Register //
     wire nLo = control_signals[0];     // 
-    
-    
+
     // Program Counter //
     ProgramCounter pc(
         .bits_in(bus4bit),
@@ -80,13 +79,14 @@ module tt_um_ece298a_8_bit_cpu_top (
         .cp(Cp),
         .ep(Ep)
     );
-
+    
     control_block cb(
         .clk(clk),
         .resetn(rst_n),
         .opcode(opcode[3:0]),
         .out(control_signals[14:0])
     );
+    
 
     // ALU //
     alu alu_object(
@@ -110,6 +110,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .rst_n(rst_n)         // Reset (ACTIVE-LOW)
     );
 
+
     // Input and MAR Register //
     input_mar_register input_mar_register(
         .clk(clk),
@@ -129,7 +130,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .bus(bus),
         .opcode(opcode)
     );
-
+    
     // B Register //
     register b_register(
         .clk(clk),
@@ -158,11 +159,21 @@ module tt_um_ece298a_8_bit_cpu_top (
         .clk(clk),       // Connect the clock signal
         .rst_n(rst_n)    // Connect the reset signal
     );
-
+    always @(posedge clk) begin
+    // Buffer the input
+    if (!loading_onto_bus)      // Load the input onto the bus if loading_onto_bus is high
+      ui_in_buf <= 8'b00000000; // Set to 0 when not loading onto the bus
+    else
+      ui_in_buf <= ui_in;       // Load the input onto the bus
+    end
+    // Tri-state buffer to connect ui_in to the bus //
+    assign bus = (loading_onto_bus) ? ui_in_buf : 8'bZZZZZZZZ;
+    wire loading_onto_bus;
+    assign loading_onto_bus = uio_in[0];
     // Wires //
     assign uio_out = 8'h00;
-    assign uio_oe = 8'hFF;
+    assign uio_oe = 8'h00;
 
-    wire _unused = &{ui_in, uio_in, ena, CF, ZF}; // Avoid unused variable warning
+    wire _unused = &{uio_in, ui_in, ena, ZF, CF}; // Avoid unused variable warning
 
 endmodule
