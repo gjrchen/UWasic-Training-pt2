@@ -24,6 +24,8 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire [3:0] bus4bit;             // 4-bit Bus (lower 4 bits of the 8-bit Bus) (High impedance when not in use)
     assign bus4bit = bus[3:0];      // Assign 4-bit Bus to the lower 4 bits of the 8-bit Bus 
 
+    assign bus[7:0] = 8'bZZZZZZZZ;
+
     // Control Signals //
     wire [14:0] control_signals;
 
