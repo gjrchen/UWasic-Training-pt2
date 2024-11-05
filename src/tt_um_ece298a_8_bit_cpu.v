@@ -173,7 +173,6 @@ module tt_um_ece298a_8_bit_cpu_top (
     assign loading_onto_bus = 0;
     // Wires //
     assign uio_out = 8'h00;
-    assign uo_out = 8'h00;
     assign uio_oe = 8'h00;
 
     wire _unused = &{uio_in, ui_in, ena, ZF, CF}; // Avoid unused variable warning
