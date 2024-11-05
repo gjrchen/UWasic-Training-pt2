@@ -25,8 +25,8 @@ module tt_um_ece298a_8_bit_cpu_top (
 
     // Control Signals //
     wire [14:0] control_signals;
-    wire loading_onto_bus;
-    
+    wire not_outputting_to_bus;
+
     // Wires //
     wire [3:0] opcode;              // opcode from IR to Control
     wire [7:0] reg_a;               // value from Accumulator Register to ALU
@@ -68,6 +68,9 @@ module tt_um_ece298a_8_bit_cpu_top (
     
     // Control Signals for the Output Register //
     wire nLo = control_signals[0];     // 
+
+    // Control Signals for the Bus Initialization //
+    assign not_outputting_to_bus = ~(Ep | (!nCE) | (!nEi) | Ea | Eu); // Figure out when nothing is outputting to the bus
 
     // Program Counter //
     ProgramCounter pc(
@@ -159,9 +162,10 @@ module tt_um_ece298a_8_bit_cpu_top (
         .clk(clk),       // Connect the clock signal
         .rst_n(rst_n)    // Connect the reset signal
     );
-    // Tri-state buffer to connect ui_in to the bus //
-    assign bus = (loading_onto_bus) ? ui_in : 8'bZZZZZZZZ;
-    assign loading_onto_bus = uio_in[0];
+
+    // Tri-state buffer to initialize the bus with a known value //
+    assign bus = (not_outputting_to_bus) ? 8'b00000000 : 8'bZZZZZZZZ; // Initialize the bus with a known value if nothing is outputting to the bus
+
     // Wires //
     assign uio_out = 8'h00;
     assign uio_oe = 8'h00;
