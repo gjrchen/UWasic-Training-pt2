@@ -73,8 +73,8 @@ module tt_um_ece298a_8_bit_cpu_top (
 
     // Program Counter //
      ProgramCounter pc(
-         .bits_in(bus[3:0]),
-         .bits_out(bus[3:0]),
+         .bits_in(),
+         .bits_out(),
          .clk(clk),
          .clr_n(rst_n),
          .lp(Lp),
@@ -161,7 +161,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     // );
 
     //assign opcode = ui_in[3:0];
-    assign uo_out[7:0] = control_signals[7:0];
+    //assign uo_out[7:0] = control_signals[7:0];
     //assign uo_out[7:4] = 0;
     reg [3:0] asdasda ;
     assign asdasda [3:0] = ui_in[3:0];
