@@ -69,7 +69,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     // Control Signals for the Output Register //
     wire nLo = control_signals[0];     // 
     
-    /*
+    
     // Program Counter //
     ProgramCounter pc(
         .bits_in(bus4bit),
@@ -87,7 +87,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .opcode(opcode[3:0]),
         .out(control_signals[14:0])
     );
-    */
+    
 
     // ALU //
     alu alu_object(
@@ -111,7 +111,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .rst_n(rst_n)         // Reset (ACTIVE-LOW)
     );
 
-    /*
+    
     // Input and MAR Register //
     input_mar_register input_mar_register(
         .clk(clk),
@@ -160,28 +160,6 @@ module tt_um_ece298a_8_bit_cpu_top (
         .clk(clk),       // Connect the clock signal
         .rst_n(rst_n)    // Connect the reset signal
     );
-    */
-    always @(posedge clk) begin
-        ui_in_buf <= ui_in;       // Load the input onto the bus
-    end
-    // Wires //
-    assign uio_out[7] = 0; // Unused
-    assign uio_out[6] = 0; // Unused
-    assign uio_out[5] = 0; // Unused
-    assign uio_out[4] = 0; // Unused
-    assign uio_out[3] = 0; // Unused
-    assign uio_out[2] = 0; // Unused
-    assign uio_out[1] = 0; // Unused
 
-    // Configure the IOs //
-    assign uio_oe[7] = 0;  // Set IO[7] to be an input
-    assign uio_oe[6] = 0;  // Set IO[6] to be an input
-    assign uio_oe[5] = 0;  // Set IO[5] to be an input
-    assign uio_oe[4] = 0;  // Set IO[4] to be an input
-    assign uio_oe[3] = 0;  // Set IO[3] to be an input
-    assign uio_oe[2] = 0;  // Set IO[2] to be an input
-    assign uio_oe[1] = 0;  // Set IO[1] to be an input
-    assign uio_oe[0] = 1;  // Set IO[0] to be an output
-    wire _unused = &{rst_n, ena, uio_in[1], uio_in[0], uio_in[6], uio_in[7], CF, 1'b0};
 
 endmodule
