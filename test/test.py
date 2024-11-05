@@ -23,6 +23,7 @@ async def test_project(dut):
     dut._log.info("Test NOP")
     dut.opcode.value = 1
     await ClockCycles(dut.clk, 1000)
+    assert dut.uo_out.value == 0b00000000
 
     dut._log.info("Test ADD")
     dut.opcode.value = 2
