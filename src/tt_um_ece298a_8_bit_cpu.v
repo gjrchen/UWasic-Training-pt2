@@ -79,7 +79,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .cp(Cp),
         .ep(Ep)
     );
-    */
+    
     control_block cb(
         .clk(clk),
         .resetn(rst_n),
