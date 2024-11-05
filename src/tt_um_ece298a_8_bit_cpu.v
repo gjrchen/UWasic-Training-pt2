@@ -163,7 +163,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     //assign opcode = ui_in[3:0];
     //assign uo_out[7:0] = control_signals[7:0];
     //assign uo_out[7:4] = 0;
-    reg asdasda [3:0];
+    reg [3:0] asdasda ;
     assign asdasda [3:0] = ui_in[3:0];
     // Wires //
     assign uio_out = 8'h00;
