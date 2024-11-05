@@ -23,7 +23,7 @@ module tb ();
   wire [7:0] uio_out;
   wire [7:0] uio_oe;
   
-  tt_um_ece298a_8_bit_cpu uut(
+  tt_um_ece298a_8_bit_cpu_top uut(
 
      // Include power ports for the Gate Level test:
 `ifdef GL_TEST
