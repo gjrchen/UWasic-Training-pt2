@@ -18,7 +18,6 @@ module tt_um_ece298a_8_bit_cpu_top (
     input  wire ena,            // always 1 when the design is powered, so you can ignore it
     input  wire rst_n           // reset_n - low to reset
 );
-    reg [7:0] ui_in_buf;
     // Bus //
     wire [7:0] bus;                 // Bus (8-bit) (High impedance when not in use)
     wire [3:0] bus4bit;             // 4-bit Bus (lower 4 bits of the 8-bit Bus) (High impedance when not in use)
@@ -159,15 +158,8 @@ module tt_um_ece298a_8_bit_cpu_top (
         .clk(clk),       // Connect the clock signal
         .rst_n(rst_n)    // Connect the reset signal
     );
-    always @(posedge clk) begin
-    // Buffer the input
-    if (!loading_onto_bus)      // Load the input onto the bus if loading_onto_bus is high
-      ui_in_buf <= 8'b00000000; // Set to 0 when not loading onto the bus
-    else
-      ui_in_buf <= ui_in;       // Load the input onto the bus
-    end
     // Tri-state buffer to connect ui_in to the bus //
-    assign bus = (loading_onto_bus) ? ui_in_buf : 8'bZZZZZZZZ;
+    assign bus = (loading_onto_bus) ? ui_in : 8'bZZZZZZZZ;
     wire loading_onto_bus;
     assign loading_onto_bus = uio_in[0];
     // Wires //
