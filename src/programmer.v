@@ -10,6 +10,7 @@ module programmer (
   input wire resetn,
   input wire [7:0] ui_in,
   input wire programming,
+  input wire new_byte,
   inout wire [7:0] bus,
   output wire [14: 0] out    
 );
@@ -34,13 +35,26 @@ localparam SIG_OUT_LOAD_N = 0;          // \L_O
   /* Internal Regs */
 reg [2:0] stage;
 reg [14:0] control_signals;
+reg programming_stage;
+reg programming_d; // delayed programming wire to check for posedge
 
   /* Micro-Operation Stages */
 parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5; 
 
+
+always @(posedge clk) begin
+    programming_d <= programming;
+  if (programming && !programming_d) begin // posedge
+    programming_stage <= 1;
+  end
+  else begin
+    programming_stage <= 0;
+  end
+  
+end
+
 /* Stage Transition Logic */
 always @(posedge clk) begin
-    // Might want to rename rst_n to resetn - Damir
     if (!resetn) begin           // Check if reset is asserted, if yes, put into a holding stage
       stage <= 6;
     end
@@ -70,7 +84,7 @@ always @(negedge clk) begin
             control_signals[SIG_MAR_ADDR_LOAD_N] <= 0;
         end 
         T1: begin
-            if (opcode != OP_HLT) begin
+            if (programming_stage) begin
                 control_signals[SIG_PC_INC] <= 1;
             end
         end
@@ -78,7 +92,7 @@ always @(negedge clk) begin
             control_signals[SIG_RAM_EN_N] <= 0;
         end
         T3: begin
-            begin
+            if (programming_stage) begin
                 control_signals[SIG_IR_EN_N] <= 0;
                 control_signals[SIG_MAR_ADDR_LOAD_N] <= 0;
             end
