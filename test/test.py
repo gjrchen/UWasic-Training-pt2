@@ -46,6 +46,7 @@ async def log_control_signals(dut):
         dut._log.info(result_string)
 
 async def init(dut):
+    dut._log.info("Beginning Initialization")
     # Need to coordinate how we initialize
     await determine_gltest(dut)
     if (GLTEST):
@@ -53,10 +54,91 @@ async def init(dut):
     else:
         dut._log.info("GLTEST is FALSE")
     
-    dut._log.info(f"Initialize clock with period={CLOCK_PERIOD} {CLOCK_UNITS}")
+    dut._log.info(f"Initialize clock with period={CLOCK_PERIOD}{CLOCK_UNITS}")
     clock = Clock(dut.clk, CLOCK_PERIOD, units=CLOCK_UNITS)
+    cocotb.start_soon(clock.start())
+
+    dut._log.info("Reset")
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+    dut.rst_n.value = 0
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+    assert dut.rst_n.value == 0, f"Reset is not 0, rst_n={dut.rst_n.value}"
+    dut.rst_n.value = 1
+    await RisingEdge(dut.clk)
+
+    dut._log.info("Initialization Complete")
+
+async def load_ram(dut, data):
+    dut._log.info("RAM Load Start")
+    assert len(data) == 16, f"Data length is not 16, len(data)={len(data)}"
+    dut.uio_in.value = setbit(dut.uio_in.value, 0, 1)
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+    for i in range(0, 16):
+        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
+        dut.ui_in.value = data[i]
+        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
+        dut.uio_in.value = setbit(dut.uio_in.value, 1, 1)
+        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
+        dut.uio_in.value = setbit(dut.uio_in.value, 1, 0)
+        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
+    dut.uio_in.value = setbit(dut.uio_in.value, 0, 0)
+    dut._log.info("RAM Load Complete")
+    
 
 @cocotb.test()
 async def check_gl_test(dut):
     dut._log.info("Checking if the test is being run for GLTEST")
     await determine_gltest(dut)
+
+@cocotb.test()
+async def empty_ram_test(dut):
+    dut._log.info("Empty RAM Test Start")
+    await init(dut)
+    await log_control_signals(dut)
+    await RisingEdge(dut.clk)
+    await ClockCycles(dut.clk, 10)
+    dut._log.info("Empty RAM Test Complete")
+
+@cocotb.test()
+async def load_ram_test(dut):
+    program_data = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
+    dut._log.info("RAM Load Test Start")
+    await init(dut)
+    await load_ram(dut, program_data)
+    dut._log.info("RAM Load Test Complete")
+
+@cocotb.test()
+async def output_basic_test(dut):
+    program_data = [0x4F, 0x50, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xAB]
+    await init(dut)
+    await load_ram(dut, program_data)
+    
+
+@cocotb.test()
+async def test_control_signals_execution(dut):
+    program_data = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
+    dut._log.info("Control Signals during Execution Test Start")
+    await init(dut)
+    await load_ram(dut, program_data)
+    for i in range(0, 20):
+        dut._log.info(dut.uo_out.value)
+    ##
+    dut._log.info("Control Signals during Execution Test Complete")
