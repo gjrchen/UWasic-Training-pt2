@@ -131,7 +131,10 @@ async def dumpRAM(dut):
     dut._log.info("Dumping RAM")
     if (not GLTEST):
         for i in range(0,16):
-            dut._log.info(f"RAM[{i}] = {dut.user_project.ram.RAM.value[i]}")
+            if (LocalTest):
+                dut._log.info(f"RAM[{i}] = {dut.user_project.ram.RAM.value[i]}")
+            else:
+                dut._log.info(f"RAM[{i}] = {dut.user_project.ram.RAM.value[15-i]}")
     else:
         dut._log.info("Cant dump RAM in GLTEST")
     dut._log.info("RAM dump complete")
@@ -140,7 +143,10 @@ async def mem_check(dut, data):
     dut._log.info("Memory Check Start")
     if (not GLTEST):
         for i in range(0, 16):
-            assert dut.user_project.ram.RAM.value[i] == data[i], f"RAM[{i}] is not equal to data[{i}], RAM[{i}]={dut.user_project.ram.RAM.value[i]}, data[{i}]={data[i]}"
+            if(LocalTest):
+                assert dut.user_project.ram.RAM.value[i] == data[i], f"RAM[{i}] is not equal to data[{i}], RAM[{i}]={dut.user_project.ram.RAM.value[i]}, data[{i}]={data[i]}"
+            else:
+                assert dut.user_project.ram.RAM.value[15-i] == data[i], f"RAM[{i}] is not equal to data[{i}], RAM[{i}]={dut.user_project.ram.RAM.value[15-i]}, data[{i}]={data[i]}"
     else:
         dut._log.info("Cant check memory in GLTEST")
     dut._log.info("Memory Check Complete")
