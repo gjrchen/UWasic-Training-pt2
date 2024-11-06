@@ -46,8 +46,8 @@ module tt_um_ece298a_8_bit_cpu_top (
     // Wires for Programmer //
     wire programming = uio_in[0];
     wire new_byte = uio_in[1];
-    wire programmer_control_signals;
-    wire controller_control_signals;
+    wire [14:0] programmer_control_signals;
+    wire [14:0] controller_control_signals;
 
     assign control_signals = programming ? programmer_control_signals : controller_control_signals;
 
