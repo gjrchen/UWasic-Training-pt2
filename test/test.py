@@ -136,6 +136,14 @@ async def dumpRAM(dut):
         dut._log.info("Cant dump RAM in GLTEST")
     dut._log.info("RAM dump complete")
 
+async def mem_check(dut, data):
+    dut._log.info("Memory Check Start")
+    if (not GLTEST):
+        for i in range(0, 16):
+            assert dut.user_project.ram.RAM.value[i] == data[i], f"RAM[{i}] is not equal to data[{i}], RAM[{i}]={dut.user_project.ram.RAM.value[i]}, data[{i}]={data[i]}"
+    else:
+        dut._log.info("Cant check memory in GLTEST")
+    dut._log.info("Memory Check Complete")
 
 @cocotb.test()
 async def check_gl_test(dut):
@@ -158,6 +166,7 @@ async def load_ram_test(dut):
     await init(dut)
     await load_ram(dut, program_data)
     await dumpRAM(dut)
+    await mem_check(dut, program_data)
     dut._log.info("RAM Load Test Complete")
 
 @cocotb.test()
@@ -170,6 +179,7 @@ async def output_basic_test(dut):
         dut._log.info(dut.uo_out.value)
         await ClockCycles(dut.clk, 2)
     ##
+    await mem_check(dut, program_data)
     dut._log.info("Output Basic Test Complete")
     
 
@@ -179,6 +189,9 @@ async def test_control_signals_execution(dut):
     dut._log.info("Control Signals during Execution Test Start")
     await init(dut)
     await load_ram(dut, program_data)
+    await dumpRAM(dut)
+    await mem_check(dut, program_data)
+
     for i in range(0, 20):
         dut._log.info(dut.uo_out.value)
         await ClockCycles(dut.clk, 2)
