@@ -48,10 +48,6 @@ parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5;
   always @(posedge clk) begin
     if (!resetn || !programming_stage) begin // Check if reset is asserted or not in programming_stage, if yes, put into a holding stage
       stage <= 6;
-      if (!resetn) begin
-       ram_addr <= 0;
-       bus_reg <= 0;
-      end
     end
     else begin                   // If reset is not asserted, do the stages sequentially
       if (stage == 6) begin        
@@ -71,6 +67,10 @@ end
 
   /* Micro-Operation Logic */
 always @(negedge clk) begin
+  if (!resetn) begin
+    ram_addr <= 0;
+    bus_reg <= 0;
+  end
   new_byte_d <= new_byte;
   if (new_byte && !new_byte_d) begin // posedge
     programming_stage <= 1;
@@ -84,7 +84,7 @@ always @(negedge clk) begin
         T0: begin
             // control_signals[SIG_PC_EN] <= 1;
           bus_reg[3:0] <= ram_addr;
-            control_signals[SIG_MAR_ADDR_LOAD_N] <= 0;
+          control_signals[SIG_MAR_ADDR_LOAD_N] <= 0;
         end 
         T1: begin
             // control_signals[SIG_PC_INC] <= 1;
