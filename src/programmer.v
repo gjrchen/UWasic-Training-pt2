@@ -44,15 +44,6 @@ reg [3:0] ram_addr;
   /* Micro-Operation Stages */
 parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5; 
 
-
-always @(posedge clk) begin
-    new_byte_d <= new_byte;
-  if (new_byte && !new_byte_d) begin // posedge
-    programming_stage <= 1;
-    ram_input <= ui_in;
-  end
-end
-
 /* Stage Transition Logic */
   always @(posedge clk) begin
     if (!resetn || !programming_stage) begin // Check if reset is asserted or not in programming_stage, if yes, put into a holding stage
@@ -76,6 +67,13 @@ end
 
   /* Micro-Operation Logic */
 always @(negedge clk) begin
+  new_byte_d <= new_byte;
+  if (new_byte && !new_byte_d) begin // posedge
+    programming_stage <= 1;
+    ram_input <= ui_in;
+  end
+
+  
     control_signals <= 15'b000111111100011; // All signals are deasserted
 
     case(stage)
