@@ -13,7 +13,13 @@ module tt_um_dff_mem #(
 );
 
   reg [7:0] RAM[RAM_BYTES - 1:0];
-
+  genvar i;
+  generate
+  for (i = 0; i < RAM_BYTES; i = i + 1) begin     // Generate circuitry for bits 7-0
+    wire [7:0] int_ram;
+    assign int_ram = RAM[i];
+  end
+  endgenerate
   // Assign outputs based on ce_n and lr_n control signals
   assign data_out = (!ce_n) ? RAM[addr] : 8'bZ;  // Output data when ce_n is low
 

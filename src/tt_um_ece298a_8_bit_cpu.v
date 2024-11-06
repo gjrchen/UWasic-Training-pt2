@@ -22,9 +22,9 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire [3:0] bus4bit;             // 4-bit Bus (lower 4 bits of the 8-bit Bus) (High impedance when not in use)
     assign bus4bit = bus[3:0];      // Assign 4-bit Bus to the lower 4 bits of the 8-bit Bus 
     wire outputting_to_bus;         // Signal to determine when nothing is outputting to the bus
-
+    wire programming;
     // Tri-state buffer to initialize the bus with a known value //
-    assign bus = (outputting_to_bus) ? 8'bZZZZZZZZ : 8'b00000000; // Initialize the bus with a known value if nothing is outputting to the bus
+    assign bus = (outputting_to_bus | programming) ? 8'bZZZZZZZZ : 8'b00000000; // Initialize the bus with a known value if nothing is outputting to the bus
    
 
     // Control Signals //
@@ -44,7 +44,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire [3:0] mar_to_ram_addr;         //
 
     // Wires for Programmer //
-    wire programming = uio_in[0];
+    assign programming = uio_in[0];
     wire new_byte = uio_in[1];
     wire [14:0] programmer_control_signals;
     wire [14:0] controller_control_signals;
