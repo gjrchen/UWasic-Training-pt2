@@ -48,12 +48,12 @@ parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5;
   always @(posedge clk) begin
     if (!resetn || !programming_stage) begin // Check if reset is asserted or not in programming_stage, if yes, put into a holding stage
       stage <= 6;
-    end
-    if (!resetn) begin
+      if (!resetn) begin
        ram_addr <= 0;
        bus_reg <= 0;
+      end
     end
- 	else begin                   // If reset is not asserted, do the stages sequentially
+    else begin                   // If reset is not asserted, do the stages sequentially
       if (stage == 6) begin        
           stage <= 0;
         end 
