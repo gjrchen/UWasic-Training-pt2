@@ -13,7 +13,7 @@ CLOCK_PERIOD = 10  # 100 MHz
 CLOCK_UNITS = "ns"
 
 GLTEST = False
-LocalTest = False
+LocalTest = True
 
 signal_dict = {'nLo': 0, 'nLb': 1, 'Eu': 2, 'sub': 3, 'Ea': 4, 'nLa' : 5, 'nEi': 6, 'nLi' : 7, 'nLr' : 8, 'nCE' : 9, 'nLmd' : 10, 'nLma' : 11, 'Lp' : 12, 'Ep' : 13, 'Cp' : 14}
 
@@ -162,7 +162,9 @@ async def empty_ram_test(dut):
 @cocotb.test()
 async def load_ram_test(dut):
     program_data = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
-    dut._log.info("RAM Load Test Start")
+    dut._log.info(f"RAM Load Test Start")
+    dut._log.info(f"data_bin={[str(bin(x)) for x in program_data]}")
+    dut._log.info(f"data_hex={[str(hex(x)) for x in program_data]}")
     await init(dut)
     await load_ram(dut, program_data)
     await dumpRAM(dut)
@@ -172,21 +174,26 @@ async def load_ram_test(dut):
 @cocotb.test()
 async def output_basic_test(dut):
     program_data = [0x4F, 0x50, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xAB]
+    dut._log.info(f"Output Basic Test Start")
+    dut._log.info(f"data_bin={[str(bin(x)) for x in program_data]}")
+    dut._log.info(f"data_hex={[str(hex(x)) for x in program_data]}")
     await init(dut)
     await load_ram(dut, program_data)
     await dumpRAM(dut)
+    await mem_check(dut, program_data)
     for i in range(0, 20):
         dut._log.info(dut.uo_out.value)
         await ClockCycles(dut.clk, 2)
     ##
-    await mem_check(dut, program_data)
     dut._log.info("Output Basic Test Complete")
     
 
 @cocotb.test()
 async def test_control_signals_execution(dut):
     program_data = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
-    dut._log.info("Control Signals during Execution Test Start")
+    dut._log.info(f"Control Signals during Execution Test Start")
+    dut._log.info(f"data_bin={[str(bin(x)) for x in program_data]}")
+    dut._log.info(f"data_hex={[str(hex(x)) for x in program_data]}")
     await init(dut)
     await load_ram(dut, program_data)
     await dumpRAM(dut)
