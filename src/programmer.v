@@ -46,7 +46,7 @@ parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5;
 
 /* Stage Transition Logic */
   always @(posedge clk) begin
-    if (!resetn || programming_stage) begin // Check if reset is asserted or not in programming_stage, if yes, put into a holding stage
+    if (!resetn || !programming_stage) begin // Check if reset is asserted or not in programming_stage, if yes, put into a holding stage
       stage <= 6;
     end
     if (!resetn) begin
