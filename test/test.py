@@ -159,5 +159,6 @@ async def test_control_signals_execution(dut):
     await load_ram(dut, program_data)
     for i in range(0, 20):
         dut._log.info(dut.uo_out.value)
+        await ClockCycles(dut.clk, 2)
     ##
     dut._log.info("Control Signals during Execution Test Complete")
