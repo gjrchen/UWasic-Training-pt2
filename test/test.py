@@ -155,7 +155,11 @@ async def output_basic_test(dut):
     program_data = [0x4F, 0x50, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xAB]
     await init(dut)
     await load_ram(dut, program_data)
-    
+    for i in range(0, 20):
+        dut._log.info(dut.uo_out.value)
+        await ClockCycles(dut.clk, 2)
+    ##
+    dut._log.info("Output Basic Test Complete")
     
 
 @cocotb.test()
