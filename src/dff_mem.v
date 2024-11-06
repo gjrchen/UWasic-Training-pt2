@@ -25,7 +25,7 @@ module tt_um_dff_mem #(
 
   always @(posedge clk) begin
     if (!rst_n) begin
-      for (int i = 0; i < RAM_BYTES; i++) begin
+      for (int j = 0; j < RAM_BYTES; j++) begin
         RAM[i] <= 8'b0;  // Reset RAM contents
       end
     end else begin
