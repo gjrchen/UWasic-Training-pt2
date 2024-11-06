@@ -61,6 +61,12 @@ async def init(dut):
     clock = Clock(dut.clk, CLOCK_PERIOD, units=CLOCK_UNITS)
     cocotb.start_soon(clock.start())
 
+    dut._log.info("Enable")
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+    dut.ena.value = 1
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
     dut._log.info("Reset")
     await RisingEdge(dut.clk)
     await RisingEdge(dut.clk)
