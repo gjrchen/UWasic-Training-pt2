@@ -36,7 +36,7 @@ localparam SIG_OUT_LOAD_N = 0;          // \L_O
 reg [2:0] stage;
 reg [14:0] control_signals;
 reg programming_stage;
-reg programming_d; // delayed programming wire to check for posedge
+reg new_byte_d; // delayed new byte wire to check for posedge
 reg [7:0] ram_input;
 reg [7:0] bus_reg;
 reg [3:0] ram_addr;
@@ -46,8 +46,8 @@ parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5;
 
 
 always @(posedge clk) begin
-    programming_d <= programming;
-  if (programming && !programming_d) begin // posedge
+    new_byte_d <= new_byte;
+  if (new_byte && !new_byte_d) begin // posedge
     programming_stage <= 1;
     ram_input <= ui_in;
   end
