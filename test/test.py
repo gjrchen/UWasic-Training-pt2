@@ -70,16 +70,41 @@ async def init(dut):
 
     dut._log.info("Initialization Complete")
 
+async def load_ram(dut, data):
+    dut._log.info("RAM Load Start")
+    assert len(data) == 16, f"Data length is not 16, len(data)={len(data)}"
+    for i in range(0, 16):
+        # LOAD THE RAM
+        await RisingEdge(dut.clk)
+    dut._log.info("RAM Load Complete")
+
 @cocotb.test()
 async def check_gl_test(dut):
     dut._log.info("Checking if the test is being run for GLTEST")
     await determine_gltest(dut)
 
 @cocotb.test()
-async def test1(dut):
-    dut._log.info("Test 1")
+async def empty_ram_test(dut):
+    dut._log.info("Empty RAM Test Start")
     await init(dut)
     await log_control_signals(dut)
     await RisingEdge(dut.clk)
     await ClockCycles(dut.clk, 10)
-    dut._log.info("Test 1 Complete")
+    dut._log.info("Empty RAM Test Complete")
+
+@cocotb.test()
+async def load_ram_test(dut):
+    program_data = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
+    dut._log.info("RAM Load Test Start")
+    await init(dut)
+    await load_ram(dut, program_data)
+    dut._log.info("RAM Load Test Complete")
+
+@cocotb.test()
+async def test_control_signals_execution(dut):
+    program_data = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
+    dut._log.info("Control Signals during Execution Test Start")
+    await init(dut)
+    await load_ram(dut, program_data)
+    ##
+    dut._log.info("Control Signals during Execution Test Complete")
