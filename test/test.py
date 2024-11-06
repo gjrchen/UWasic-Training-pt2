@@ -26,7 +26,10 @@ def setbit(current, bit_index, bit_value):
     return modified
 def retrieve_control_signal(control_signal_vals, index):
     # Local testing might use a reverse order, in case we need to modify the order
-    return control_signal_vals[index]
+    if LocalTest:
+        return control_signal_vals[index]
+    else:
+        return control_signal_vals[14-index]
 
     
 
