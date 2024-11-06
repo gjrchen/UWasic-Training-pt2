@@ -17,7 +17,7 @@ signal_dict = {'nLo': 0, 'nLb': 1, 'Eu': 2, 'sub': 3, 'Ea': 4, 'nLa' : 5, 'nEi':
 
 def setbit(current, bit_index, bit_value):
     modified = current
-    modified[bit_index] = bit_value
+    modified[7-bit_index] = bit_value
     return modified
 
 def retrieve_control_signal(control_signal_vals, index):
