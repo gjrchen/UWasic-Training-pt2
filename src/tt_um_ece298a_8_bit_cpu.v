@@ -51,7 +51,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire restart_program_n;
     wire clear_ram_n;
 
-    assign clear_ram_n = 0;
+    assign clear_ram_n = 1;
     assign restart_program_n = rst_n;
 
     assign control_signals = programming ? programmer_control_signals : controller_control_signals;
@@ -167,9 +167,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     );
 
     // RAM //
-    tt_um_dff_mem #(
-    .RAM_BYTES(16)                  // Set the RAM size to 16 bytes
-    ) ram (
+    tt_um_dff_mem ram(
         .addr(mar_to_ram_addr),     //
         .data_in(mar_to_ram_data),  // 
         .data_out(bus),             //

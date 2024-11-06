@@ -126,7 +126,16 @@ async def load_ram(dut, data):
     assert dut.rst_n.value == 0, f"Reset is not 0, rst_n={dut.rst_n.value}"
     dut.rst_n.value = 1
     await RisingEdge(dut.clk)
-    
+
+async def dumpRAM(dut):
+    dut._log.info("Dumping RAM")
+    if (not GLTEST):
+        for i in range(0,16):
+            dut._log.info(f"RAM[{i}] = {dut.user_project.ram.RAM.value[i]}")
+    else:
+        dut._log.info("Cant dump RAM in GLTEST")
+    dut._log.info("RAM dump complete")
+
 
 @cocotb.test()
 async def check_gl_test(dut):
@@ -148,6 +157,7 @@ async def load_ram_test(dut):
     dut._log.info("RAM Load Test Start")
     await init(dut)
     await load_ram(dut, program_data)
+    await dumpRAM(dut)
     dut._log.info("RAM Load Test Complete")
 
 @cocotb.test()
@@ -155,6 +165,7 @@ async def output_basic_test(dut):
     program_data = [0x4F, 0x50, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xAB]
     await init(dut)
     await load_ram(dut, program_data)
+    await dumpRAM(dut)
     for i in range(0, 20):
         dut._log.info(dut.uo_out.value)
         await ClockCycles(dut.clk, 2)
