@@ -43,6 +43,14 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire [7:0] mar_to_ram_data;         //
     wire [3:0] mar_to_ram_addr;         //
 
+    // Wires for Programmer //
+    wire programming = uio_in[0];
+    wire new_byte = uio_in[1];
+    wire programmer_control_signals;
+    wire controller_control_signals;
+
+    assign control_signals = programming ? programmer_control_signals : controller_control_signals;
+
     // Control Signals for the Program Counter //
     wire Cp = control_signals[14];      // 
     wire Ep = control_signals[13];      // 
@@ -90,7 +98,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .clk(clk),                  //
         .resetn(rst_n),             //
         .opcode(opcode[3:0]),       //
-        .out(control_signals[14:0]) //
+        .out(controller_control_signals) //
     );
     
 
@@ -165,10 +173,22 @@ module tt_um_ece298a_8_bit_cpu_top (
         .clk(clk),                  // Connect the clock signal
         .rst_n(rst_n)               // Connect the reset signal
     );
+
+    // Programmer //
+    programmer programmer(
+        .clk(clk),
+        .resetn(rst_n),
+        .ui_in(ui_in),
+        .programming(programming),
+        .new_byte(new_byte),
+        .bus(bus),
+        .out(programmer_control_signals)  
+);
+        
     // Wires //
     assign uio_out = 8'h00;         // Set the IO outputs to 0
     assign uio_oe = 8'h00;          // Configure the IO ports to be inputs
 
-    wire _unused = &{uio_in, ui_in, ena, ZF, CF}; // Avoid unused variable warning
+    wire _unused = &{uio_in[7:2], ena, ZF, CF}; // Avoid unused variable warning
 
 endmodule
