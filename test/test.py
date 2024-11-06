@@ -110,6 +110,15 @@ async def load_ram(dut, data):
         await RisingEdge(dut.clk)
     dut.uio_in.value = setbit(dut.uio_in.value, 0, 0)
     dut._log.info("RAM Load Complete")
+    dut._log.info("Reset")
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+    dut.rst_n.value = 0
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+    assert dut.rst_n.value == 0, f"Reset is not 0, rst_n={dut.rst_n.value}"
+    dut.rst_n.value = 1
+    await RisingEdge(dut.clk)
     
 
 @cocotb.test()
@@ -139,6 +148,7 @@ async def output_basic_test(dut):
     program_data = [0x4F, 0x50, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xAB]
     await init(dut)
     await load_ram(dut, program_data)
+    
     
 
 @cocotb.test()
