@@ -37,6 +37,7 @@ reg [2:0] stage;
 reg [14:0] control_signals;
 reg programming_stage;
 reg programming_d; // delayed programming wire to check for posedge
+reg [7:0] ram_input;
 
   /* Micro-Operation Stages */
 parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5; 
@@ -46,11 +47,8 @@ always @(posedge clk) begin
     programming_d <= programming;
   if (programming && !programming_d) begin // posedge
     programming_stage <= 1;
+    ram_input <= ui_in;
   end
-  else begin
-    programming_stage <= 0;
-  end
-  
 end
 
 /* Stage Transition Logic */
@@ -96,21 +94,22 @@ always @(negedge clk) begin
                 control_signals[SIG_IR_EN_N] <= 0;
                 control_signals[SIG_MAR_ADDR_LOAD_N] <= 0;
             end
-            default: begin
-            // Do nothing (leave control_signals unchanged)
-            end
         end
         T4: begin
-            begin
-                control_signals[SIG_RAM_EN_N] <= 0;
-                control_signals[SIG_REGA_LOAD_N] <= 0;
+            if (programming_stage) begin
+                control_signals[SIG_REGA_EN] <= 1;
+                control_signals[SIG_MAR_MEM_LOAD_N] <= 0;
             end
             default: begin
             // Do nothing (leave control_signals unchanged)
             end
         end
         T5: begin
-            // Do nothing (leave control_signals unchanged)
+          if (programming_stage) begin
+            control_signals[SIG_RAM_LOAD_N] <= 0;
+            // reset programming_stage to be ready to take a new input
+            programming_stage <= 0;
+          end
         end
     endcase
 end
