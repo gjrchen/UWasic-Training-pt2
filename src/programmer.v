@@ -38,6 +38,8 @@ reg [14:0] control_signals;
 reg programming_stage;
 reg programming_d; // delayed programming wire to check for posedge
 reg [7:0] ram_input;
+reg [7:0] bus_reg;
+reg [3:0] ram_addr;
 
   /* Micro-Operation Stages */
 parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5; 
@@ -52,8 +54,8 @@ always @(posedge clk) begin
 end
 
 /* Stage Transition Logic */
-always @(posedge clk) begin
-    if (!resetn) begin           // Check if reset is asserted, if yes, put into a holding stage
+  always @(posedge clk) begin
+    if (!resetn || !programming_stage) begin // Check if reset is asserted or not in programming_stage, if yes, put into a holding stage
       stage <= 6;
     end
  	else begin                   // If reset is not asserted, do the stages sequentially
@@ -78,42 +80,32 @@ always @(negedge clk) begin
 
     case(stage)
         T0: begin
-            control_signals[SIG_PC_EN] <= 1;
+            // control_signals[SIG_PC_EN] <= 1;
+            bus_reg <= ram_addr;
             control_signals[SIG_MAR_ADDR_LOAD_N] <= 0;
         end 
         T1: begin
-            if (programming_stage) begin
-                control_signals[SIG_PC_INC] <= 1;
-            end
+            // control_signals[SIG_PC_INC] <= 1;
+            ram_addr <= ram_addr + 1;
         end
         T2: begin
-            control_signals[SIG_RAM_EN_N] <= 0;
         end
         T3: begin
-            if (programming_stage) begin
-                control_signals[SIG_IR_EN_N] <= 0;
-                control_signals[SIG_MAR_ADDR_LOAD_N] <= 0;
-            end
         end
         T4: begin
-            if (programming_stage) begin
-                control_signals[SIG_REGA_EN] <= 1;
-                control_signals[SIG_MAR_MEM_LOAD_N] <= 0;
-            end
-            default: begin
-            // Do nothing (leave control_signals unchanged)
-            end
+            // control_signals[SIG_REGA_EN] <= 1;
+            bus_reg <= ram_input;
+            control_signals[SIG_MAR_MEM_LOAD_N] <= 0;
         end
         T5: begin
-          if (programming_stage) begin
             control_signals[SIG_RAM_LOAD_N] <= 0;
             // reset programming_stage to be ready to take a new input
             programming_stage <= 0;
-          end
         end
     endcase
 end
 
 assign out = control_signals;
+assign bus = programming ? bus_reg : 8'bZ;
   
 endmodule
