@@ -48,6 +48,11 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire new_byte = uio_in[1];
     wire [14:0] programmer_control_signals;
     wire [14:0] controller_control_signals;
+    wire restart_program_n;
+    wire clear_ram_n;
+
+    assign clear_ram_n = 0;
+    assign restart_program_n = rst_n;
 
     assign control_signals = programming ? programmer_control_signals : controller_control_signals;
 
@@ -88,7 +93,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .bits_in(bus4bit),      //
         .bits_out(bus4bit),     //
         .clk(clk),              //
-        .clr_n(rst_n),          //
+        .clr_n(restart_program_n),          //
         .lp(Lp),                //
         .cp(Cp),                //
         .ep(Ep)                 //
@@ -96,7 +101,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     
     control_block cb(
         .clk(clk),                  //
-        .resetn(rst_n),             //
+        .resetn(restart_program_n),             //
         .opcode(opcode[3:0]),       //
         .out(controller_control_signals) //
     );
@@ -121,7 +126,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .load(nLa),             // Enable Accumulator Register load from bus (ACTIVE-LOW)
         .enable_output(Ea),     // Enable Accumulator Register output to the bus (ACTIVE-HIGH)
         .regA(reg_a),           // Register A (8 bits)
-        .rst_n(rst_n)           // Reset (ACTIVE-LOW)
+        .rst_n(restart_program_n)           // Reset (ACTIVE-LOW)
     );
 
 
@@ -138,7 +143,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     // Instruction Register //
     instruction_register instruction_register(
         .clk(clk),              //
-        .clear(~rst_n),         //
+        .clear(~restart_program_n),         //
         .n_load(nLi),           //
         .n_enable(nEi),         //
         .bus(bus),              //
@@ -171,13 +176,13 @@ module tt_um_ece298a_8_bit_cpu_top (
         .lr_n(nLr),                 //
         .ce_n(nCE),                 // Connect the chip enable signal
         .clk(clk),                  // Connect the clock signal
-        .rst_n(rst_n)               // Connect the reset signal
+        .rst_n(clear_ram_n)               // Connect the reset signal
     );
 
     // Programmer //
     programmer programmer(
         .clk(clk),
-        .resetn(rst_n),
+        .resetn(restart_program_n),
         .ui_in(ui_in),
         .programming(programming),
         .new_byte(new_byte),
