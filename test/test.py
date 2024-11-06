@@ -13,13 +13,17 @@ CLOCK_PERIOD = 10  # 100 MHz
 CLOCK_UNITS = "ns"
 
 GLTEST = False
+LocalTest = False
+
 signal_dict = {'nLo': 0, 'nLb': 1, 'Eu': 2, 'sub': 3, 'Ea': 4, 'nLa' : 5, 'nEi': 6, 'nLi' : 7, 'nLr' : 8, 'nCE' : 9, 'nLmd' : 10, 'nLma' : 11, 'Lp' : 12, 'Ep' : 13, 'Cp' : 14}
 
 def setbit(current, bit_index, bit_value):
     modified = current
-    modified[7-bit_index] = bit_value
+    if LocalTest:
+        modified[7-bit_index] = bit_value
+    else:
+        modified[bit_index] = bit_value
     return modified
-
 def retrieve_control_signal(control_signal_vals, index):
     # Local testing might use a reverse order, in case we need to modify the order
     return control_signal_vals[index]
