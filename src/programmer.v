@@ -81,7 +81,7 @@ always @(negedge clk) begin
     case(stage)
         T0: begin
             // control_signals[SIG_PC_EN] <= 1;
-            bus_reg <= ram_addr;
+          bus_reg[3:0] <= ram_addr;
             control_signals[SIG_MAR_ADDR_LOAD_N] <= 0;
         end 
         T1: begin
