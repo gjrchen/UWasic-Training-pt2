@@ -185,7 +185,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     assign uio_out[4] = ZF;
     assign uio_out[5] = HF;
     // Wires //
-    assign uio_out[7:6] = 5'b00;         // Set the IO outputs to 0
+    assign uio_out[7:6] = 2'b00;         // Set the IO outputs to 0
     assign uio_out[0] = 1'b0;         // Set the IO outputs to 0
     assign uio_oe = 8'b00111110;          // Configure the IO ports to be inputs
 
