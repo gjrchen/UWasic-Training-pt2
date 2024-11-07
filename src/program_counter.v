@@ -41,8 +41,7 @@ module set_counter_bit(input CLR_n, input Lp, input Cp, input b, input A, input 
 endmodule
 
 module ProgramCounter (
-  input wire[3:0] bits_in,
-  output wire [3:0] bits_out,
+  inout wire[3:0] bus,
   input wire clk,
   input wire clr_n,
   input wire lp,
@@ -50,12 +49,10 @@ module ProgramCounter (
   input wire ep
 );
   wire[3:0] counter;
-  set_counter_bit set_bit_0(clr_n, lp, cp, bits_in[0], 1'b1, clk, counter[0]);
-  set_counter_bit set_bit_1(clr_n, lp, cp, bits_in[1], (counter[0]), clk, counter[1]);
-  set_counter_bit set_bit_2(clr_n, lp, cp, bits_in[2], (counter[0] & counter[1]), clk, counter[2]);
-  set_counter_bit set_bit_3(clr_n, lp, cp, bits_in[3], (counter[0] & counter[1] & counter[2]), clk, counter[3]);
+  set_counter_bit set_bit_0(clr_n, lp, cp, bus[0], 1'b1, clk, counter[0]);
+  set_counter_bit set_bit_1(clr_n, lp, cp, bus[1], (counter[0]), clk, counter[1]);
+  set_counter_bit set_bit_2(clr_n, lp, cp, bus[2], (counter[0] & counter[1]), clk, counter[2]);
+  set_counter_bit set_bit_3(clr_n, lp, cp, bus[3], (counter[0] & counter[1] & counter[2]), clk, counter[3]);
 
-  reg enable;
-  always @ (posedge clk) enable <= ep;
-  assign bits_out = enable ? counter : 4'bZZZZ;
+  assign bus = ep ? counter : 4'bZZZZ;
 endmodule
