@@ -13,7 +13,7 @@ CLOCK_PERIOD = 10  # 100 MHz
 CLOCK_UNITS = "ns"
 
 GLTEST = False
-LocalTest = True
+LocalTest = False
 
 signal_dict = {'nLo': 0, 'nLb': 1, 'Eu': 2, 'sub': 3, 'Ea': 4, 'nLa' : 5, 'nEi': 6, 'nLi' : 7, 'nLr' : 8, 'nCE' : 9, 'nLmd' : 10, 'nLma' : 11, 'Lp' : 12, 'Ep' : 13, 'Cp' : 14}
 uio_dict = {'ready_for_ui' : 1, 'done_load' : 2, 'CF' : 3, 'ZF' : 4, 'HF' : 5}
