@@ -88,8 +88,7 @@ module tt_um_ece298a_8_bit_cpu_top (
 
     // Program Counter //
     ProgramCounter pc(
-        .bits_in(bus4bit),      //
-        .bits_out(bus4bit),     //
+        .bus(bus4bit),      //
         .clk(clk),              //
         .clr_n(rst_n),          //
         .lp(Lp),                //
