@@ -178,7 +178,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .lr_n(nLr),                 //
         .ce_n(nCE),                 // Connect the chip enable signal
         .clk(clk),                  // Connect the clock signal
-        .rst_n(rst_n)               // Connect the reset signal
+        .rst_n(1)               // Connect the reset signal
     );
     // Wires //
     assign uio_out[7:3] = 5'b00000;         // Set the IO outputs to 0
