@@ -213,3 +213,44 @@ async def test_control_signals_execution(dut):
         await ClockCycles(dut.clk, 2)
     ##
     dut._log.info("Control Signals during Execution Test Complete")
+
+@cocotb.test()
+async def test_add_instruction(dut):
+    """Test the ADD instruction, verify control signals, and check program counter increment at the end."""
+    # Load the ADD instruction (opcode 0x20) into the instruction register
+    await load_instruction(dut, 0x20)  # Assuming the ADD opcode is 0x20
+    dut.reg_a.value = 5
+    dut.reg_b.value = 3
+
+    # Capture initial program counter value
+    initial_pc = int(dut.pc.value)
+
+    # Initialize expected control signal values for each stage of the ADD instruction
+    expected_control_signals = [
+        0x27E3,  # T0: Ep, \Lma
+        0x4FE3,  # T1: Cp - Program counter should increment by the end of the cycle
+        0x0D63,  # T2: \CE, \Li
+        0x07A3,  # T3: \Ei, \Lma
+        0x0DE1,  # T4: \CE, \Lb
+        0x0FC7   # T5: Eu, \La
+    ]
+
+    dut._log.info("Testing ADD instruction - Verifying control signals at each stage.")
+    for stage, expected_signal in enumerate(expected_control_signals):
+        await RisingEdge(dut.clk)
+
+        # Verify control signals
+        actual_signal = int(dut.control_signals.value)
+        assert actual_signal == expected_signal, f"Stage T{stage}: Expected {hex(expected_signal)}, got {hex(actual_signal)}"
+        dut._log.info(f"Stage T{stage} control signal verified: {hex(actual_signal)}")
+
+    # After the ADD instruction cycle completes, verify that the PC has incremented by 1
+    final_pc = int(dut.pc.value)
+    assert final_pc == initial_pc + 1, f"Expected PC to increment to {initial_pc + 1} at end of ADD, but got {final_pc}"
+    dut._log.info(f"Program counter increment verified at end of ADD instruction: PC={final_pc}")
+
+    # Verify the result of the ADD operation
+    await ClockCycles(dut.clk, 2)  # Allow time to finish idk how much 2 is good for T6 (blank stage)
+    expected_result = 5 + 3
+    assert dut.reg_a.value == expected_result, f"Expected A = {expected_result}, got {dut.reg_a.value}"
+    dut._log.info("ADD operation result verified.")
