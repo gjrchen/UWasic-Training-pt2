@@ -358,6 +358,67 @@ async def jmp_checker(dut, address):
         dut._log.error("Cant check JMP in GLTEST")
     dut._log.info("JMP Checker Complete")
 
+async def nop_checker(dut):
+    dut._log.info(f"NOP Checker Start")
+    if (not GLTEST):
+        timeout = 0
+        while not (dut.user_project.cb.stage.value == 0):
+            await RisingEdge(dut.clk)
+            dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
+            timeout += 1
+            if (timeout > 2):
+                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
+        pc_beginning = dut.user_project.pc.counter.value
+        dut._log.info(f"PC={pc_beginning}")
+        dut._log.info("T0")
+        assert dut.user_project.cb.stage.value == 0, f"Stage is not 0, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("010011111100011"), f"Control Signals are not correct, expected=010011111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T1")
+        assert dut.user_project.cb.stage.value == 1, f"Stage is not 1, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("100111111100011"), f"Control Signals are not correct, expected=100111111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T2")
+        assert dut.user_project.cb.stage.value == 2, f"Stage is not 2, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000110101100011"), f"Control Signals are not correct, expected=000110101100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T3")
+        assert dut.user_project.cb.stage.value == 3, f"Stage is not 3, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        assert dut.user_project.cb.opcode.value == 1, f"Opcode is not NOP, opcode={dut.user_project.cb.opcode.value}"
+        await RisingEdge(dut.clk)
+        dut._log.info("T4")
+        assert dut.user_project.cb.stage.value == 4, f"Stage is not 4, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T5")
+        assert dut.user_project.cb.stage.value == 5, f"Stage is not 5, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T6")
+        assert dut.user_project.cb.stage.value == 6, f"Stage is not 6, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info(f"PC={dut.user_project.pc.counter.value}")
+        assert dut.user_project.pc.counter.value == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={dut.user_project.pc.counter.value}, pc_beginning={pc_beginning}"
+    else:
+        dut._log.error("Cant check NOP in GLTEST")
+    dut._log.info("NOP Checker Complete")
+
 
 @cocotb.test()
 async def test_operation_hlt(dut):
@@ -384,9 +445,24 @@ async def test_operation_jmp(dut):
     await load_ram(dut, program_data)
     await dumpRAM(dut)
     await mem_check(dut, program_data)
-    await jmp_checker(dut, program_data[0]&0x0F)
+    await jmp_checker(dut, program_data[0]&0xF)
     await wait_until_next_t0_gltest(dut)
     await hlt_checker(dut)
     await hlt_checker(dut)
-
     dut._log.info("Operation JMP Test Complete")
+
+@cocotb.test()
+async def test_operation_nop(dut):
+    program_data = [0x1E, 0x1F, 0x70, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x0F, 0x0F]
+    dut._log.info(f"Operation NOP Test Start")
+    dut._log.info(f"data_bin={[str(bin(x)) for x in program_data]}")
+    dut._log.info(f"data_hex={[str(hex(x)) for x in program_data]}")
+    await init(dut)
+    await load_ram(dut, program_data)
+    await dumpRAM(dut)
+    await mem_check(dut, program_data)
+    await nop_checker(dut)
+    await nop_checker(dut)
+    await jmp_checker(dut, program_data[2]&0xF)
+    await nop_checker(dut)
+    dut._log.info("Operation NOP Test Complete")
