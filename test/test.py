@@ -255,6 +255,46 @@ async def hlt_checker(dut):
         dut._log.info("Cant check HLT in GLTEST")
     dut._log.info("HLT Checker Complete")
 
+# async def jmp_checker(dut):
+#     dut._log.info("JMP Checker Start")
+#     if (not GLTEST):
+#         pc_beginning = dut.user_project.pc.counter.value
+#         await FallingEdge(dut.clk)
+#         await FallingEdge(dut.clk)
+#         dut._log.info("T0")
+#         await log_control_signals(dut)
+#         assert dut.user_project.control_signals.value == LogicArray("010011111100011"), f"Control Signals are not correct, expected=010011111100011"
+#         await FallingEdge(dut.clk)
+#         dut._log.info("T1")
+#         await log_control_signals(dut)
+#         assert dut.user_project.control_signals.value == LogicArray("100111111100011"), f"Control Signals are not correct, expected=100111111100011"
+#         assert retrieve_control_signal(dut.user_project.control_signals.value, 14) == 0, f"""Cp is not 0, Ep={retrieve_control_signal(dut.user_project.control_signals.value, 14)}"""
+#         await FallingEdge(dut.clk)
+#         dut._log.info("T2")
+#         await log_control_signals(dut)
+#         assert dut.user_project.control_signals.value == LogicArray("000110101100011"), f"Control Signals are not correct, expected=000110101100011"
+#         await FallingEdge(dut.clk)
+#         dut._log.info("T3")
+#         await log_control_signals(dut)
+#         assert dut.user_project.control_signals.value == LogicArray("000011110100011"), f"Control Signals are not correct, expected=000011110100011"
+#         await FallingEdge(dut.clk)
+#         dut._log.info("T4")
+#         await log_control_signals(dut)
+#         assert dut.user_project.control_signals.value == LogicArray("000110111000011"), f"Control Signals are not correct, expected=000110111000011"
+#         await FallingEdge(dut.clk)
+#         dut._log.info("T5")
+#         await log_control_signals(dut)
+#         assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+#         await FallingEdge(dut.clk)
+#         dut._log.info("T6")
+#         await log_control_signals(dut)
+#         assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+#         await FallingEdge(dut.clk)
+#         assert pc_beginning == dut.user_project.pc.counter.value, f"PC is not the same, pc_beginning={pc_beginning}, pc={dut.user_project.pc.counter.value}"
+#     else:
+#         dut._log.info("Cant check JMP in GLTEST")
+#     dut._log.info("JMP Checker Complete")
+
 
 @cocotb.test()
 async def test_operation_hlt(dut):
