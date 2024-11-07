@@ -221,9 +221,13 @@ async def test_add_instruction(dut):
     #assume A has a value (supposedly does if STA works)
     #perform add instruction, adding val at address 0x1
 
+    dut._log.info(f"Load data into memory and A register")
+    
     data = [0x21, 0x1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     await load_ram(dut, data)
     dut.reg_a.value = 1
+
+    dut._log.info(f"Finished loading data into memory and A register")
 
     # Capture initial program counter value
     initial_pc = int(dut.pc.value)
