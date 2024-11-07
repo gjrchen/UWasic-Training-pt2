@@ -98,11 +98,11 @@ async def load_ram(dut, data):
     await RisingEdge(dut.clk)
     dut.rst_n.value = 1
     for i in range(0, 16):
-        while !(dut.uio_out.value & 0b00000010):
+        while not (dut.uio_out.value & 0b00000010):
             await RisingEdge(dut.clk)
         dut._log.info("Loading Byte " + i)
         dut.ui_in.value = data[i]
-        while !(dut.uio_out.value & 0b00000100):
+        while not (dut.uio_out.value & 0b00000100):
             await RisingEdge(dut.clk)
     dut.uio_in.value = setbit(dut.uio_in.value, 0, 0) # Stop programming
     dut._log.info("RAM Load Complete")
