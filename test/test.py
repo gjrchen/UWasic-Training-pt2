@@ -18,7 +18,17 @@ LocalTest = False
 signal_dict = {'nLo': 0, 'nLb': 1, 'Eu': 2, 'sub': 3, 'Ea': 4, 'nLa' : 5, 'nEi': 6, 'nLi' : 7, 'nLr' : 8, 'nCE' : 9, 'nLmd' : 10, 'nLma' : 11, 'Lp' : 12, 'Ep' : 13, 'Cp' : 14}
 uio_dict = {'ready_for_ui' : 1, 'done_load' : 2, 'CF' : 3, 'ZF' : 4, 'HF' : 5}
 
-
+async def check_adder_operation(operation, a, b):
+    if operation == 0:
+        expVal = (a + b) 
+        expCF = int((expVal & 0x100) >> 8)
+        expVal = expVal & 0xFF  # 8-bit overflow behavior for addition
+    elif operation == 1:
+        expVal = (a + ((b ^ 0xFF) + 1))
+        expCF = (expVal & 0x100) >> 8
+        expVal = expVal & 0xFF  # 8-bit underflow behavior for subtraction
+    expZF = int(expVal == 0)
+    return expVal, expCF, expZF
 
 def setbit(current, bit_index, bit_value):
     modified = current
@@ -419,6 +429,80 @@ async def nop_checker(dut):
         dut._log.error("Cant check NOP in GLTEST")
     dut._log.info("NOP Checker Complete")
 
+async def add_checker(dut, address):
+    dut._log.info(f"ADD Checker Start")
+    if (not GLTEST):
+        timeout = 0
+        while not (dut.user_project.cb.stage.value == 0):
+            await RisingEdge(dut.clk)
+            dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
+            timeout += 1
+            if (timeout > 2):
+                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
+        pc_beginning = dut.user_project.pc.counter.value
+        val_a = dut.user_project.accumulator_object.regA.value
+        if LocalTest:
+            val_b = dut.user_project.ram.RAM.value[address]
+        else:
+            val_b = dut.user_project.ram.RAM.value[15-address]
+        expVal, expCF, expZF = await check_adder_operation(0, int(val_a), int(val_b))
+        dut._log.info(f"Adder Operation: {int(val_a)} + {int(val_b)} = {expVal}, CF={expCF}, ZF={expZF}")
+        dut._log.info(f"Adder Operation bin: {int(val_a):8b} + {int(val_b):8b} = {expVal:8b}, CF={expCF}, ZF={expZF}")
+        dut._log.info(f"Adder Operation hex: {int(val_a):02X} + {int(val_b):02X} = {expVal:02X}, CF={expCF}, ZF={expZF}")
+        dut._log.info(f"PC={pc_beginning}")
+        dut._log.info("T0")
+        assert dut.user_project.cb.stage.value == 0, f"Stage is not 0, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("010011111100011"), f"Control Signals are not correct, expected=010011111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T1")
+        assert dut.user_project.cb.stage.value == 1, f"Stage is not 1, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("100111111100011"), f"Control Signals are not correct, expected=100111111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T2")
+        assert dut.user_project.cb.stage.value == 2, f"Stage is not 2, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000110101100011"), f"Control Signals are not correct, expected=000110101100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T3")
+        assert dut.user_project.cb.stage.value == 3, f"Stage is not 3, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000011110100011"), f"Control Signals are not correct, expected=000011110100011"
+        assert dut.user_project.cb.opcode.value == 2, f"Opcode is not ADD, opcode={dut.user_project.cb.opcode.value}"
+        await RisingEdge(dut.clk)
+        dut._log.info("T4")
+        assert dut.user_project.cb.stage.value == 4, f"Stage is not 4, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000110111100001"), f"Control Signals are not correct, expected=000110111100001"
+        assert dut.user_project.input_mar_register.addr.value == address, f"Address in MAR is not correct, mar_address={dut.user_project.input_mar_register.addr.value}, expected={address}"
+        await RisingEdge(dut.clk)
+        dut._log.info("T5")
+        assert dut.user_project.cb.stage.value == 5, f"Stage is not 5, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111000111"), f"Control Signals are not correct, expected=000111111000111"
+        assert dut.user_project.b_register.value.value == val_b, f"Value in B Register is not correct, b_register={dut.user_project.b_register.regB.value}, expected={val_b}"
+        await RisingEdge(dut.clk)
+        dut._log.info("T6")
+        assert dut.user_project.cb.stage.value == 6, f"Stage is not 6, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        assert dut.user_project.alu_object.CF.value == expCF, f"Carry Out in ALU is not correct, alu_carry_out={dut.user_project.alu_object.CF.value}, expected={expCF}"
+        assert dut.user_project.alu_object.ZF.value == expZF, f"Zero Flag in ALU is not correct, alu_zero_flag={dut.user_project.alu_object.ZF.value}, expected={expZF}"
+        assert dut.user_project.accumulator_object.regA.value == expVal, f"Value in Accumulator is not correct, accumulator={dut.user_project.accumulator_object.regA.value}, expected={expVal}"
+        await RisingEdge(dut.clk)
+        dut._log.info(f"PC={dut.user_project.pc.counter.value}")
+        assert dut.user_project.pc.counter.value == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={dut.user_project.pc.counter.value}, pc_beginning={pc_beginning}"
+    else:
+        dut._log.error("Cant check ADD in GLTEST")
+    dut._log.info("ADD Checker Complete")
 
 @cocotb.test()
 async def test_operation_hlt(dut):
@@ -466,3 +550,35 @@ async def test_operation_nop(dut):
     await jmp_checker(dut, program_data[2]&0xF)
     await nop_checker(dut)
     dut._log.info("Operation NOP Test Complete")
+
+@cocotb.test()
+async def test_operation_add(dut):
+    program_data = [0x2E, 0x10, 0x70, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x09, 0xFF]
+    dut._log.info(f"Operation ADD Test Start")
+    dut._log.info(f"data_bin={[str(bin(x)) for x in program_data]}")
+    dut._log.info(f"data_hex={[str(hex(x)) for x in program_data]}")
+    await init(dut)
+    await load_ram(dut, program_data)
+    await dumpRAM(dut)
+    await mem_check(dut, program_data)
+    await add_checker(dut, program_data[0]&0xF)
+    await nop_checker(dut)
+    await jmp_checker(dut, program_data[2]&0xF)
+    await add_checker(dut, program_data[0]&0xF)
+    dut._log.info("Operation ADD Test Complete")
+
+@cocotb.test()
+async def test_operation_add_2(dut):
+    program_data = [0x2E, 0x10, 0x70, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xA9, 0xFF]
+    dut._log.info(f"Operation ADD Test Start")
+    dut._log.info(f"data_bin={[str(bin(x)) for x in program_data]}")
+    dut._log.info(f"data_hex={[str(hex(x)) for x in program_data]}")
+    await init(dut)
+    await load_ram(dut, program_data)
+    await dumpRAM(dut)
+    await mem_check(dut, program_data)
+    await add_checker(dut, program_data[0]&0xF)
+    await nop_checker(dut)
+    await jmp_checker(dut, program_data[2]&0xF)
+    await add_checker(dut, program_data[0]&0xF)
+    dut._log.info("Operation ADD Test Complete")
