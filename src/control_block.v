@@ -89,11 +89,8 @@ always @(negedge clk) begin
             control_signals[SIG_PC_EN] <= 1;
             control_signals[SIG_MAR_ADDR_LOAD_N] <= 0;
             ready_reg <= 1;
-        end 
+        end
         T1: begin
-            if (opcode != OP_HLT || programming) begin
-                control_signals[SIG_PC_INC] <= 1;
-            end
         end
         T2: begin
             if (!programming) begin
@@ -102,6 +99,10 @@ always @(negedge clk) begin
             end
         end
         T3: begin
+            if (opcode != OP_HLT || programming) begin
+                control_signals[SIG_PC_EN] <= 1;
+            end
+
             if (!programming) begin
                 case (opcode)
                     OP_ADD, OP_SUB, OP_LDA, OP_STA: begin
