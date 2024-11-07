@@ -233,8 +233,7 @@ async def test_add_instruction(dut):
     dut._log.info(f"Finished loading data into memory and A register")
 
     # Capture initial program counter value
-    dut.user_project.pc = 0
-    initial_pc = int(dut.user_project.pc)
+    initial_pc = 0
 
     # Initialize expected control signal values for each stage of the ADD instruction
     expected_control_signals = [
@@ -284,8 +283,7 @@ async def test_sub_instruction(dut):
     dut.user_project.accumulator_object.regA.value = 1
     
     # Capture initial program counter value
-    dut.user_project.pc = 0
-    initial_pc = int(dut.user_project.pc)
+    initial_pc = 0
 
     # Initialize expected control signal values for each stage of the ADD instruction
     expected_control_signals = [
