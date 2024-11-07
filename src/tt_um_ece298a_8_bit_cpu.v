@@ -181,7 +181,8 @@ module tt_um_ece298a_8_bit_cpu_top (
         .rst_n(rst_n)               // Connect the reset signal
     );
     // Wires //
-    assign uio_out = 8'b00000ZZ0;         // Set the IO outputs to 0
+    assign uio_out[7:3] = 5'b00000;         // Set the IO outputs to 0
+    assign uio_out[0] = 1'b0;         // Set the IO outputs to 0
     assign uio_oe = 8'b00000110;          // Configure the IO ports to be inputs
 
     wire _unused = &{uio_in[7:3], ena, ZF, CF}; // Avoid unused variable warning
