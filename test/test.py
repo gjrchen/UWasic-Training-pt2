@@ -92,39 +92,23 @@ async def init(dut):
 async def load_ram(dut, data):
     dut._log.info("RAM Load Start")
     assert len(data) == 16, f"Data length is not 16, len(data)={len(data)}"
-    dut.uio_in.value = setbit(dut.uio_in.value, 0, 1)
+    dut.uio_in.value = setbit(dut.uio_in.value, 0, 1) # Start programming
+    dut._log.info("Reset")
+    dut.rst_n.value = 0
     await RisingEdge(dut.clk)
-    await RisingEdge(dut.clk)
+    dut.rst_n.value = 1
     for i in range(0, 16):
-        await RisingEdge(dut.clk)
-        await RisingEdge(dut.clk)
+        while !(dut.uio_out.value & 0b00000010):
+            await RisingEdge(dut.clk)
+        dut._log.info("Loading Byte " + i)
         dut.ui_in.value = data[i]
-        await RisingEdge(dut.clk)
-        await RisingEdge(dut.clk)
-        dut.uio_in.value = setbit(dut.uio_in.value, 1, 1)
-        await RisingEdge(dut.clk)
-        await RisingEdge(dut.clk)
-        dut.uio_in.value = setbit(dut.uio_in.value, 1, 0)
-        await RisingEdge(dut.clk)
-        await RisingEdge(dut.clk)
-        await RisingEdge(dut.clk)
-        await RisingEdge(dut.clk)
-        await RisingEdge(dut.clk)
-        await RisingEdge(dut.clk)
-        await RisingEdge(dut.clk)
-        await RisingEdge(dut.clk)
-        await RisingEdge(dut.clk)
-        await RisingEdge(dut.clk)
-        await RisingEdge(dut.clk)
-        await RisingEdge(dut.clk)
-        await RisingEdge(dut.clk)
-    dut.uio_in.value = setbit(dut.uio_in.value, 0, 0)
+        while !(dut.uio_out.value & 0b00000100):
+            await RisingEdge(dut.clk)
+    dut.uio_in.value = setbit(dut.uio_in.value, 0, 0) # Stop programming
     dut._log.info("RAM Load Complete")
     dut._log.info("Reset")
     await RisingEdge(dut.clk)
-    await RisingEdge(dut.clk)
     dut.rst_n.value = 0
-    await RisingEdge(dut.clk)
     await RisingEdge(dut.clk)
     assert dut.rst_n.value == 0, f"Reset is not 0, rst_n={dut.rst_n.value}"
     dut.rst_n.value = 1
