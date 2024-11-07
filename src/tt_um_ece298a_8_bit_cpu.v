@@ -19,8 +19,6 @@ module tt_um_ece298a_8_bit_cpu_top (
 );
     // Bus //
     wire [7:0] bus;                 // Bus (8-bit) (High impedance when not in use)
-    wire [3:0] bus4bit;             // 4-bit Bus (lower 4 bits of the 8-bit Bus) (High impedance when not in use)
-    assign bus4bit = bus[3:0];      // Assign 4-bit Bus to the lower 4 bits of the 8-bit Bus 
     wire outputting_to_bus;         // Signal to determine when nothing is outputting to the bus
 
     // Tri-state buffer to initialize the bus with a known value //
@@ -88,7 +86,7 @@ module tt_um_ece298a_8_bit_cpu_top (
 
     // Program Counter //
     ProgramCounter pc(
-        .bus(bus4bit),      //
+        .bus(bus[3:0]),      //
         .clk(clk),              //
         .clr_n(rst_n),          //
         .lp(Lp),                //
