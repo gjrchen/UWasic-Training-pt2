@@ -224,7 +224,10 @@ async def test_add_instruction(dut):
     dut._log.info(f"Load data into memory and A register")
     
     data = [0x21, 0x1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    await init(dut)
     await load_ram(dut, data)
+    await dumpRAM(dut)
+    await mem_check(dut, data)
     dut.reg_a.value = 1
 
     dut._log.info(f"Finished loading data into memory and A register")
@@ -272,6 +275,10 @@ async def test_sub_instruction(dut):
     #perform add instruction, adding val at address 0x1
 
     data = [0x31, 0x1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    await init(dut)
+    await load_ram(dut, data)
+    await dumpRAM(dut)
+    await mem_check(dut, data)
     await load_ram(dut, data)
     dut.reg_a.value = 1
     
