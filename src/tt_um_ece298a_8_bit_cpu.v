@@ -184,6 +184,6 @@ module tt_um_ece298a_8_bit_cpu_top (
     assign uio_out = 8'h00;         // Set the IO outputs to 0
     assign uio_oe = 8'b00000110;          // Configure the IO ports to be inputs
 
-    wire _unused = &{uio_in, ena, ZF, CF}; // Avoid unused variable warning
+    wire _unused = &{uio_in[7:3], ena, ZF, CF}; // Avoid unused variable warning
 
 endmodule
