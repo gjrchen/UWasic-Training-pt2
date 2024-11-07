@@ -3,7 +3,7 @@
 .vscode
 *.vcd
 runs/*
-!runs/final/*
+!runs/final/
 tt_submission
 src/user_config.json
 src/config_merged.json
