@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Siddharth Nema
+ * Copyright (c) 2024 Siddharth Nema & Gerry Chen
  * SPDX-License-Identifier: Apache-2.0
  */
 
