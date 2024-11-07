@@ -25,10 +25,21 @@ module tt_um_ece298a_8_bit_cpu_top (
 
     // Tri-state buffer to initialize the bus with a known value //
     assign bus = (outputting_to_bus) ? 8'bZZZZZZZZ : 8'b00000000; // Initialize the bus with a known value if nothing is outputting to the bus
-   
 
     // Control Signals //
     wire [14:0] control_signals;        // Control Signals (15-bit), see below for the signal assignments
+
+    // Programmer Wires //
+    wire programming = uio_in[0];
+    wire ready_for_ui;
+    wire done_load;
+    wire read_ui_in;
+
+    assign uio_out[1] = ready_for_ui;
+    assign uio_out[2] = done_load;
+
+    assign bus = (read_ui_in) ? ui_in : 8'bZZZZZZZZ;
+    
 
     // Wires //
     wire [3:0] opcode;                  // opcode from IR to Control
@@ -73,7 +84,7 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire nLo = control_signals[0];      // 
 
     // Control Signals for the Bus Initialization //
-    assign outputting_to_bus = (Ep | (!nCE) | (!nEi) | Ea | Eu); // Figure out when nothing is outputting to the bus   
+    assign outputting_to_bus = (Ep | (!nCE) | (!nEi) | Ea | Eu | read_ui_in); // Figure out when nothing is outputting to the bus   
 
     // Program Counter //
     ProgramCounter pc(
@@ -90,7 +101,11 @@ module tt_um_ece298a_8_bit_cpu_top (
         .clk(clk),                  //
         .resetn(rst_n),             //
         .opcode(opcode[3:0]),       //
-        .out(control_signals[14:0]) //
+        .out(control_signals[14:0]), //
+        .programming(programming),
+        .done_load(done_load),
+        .read_ui_in(read_ui_in),
+        .ready(ready_for_ui)
     );
     
 
@@ -166,9 +181,10 @@ module tt_um_ece298a_8_bit_cpu_top (
         .rst_n(rst_n)               // Connect the reset signal
     );
     // Wires //
-    assign uio_out = 8'h00;         // Set the IO outputs to 0
-    assign uio_oe = 8'h00;          // Configure the IO ports to be inputs
+    assign uio_out[7:3] = 5'b00000;         // Set the IO outputs to 0
+    assign uio_out[0] = 1'b0;         // Set the IO outputs to 0
+    assign uio_oe = 8'b00000110;          // Configure the IO ports to be inputs
 
-    wire _unused = &{uio_in, ui_in, ena, ZF, CF}; // Avoid unused variable warning
+    wire _unused = &{uio_in[7:3], ena, ZF, CF}; // Avoid unused variable warning
 
 endmodule
