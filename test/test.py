@@ -267,3 +267,4 @@ async def test_operation_hlt(dut):
     await dumpRAM(dut)
     await mem_check(dut, program_data)
     await hlt_checker(dut)
+    dut._log.info("Operation HLT Test Complete")
