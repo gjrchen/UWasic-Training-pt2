@@ -13,9 +13,11 @@ CLOCK_PERIOD = 10  # 100 MHz
 CLOCK_UNITS = "ns"
 
 GLTEST = False
-LocalTest = False
+LocalTest = True
 
 signal_dict = {'nLo': 0, 'nLb': 1, 'Eu': 2, 'sub': 3, 'Ea': 4, 'nLa' : 5, 'nEi': 6, 'nLi' : 7, 'nLr' : 8, 'nCE' : 9, 'nLmd' : 10, 'nLma' : 11, 'Lp' : 12, 'Ep' : 13, 'Cp' : 14}
+uio_dict = {'programming' : 0, 'ready_for_ui' : 1, 'done_load' : 2, 'CF' : 3, 'ZF' : 4, 'HF' : 5}
+
 
 def setbit(current, bit_index, bit_value):
     modified = current
@@ -30,7 +32,12 @@ def retrieve_control_signal(control_signal_vals, index):
         return control_signal_vals[index]
     else:
         return control_signal_vals[14-index]
-
+def retrieve_bit_from_8_wide_wire(wire, index):
+    # Local testing might use a reverse order, in case we need to modify the order
+    if LocalTest:
+        return wire[index]
+    else:
+        return wire[7-index]
     
 
 async def determine_gltest(dut):
@@ -54,6 +61,14 @@ async def log_control_signals(dut):
         for signal in signal_dict:
             result_string += f"{signal}={retrieve_control_signal(control_signal_vals, signal_dict[signal])}, "
         dut._log.info(result_string)
+
+async def log_uio_out(dut):
+    uio_vals = dut.uio_out.value
+    dut._log.info(f"UIO_OUT Array={uio_vals}")
+    result_string = ""
+    for uio_pin in uio_dict:
+        result_string += f"{uio_pin}={retrieve_bit_from_8_wide_wire(uio_vals, uio_dict[uio_pin])}, "
+    dut._log.info(result_string)
 
 async def init(dut):
     dut._log.info("Beginning Initialization")
@@ -98,11 +113,11 @@ async def load_ram(dut, data):
     await RisingEdge(dut.clk)
     dut.rst_n.value = 1
     for i in range(0, 16):
-        while not (dut.uio_out.value & 0b00000010):
+        while not (retrieve_bit_from_8_wide_wire(dut.uio_out.value, uio_dict['ready_for_ui'])):
             await RisingEdge(dut.clk)
         dut._log.info(f"Loading Byte {i}")
         dut.ui_in.value = data[i]
-        while not (dut.uio_out.value & 0b00000100):
+        while not (retrieve_bit_from_8_wide_wire(dut.uio_out.value, uio_dict['done_load'])):
             await RisingEdge(dut.clk)
     dut.uio_in.value = setbit(dut.uio_in.value, 0, 0) # Stop programming
     dut._log.info("RAM Load Complete")
@@ -206,31 +221,38 @@ async def hlt_checker(dut):
         await FallingEdge(dut.clk)
         dut._log.info("T0")
         await log_control_signals(dut)
+        await log_uio_out(dut)
         assert dut.user_project.control_signals.value == LogicArray("010011111100011"), f"Control Signals are not correct, expected=010011111100011"
         await FallingEdge(dut.clk)
         dut._log.info("T1")
         await log_control_signals(dut)
+        await log_uio_out(dut)
         assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
         assert retrieve_control_signal(dut.user_project.control_signals.value, 14) == 0, f"""Cp is not 0, Ep={retrieve_control_signal(dut.user_project.control_signals.value, 14)}"""
         await FallingEdge(dut.clk)
         dut._log.info("T2")
         await log_control_signals(dut)
+        await log_uio_out(dut)
         assert dut.user_project.control_signals.value == LogicArray("000110101100011"), f"Control Signals are not correct, expected=000110101100011"
         await FallingEdge(dut.clk)
         dut._log.info("T3")
         await log_control_signals(dut)
+        await log_uio_out(dut)
         assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
         await FallingEdge(dut.clk)
         dut._log.info("T4")
         await log_control_signals(dut)
+        await log_uio_out(dut)
         assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
         await FallingEdge(dut.clk)
         dut._log.info("T5")
         await log_control_signals(dut)
+        await log_uio_out(dut)
         assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
         await FallingEdge(dut.clk)
         dut._log.info("T6")
         await log_control_signals(dut)
+        await log_uio_out(dut)
         assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
         await FallingEdge(dut.clk)
         assert pc_beginning == dut.user_project.pc.counter.value, f"PC is not the same, pc_beginning={pc_beginning}, pc={dut.user_project.pc.counter.value}"

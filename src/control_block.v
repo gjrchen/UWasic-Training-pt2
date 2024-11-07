@@ -94,6 +94,8 @@ always @(negedge clk) begin
         T1: begin
             if (opcode != OP_HLT || programming) begin
                 control_signals[SIG_PC_INC] <= 1;
+            end else if (opcode == OP_HLT) begin
+                halt_flag_reg <= 1;
             end
         end
         T2: begin
