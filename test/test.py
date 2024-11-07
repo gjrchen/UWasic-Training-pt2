@@ -213,3 +213,37 @@ async def test_control_signals_execution(dut):
         await ClockCycles(dut.clk, 2)
     ##
     dut._log.info("Control Signals during Execution Test Complete")
+
+async def hlt_checker(dut):
+    dut._log.info("HLT Checker Start")
+    if (not GLTEST):
+        pc_beginning = dut.user_project.pc.counter.value
+        await FallingEdge(dut.clk)
+        await FallingEdge(dut.clk)
+        await log_control_signals(dut)
+        assert retrieve_control_signal(dut.user_project.control_signals.value, signal_dict["Ep"]) == 1, f"""Ep is not 1, Ep={retrieve_control_signal(dut.user_project.control_signals.value, signal_dict["Ep"])}"""
+        assert retrieve_control_signal(dut.user_project.control_signals.value, signal_dict["nLma"]) == 0, f"""nLma is not 0, Cp={retrieve_control_signal(dut.user_project.control_signals.value, signal_dict["nLma"])}"""
+        await FallingEdge(dut.clk)
+        await log_control_signals(dut)
+        assert dut.user_project.instruction_register.opcode.value == 0, f"Opcode is not 0, opcode={dut.user_project.instruction_register.opcode.value}"
+        assert retrieve_control_signal(dut.user_project.control_signals.value, 14) == 0, f"""Cp is not 0, Ep={retrieve_control_signal(dut.user_project.control_signals.value, 14)}"""
+        await FallingEdge(dut.clk)
+        await FallingEdge(dut.clk)
+        await FallingEdge(dut.clk)
+        await FallingEdge(dut.clk)
+    else:
+        dut._log.info("Cant check HLT in GLTEST")
+    dut._log.info("HLT Checker Complete")
+
+
+@cocotb.test()
+async def test_operation_hlt(dut):
+    program_data = [0x0F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
+    dut._log.info(f"Operation HLT Test Start")
+    dut._log.info(f"data_bin={[str(bin(x)) for x in program_data]}")
+    dut._log.info(f"data_hex={[str(hex(x)) for x in program_data]}")
+    await init(dut)
+    await load_ram(dut, program_data)
+    await dumpRAM(dut)
+    await mem_check(dut, program_data)
+    await hlt_checker(dut)
