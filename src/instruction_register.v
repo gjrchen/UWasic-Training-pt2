@@ -9,7 +9,7 @@ module instruction_register(
   assign opcode = instruction[7:4];
   
   always@(posedge clk) begin
-    if (clear) instruction <= 8'b0;
+    if (clear) instruction <= 8'b1;
     else if (!n_load) instruction <= bus;
   end
 
