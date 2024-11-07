@@ -307,67 +307,6 @@ async def hlt_checker(dut):
         dut._log.error("Cant check HLT in GLTEST")
     dut._log.info("HLT Checker Complete")
 
-async def jmp_checker(dut, address):
-    dut._log.info(f"JMP Checker Start with jmp_address={address}, hex={address:01X}, bin={address:4b}")
-    if (not GLTEST):
-        timeout = 0
-        while not (dut.user_project.cb.stage.value == 0):
-            await RisingEdge(dut.clk)
-            dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
-            timeout += 1
-            if (timeout > 2):
-                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
-        pc_beginning = dut.user_project.pc.counter.value
-        dut._log.info(f"PC={pc_beginning}")
-        dut._log.info("T0")
-        assert dut.user_project.cb.stage.value == 0, f"Stage is not 0, stage={dut.user_project.cb.stage.value}"
-        await log_control_signals(dut)
-        await log_uio_out(dut)
-        assert dut.user_project.control_signals.value == LogicArray("010011111100011"), f"Control Signals are not correct, expected=010011111100011"
-        await RisingEdge(dut.clk)
-        dut._log.info("T1")
-        assert dut.user_project.cb.stage.value == 1, f"Stage is not 1, stage={dut.user_project.cb.stage.value}"
-        await log_control_signals(dut)
-        await log_uio_out(dut)
-        assert dut.user_project.control_signals.value == LogicArray("100111111100011"), f"Control Signals are not correct, expected=100111111100011"
-        await RisingEdge(dut.clk)
-        dut._log.info("T2")
-        assert dut.user_project.cb.stage.value == 2, f"Stage is not 2, stage={dut.user_project.cb.stage.value}"
-        await log_control_signals(dut)
-        await log_uio_out(dut)
-        assert dut.user_project.control_signals.value == LogicArray("000110101100011"), f"Control Signals are not correct, expected=000110101100011"
-        await RisingEdge(dut.clk)
-        dut._log.info("T3")
-        assert dut.user_project.cb.stage.value == 3, f"Stage is not 3, stage={dut.user_project.cb.stage.value}"
-        await log_control_signals(dut)
-        await log_uio_out(dut)
-        assert dut.user_project.control_signals.value == LogicArray("001111110100011"), f"Control Signals are not correct, expected=001111110100011"
-        assert dut.user_project.cb.opcode.value == 7, f"Opcode is not JMP, opcode={dut.user_project.cb.opcode.value}"
-        await RisingEdge(dut.clk)
-        dut._log.info("T4")
-        assert dut.user_project.cb.stage.value == 4, f"Stage is not 4, stage={dut.user_project.cb.stage.value}"
-        await log_control_signals(dut)
-        await log_uio_out(dut)
-        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
-        await RisingEdge(dut.clk)
-        dut._log.info("T5")
-        assert dut.user_project.cb.stage.value == 5, f"Stage is not 5, stage={dut.user_project.cb.stage.value}"
-        await log_control_signals(dut)
-        await log_uio_out(dut)
-        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
-        await RisingEdge(dut.clk)
-        dut._log.info("T6")
-        assert dut.user_project.cb.stage.value == 6, f"Stage is not 6, stage={dut.user_project.cb.stage.value}"
-        await log_control_signals(dut)
-        await log_uio_out(dut)
-        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
-        await RisingEdge(dut.clk)
-        dut._log.info(f"PC={dut.user_project.pc.counter.value}")
-        assert dut.user_project.pc.counter.value == address, f"PC is not address, pc={dut.user_project.pc.counter.value}, jmp_address={address}"
-    else:
-        dut._log.error("Cant check JMP in GLTEST")
-    dut._log.info("JMP Checker Complete")
-
 async def nop_checker(dut):
     dut._log.info(f"NOP Checker Start")
     if (not GLTEST):
@@ -579,6 +518,268 @@ async def sub_checker(dut, address):
         dut._log.error("Cant check SUB in GLTEST")
     dut._log.info("SUB Checker Complete")
 
+async def lda_checker(dut, address):
+    dut._log.info(f"LDA Checker Start")
+    if (not GLTEST):
+        timeout = 0
+        while not (dut.user_project.cb.stage.value == 0):
+            await RisingEdge(dut.clk)
+            dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
+            timeout += 1
+            if (timeout > 2):
+                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
+        if LocalTest:
+            new_val_a = dut.user_project.ram.RAM.value[address]
+        else:
+            new_val_a = dut.user_project.ram.RAM.value[15-address]
+        pc_beginning = dut.user_project.pc.counter.value
+        dut._log.info(f"PC={pc_beginning}")
+        dut._log.info("T0")
+        assert dut.user_project.cb.stage.value == 0, f"Stage is not 0, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("010011111100011"), f"Control Signals are not correct, expected=010011111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T1")
+        assert dut.user_project.cb.stage.value == 1, f"Stage is not 1, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("100111111100011"), f"Control Signals are not correct, expected=100111111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T2")
+        assert dut.user_project.cb.stage.value == 2, f"Stage is not 2, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000110101100011"), f"Control Signals are not correct, expected=000110101100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T3")
+        assert dut.user_project.cb.stage.value == 3, f"Stage is not 3, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000011110100011"), f"Control Signals are not correct, expected=000011110100011"
+        assert dut.user_project.cb.opcode.value == 4, f"Opcode is not LDA, opcode={dut.user_project.cb.opcode.value}"
+        await RisingEdge(dut.clk)
+        dut._log.info("T4")
+        assert dut.user_project.cb.stage.value == 4, f"Stage is not 4, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000110111000011"), f"Control Signals are not correct, expected=000110111000011"
+        assert dut.user_project.input_mar_register.addr.value == address, f"Address in MAR is not correct, mar_address={dut.user_project.input_mar_register.addr.value}, expected={address}"
+        await RisingEdge(dut.clk)
+        dut._log.info("T5")
+        assert dut.user_project.cb.stage.value == 5, f"Stage is not 5, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        assert dut.user_project.accumulator_object.regA.value == new_val_a, f"Value in Accumulator is not correct, accumulator={dut.user_project.accumulator_object.regA.value}, expected={new_val_a}"
+        await RisingEdge(dut.clk)
+        dut._log.info("T6")
+        assert dut.user_project.cb.stage.value == 6, f"Stage is not 6, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        assert dut.user_project.accumulator_object.regA.value == new_val_a, f"Value in Accumulator is not correct, accumulator={dut.user_project.accumulator_object.regA.value}, expected={new_val_a}"
+        await RisingEdge(dut.clk)
+        dut._log.info(f"PC={dut.user_project.pc.counter.value}")
+        assert dut.user_project.pc.counter.value == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={dut.user_project.pc.counter.value}, pc_beginning={pc_beginning}"
+    else:
+        dut._log.error("Cant check LDA in GLTEST")
+    dut._log.info("LDA Checker Complete")
+
+async def out_checker(dut):
+    dut._log.info(f"OUT Checker Start")
+    if (not GLTEST):
+        timeout = 0
+        while not (dut.user_project.cb.stage.value == 0):
+            await RisingEdge(dut.clk)
+            dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
+            timeout += 1
+            if (timeout > 2):
+                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
+        pc_beginning = dut.user_project.pc.counter.value
+        val_a = dut.user_project.accumulator_object.regA.value
+        dut._log.info(f"PC={pc_beginning}")
+        dut._log.info("T0")
+        assert dut.user_project.cb.stage.value == 0, f"Stage is not 0, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("010011111100011"), f"Control Signals are not correct, expected=010011111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T1")
+        assert dut.user_project.cb.stage.value == 1, f"Stage is not 1, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("100111111100011"), f"Control Signals are not correct, expected=100111111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T2")
+        assert dut.user_project.cb.stage.value == 2, f"Stage is not 2, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000110101100011"), f"Control Signals are not correct, expected=000110101100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T3")
+        assert dut.user_project.cb.stage.value == 3, f"Stage is not 3, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111110010"), f"Control Signals are not correct, expected=000111111110010"
+        assert dut.user_project.cb.opcode.value == 5, f"Opcode is not OUT, opcode={dut.user_project.cb.opcode.value}"
+        await RisingEdge(dut.clk)
+        dut._log.info("T4")
+        assert dut.user_project.cb.stage.value == 4, f"Stage is not 4, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        assert dut.user_project.output_register.value.value == val_a, f"Value in Output Register is not correct, output_register={dut.output_register.regO.value}, expected={val_a}"
+        await RisingEdge(dut.clk)
+        dut._log.info("T5")
+        assert dut.user_project.cb.stage.value == 5, f"Stage is not 5, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T6")
+        assert dut.user_project.cb.stage.value == 6, f"Stage is not 6, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        assert dut.uo_out.value == val_a, f"Value in UO_OUT is not correct, uo_out={dut.uo_out.value}, expected={val_a}"
+        await RisingEdge(dut.clk)
+        dut._log.info(f"PC={dut.user_project.pc.counter.value}")
+        assert dut.user_project.pc.counter.value == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={dut.user_project.pc.counter.value}, pc_beginning={pc_beginning}"
+    else:
+        dut._log.error("Cant check OUT in GLTEST")
+    dut._log.info("OUT Checker Complete")
+
+async def sta_checker(dut, address):
+    dut._log.info(f"STA Checker Start")
+    if (not GLTEST):
+        timeout = 0
+        while not (dut.user_project.cb.stage.value == 0):
+            await RisingEdge(dut.clk)
+            dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
+            timeout += 1
+            if (timeout > 2):
+                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
+        pc_beginning = dut.user_project.pc.counter.value
+        val_a = dut.user_project.accumulator_object.regA.value
+        dut._log.info(f"PC={pc_beginning}")
+        dut._log.info("T0")
+        assert dut.user_project.cb.stage.value == 0, f"Stage is not 0, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("010011111100011"), f"Control Signals are not correct, expected=010011111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T1")
+        assert dut.user_project.cb.stage.value == 1, f"Stage is not 1, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("100111111100011"), f"Control Signals are not correct, expected=100111111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T2")
+        assert dut.user_project.cb.stage.value == 2, f"Stage is not 2, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000110101100011"), f"Control Signals are not correct, expected=000110101100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T3")
+        assert dut.user_project.cb.stage.value == 3, f"Stage is not 3, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000011110100011"), f"Control Signals are not correct, expected=000011110100011"
+        assert dut.user_project.cb.opcode.value == 6, f"Opcode is not STA, opcode={dut.user_project.cb.opcode.value}"
+        await RisingEdge(dut.clk)
+        dut._log.info("T4")
+        assert dut.user_project.cb.stage.value == 4, f"Stage is not 4, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000101111110011"), f"Control Signals are not correct, expected=000101111110011"
+        assert dut.user_project.input_mar_register.addr.value == address, f"Address in MAR is not correct, mar_address={dut.user_project.input_mar_register.addr.value}, expected={address}"
+        await RisingEdge(dut.clk)
+        dut._log.info("T5")
+        assert dut.user_project.cb.stage.value == 5, f"Stage is not 5, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111011100011"), f"Control Signals are not correct, expected=000111011100011"
+        assert dut.user_project.input_mar_register.data.value == val_a, f"Value in MAR is not correct, mar_data={dut.user_project.input_ram_register.data.value}, expected={val_a}"
+        await RisingEdge(dut.clk)
+        dut._log.info("T6")
+        assert dut.user_project.cb.stage.value == 6, f"Stage is not 6, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        if LocalTest:
+            assert dut.user_project.ram.RAM.value[address] == val_a, f"Value in RAM is not correct, ram={dut.user_project.ram.RAM.value[address]}, expected={val_a}"
+        else:
+            assert dut.user_project.ram.RAM.value[15-address] == val_a, f"Value in RAM is not correct, ram={dut.user_project.ram.RAM.value[15-address]}, expected={val_a}"
+        await RisingEdge(dut.clk)
+        dut._log.info(f"PC={dut.user_project.pc.counter.value}")
+        assert dut.user_project.pc.counter.value == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={dut.user_project.pc.counter.value}, pc_beginning={pc_beginning}"
+    else:
+        dut._log.error("Cant check STA in GLTEST")
+    dut._log.info("STA Checker Complete")
+
+async def jmp_checker(dut, address):
+    dut._log.info(f"JMP Checker Start with jmp_address={address}, hex={address:01X}, bin={address:4b}")
+    if (not GLTEST):
+        timeout = 0
+        while not (dut.user_project.cb.stage.value == 0):
+            await RisingEdge(dut.clk)
+            dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
+            timeout += 1
+            if (timeout > 2):
+                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
+        pc_beginning = dut.user_project.pc.counter.value
+        dut._log.info(f"PC={pc_beginning}")
+        dut._log.info("T0")
+        assert dut.user_project.cb.stage.value == 0, f"Stage is not 0, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("010011111100011"), f"Control Signals are not correct, expected=010011111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T1")
+        assert dut.user_project.cb.stage.value == 1, f"Stage is not 1, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("100111111100011"), f"Control Signals are not correct, expected=100111111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T2")
+        assert dut.user_project.cb.stage.value == 2, f"Stage is not 2, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000110101100011"), f"Control Signals are not correct, expected=000110101100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T3")
+        assert dut.user_project.cb.stage.value == 3, f"Stage is not 3, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("001111110100011"), f"Control Signals are not correct, expected=001111110100011"
+        assert dut.user_project.cb.opcode.value == 7, f"Opcode is not JMP, opcode={dut.user_project.cb.opcode.value}"
+        await RisingEdge(dut.clk)
+        dut._log.info("T4")
+        assert dut.user_project.cb.stage.value == 4, f"Stage is not 4, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T5")
+        assert dut.user_project.cb.stage.value == 5, f"Stage is not 5, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T6")
+        assert dut.user_project.cb.stage.value == 6, f"Stage is not 6, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info(f"PC={dut.user_project.pc.counter.value}")
+        assert dut.user_project.pc.counter.value == address, f"PC is not address, pc={dut.user_project.pc.counter.value}, jmp_address={address}"
+    else:
+        dut._log.error("Cant check JMP in GLTEST")
+    dut._log.info("JMP Checker Complete")
+
+
 @cocotb.test()
 async def test_operation_hlt(dut):
     program_data = [0x0F, 0x0F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
@@ -691,4 +892,58 @@ async def test_operation_sub_add(dut):
     await wait_until_next_t0_gltest(dut)
     await hlt_checker(dut)
     await hlt_checker(dut)
+    await hlt_checker(dut)
     dut._log.info("Operation SUB ADD Test Complete")
+
+@cocotb.test()
+async def test_operation_lda(dut):
+    program_data = [0x4E, 0x2F, 0x1F, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x09, 0xFF]
+    dut._log.info(f"Operation LDA Test Start")
+    dut._log.info(f"data_bin={[str(bin(x)) for x in program_data]}")
+    dut._log.info(f"data_hex={[str(hex(x)) for x in program_data]}")
+    await init(dut)
+    await load_ram(dut, program_data)
+    await dumpRAM(dut)
+    await mem_check(dut, program_data)
+    await lda_checker(dut, program_data[0]&0xF)
+    await add_checker(dut, program_data[1]&0xF)
+    await nop_checker(dut)
+    await wait_until_next_t0_gltest(dut)
+    await hlt_checker(dut)
+    dut._log.info("Operation LDA Test Complete")
+
+@cocotb.test()
+async def test_operation_out(dut):
+    program_data = [0x4E, 0x2F, 0x5F, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x09, 0xFF]
+    dut._log.info(f"Operation OUT Test Start")
+    dut._log.info(f"data_bin={[str(bin(x)) for x in program_data]}")
+    dut._log.info(f"data_hex={[str(hex(x)) for x in program_data]}")
+    await init(dut)
+    await load_ram(dut, program_data)
+    await dumpRAM(dut)
+    await mem_check(dut, program_data)
+    await lda_checker(dut, program_data[0]&0xF)
+    await add_checker(dut, program_data[1]&0xF)
+    await out_checker(dut)
+    await wait_until_next_t0_gltest(dut)
+    await hlt_checker(dut)
+    dut._log.info("Operation OUT Test Complete")
+
+@cocotb.test()
+async def test_operation_sta(dut):
+    program_data = [0x4E, 0x2F, 0x5F, 0x60, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x09, 0xFF]
+    dut._log.info(f"Operation STA Test Start")
+    dut._log.info(f"data_bin={[str(bin(x)) for x in program_data]}")
+    dut._log.info(f"data_hex={[str(hex(x)) for x in program_data]}")
+    await init(dut)
+    await load_ram(dut, program_data)
+    await dumpRAM(dut)
+    await mem_check(dut, program_data)
+    await lda_checker(dut, program_data[0]&0xF)
+    await add_checker(dut, program_data[1]&0xF)
+    await out_checker(dut)
+    await sta_checker(dut, program_data[3]&0xF)
+    await wait_until_next_t0_gltest(dut)
+    await hlt_checker(dut)
+    await dumpRAM(dut)
+    dut._log.info("Operation STA Test Complete")
