@@ -216,11 +216,21 @@ async def test_control_signals_execution(dut):
 
 @cocotb.test()
 async def test_add_instruction(dut):
-    """Test the ADD instruction, verify control signals, and check program counter increment at the end."""
-    # Load the ADD instruction (opcode 0x20) into the instruction register
-    await load_instruction(dut, 0x20)  # Assuming the ADD opcode is 0x20
-    dut.reg_a.value = 5
-    dut.reg_b.value = 3
+    # dut._log.info(f"Loading instruction: {hex(instruction)}")
+    # dut.ui_in.value = 0x20   # ADD opcode is 0x20 (top half)
+    # dut.uio_in.value = 1  # Enable programming mode
+    # await ClockCycles(dut.clk, 2)
+    # dut.uio_in.value = 0  # Exit programming mode
+    # await ClockCycles(dut.clk, 2)
+
+    #TO DO AN ADD:
+    #set a value at adress 1 (to go into B)
+    #assume A has a value (supposedly does if STA works)
+    #perform add instruction, adding val at address 0x1
+
+    data = [0x21, 0x1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    await load_ram(dut, data)
+    dut.reg_a.value = 1
 
     # Capture initial program counter value
     initial_pc = int(dut.pc.value)
@@ -251,7 +261,7 @@ async def test_add_instruction(dut):
 
     # Verify the result of the ADD operation
     await ClockCycles(dut.clk, 2)  # Allow time to finish idk how much 2 is good for T6 (blank stage)
-    expected_result = 5 + 3
+    expected_result = 1 + 1
     assert dut.reg_a.value == expected_result, f"Expected A = {expected_result}, got {dut.reg_a.value}"
     dut._log.info("ADD operation result verified.")
 
