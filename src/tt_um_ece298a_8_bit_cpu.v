@@ -116,7 +116,8 @@ module tt_um_ece298a_8_bit_cpu_top (
         .sub(sub),              // Perform addition when 0, perform subtraction when 1
         .bus(bus),              // Bus (8 bits)
         .CF(CF),                // Carry Flag
-        .ZF(ZF)                 // Zero Flag
+        .ZF(ZF),                // Zero Flag
+        .rst_n(rst_n)           // Reset (ACTIVE-LOW)
     );
     
     // Accumulator Register //

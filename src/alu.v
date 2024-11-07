@@ -6,7 +6,8 @@ module alu (
     input  wire       sub,            // Perform addition when 0, perform subtraction when 1
     output wire [7:0] bus,            // Bus (8 bits)
     output reg        CF,             // Carry Flag
-    output reg        ZF              // Zero Flag
+    output reg        ZF,             // Zero Flag
+    input  wire       rst_n           // Reset (ACTIVE-LOW)
 );
   // ALU Internal signals //
   wire carry_out; // Carry out from the 8-bit adder/subtractor
@@ -28,7 +29,10 @@ module alu (
   
   // Flags //
   always @(posedge clk) begin // Clock (Rising edge)
-    if (enable_output) begin  // Allow the flags to be updated only when the ALU output is enabled
+    if (!rst_n) begin // Reset (ACTIVE-LOW)
+      CF <= 1'b0; // Clear Carry Flag
+      ZF <= 1'b0; // Clear Zero Flag
+    end else if (enable_output) begin  // Allow the flags to be updated only when the ALU output is enabled
       CF <= carry_out;        // Carry Flag <= Carry out from the 8-bit adder/subtractor
       ZF <= res_zero;         // Zero Flag <= Result is zero
     end
