@@ -9,7 +9,13 @@ module control_block (
     input wire clk,
     input wire resetn,
     input wire [3:0] opcode,
-    output wire [14: 0] out    
+    output wire [14: 0] out,    
+
+    // Inputs for the programmer part
+    input wire programming,
+    output wire done_load,
+    output wire read_ui_in,
+    output wire ready
 );
 
 /* Supported Instructions' Opcodes */
@@ -43,13 +49,15 @@ localparam SIG_OUT_LOAD_N = 0;          // \L_O
 /* Internal Regs */
 reg [2:0] stage;
 reg [14:0] control_signals;
+reg done_load;
+reg read_ui_in;
+reg ready;
 
 /* Micro-Operation Stages */
 parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5; 
 
 /* Stage Transition Logic */
 always @(posedge clk) begin
-    // Might want to rename rst_n to resetn - Damir
     if (!resetn) begin           // Check if reset is asserted, if yes, put into a holding stage
       stage <= 6;
     end
@@ -72,11 +80,15 @@ end
 /* Micro-Operation Logic */
 always @(negedge clk) begin
     control_signals <= 15'b000111111100011; // All signals are deasserted
-
+    done_load <= 0;
+    read_ui_in <= 0;
+    ready <= 0;
+    
     case(stage)
         T0: begin
             control_signals[SIG_PC_EN] <= 1;
             control_signals[SIG_MAR_ADDR_LOAD_N] <= 0;
+            ready <= 1;
         end 
         T1: begin
             if (opcode != OP_HLT) begin
@@ -84,65 +96,79 @@ always @(negedge clk) begin
             end
         end
         T2: begin
-            control_signals[SIG_RAM_EN_N] <= 0;
-            control_signals[SIG_IR_LOAD_N] <= 0;
+            if (!programming) begin
+                control_signals[SIG_RAM_EN_N] <= 0;
+                control_signals[SIG_IR_LOAD_N] <= 0;
+            end
         end
         T3: begin
-            case (opcode)
-                OP_ADD, OP_SUB, OP_LDA, OP_STA: begin
-                    control_signals[SIG_IR_EN_N] <= 0;
-                    control_signals[SIG_MAR_ADDR_LOAD_N] <= 0;
-                end
-                OP_OUT: begin
-                    control_signals[SIG_REGA_EN] <= 1;
-                    control_signals[SIG_OUT_LOAD_N] <= 0;
-                end
-                OP_JMP: begin
-                    control_signals[SIG_IR_EN_N] <= 0;
-                    control_signals[SIG_PC_LOAD] <= 1;
-                end
-                default: begin
-                // Do nothing (leave control_signals unchanged)
-                end
-            endcase
+            if (!programming) begin
+                case (opcode)
+                    OP_ADD, OP_SUB, OP_LDA, OP_STA: begin
+                        control_signals[SIG_IR_EN_N] <= 0;
+                        control_signals[SIG_MAR_ADDR_LOAD_N] <= 0;
+                    end
+                    OP_OUT: begin
+                        control_signals[SIG_REGA_EN] <= 1;
+                        control_signals[SIG_OUT_LOAD_N] <= 0;
+                    end
+                    OP_JMP: begin
+                        control_signals[SIG_IR_EN_N] <= 0;
+                        control_signals[SIG_PC_LOAD] <= 1;
+                    end
+                    default: begin
+                    // Do nothing (leave control_signals unchanged)
+                    end
+                endcase
+            end else begin
+                read_ui_in <= 1;
+                control_signals[SIG_MAR_MEM_LOAD_N] <= 0;
+            end
         end
         T4: begin
-            case (opcode)
-                OP_ADD, OP_SUB: begin
-                    control_signals[SIG_RAM_EN_N] <= 0;
-                    control_signals[SIG_REGB_LOAD_N] <= 0;
-                end
-                OP_LDA: begin
-                    control_signals[SIG_RAM_EN_N] <= 0;
-                    control_signals[SIG_REGA_LOAD_N] <= 0;
-                end
-                OP_STA: begin
-                    control_signals[SIG_REGA_EN] <= 1;
-                    control_signals[SIG_MAR_MEM_LOAD_N] <= 0;
-                end
-                default: begin
-                // Do nothing (leave control_signals unchanged)
-                end
-            endcase
+            if (!programming) begin
+                case (opcode)
+                    OP_ADD, OP_SUB: begin
+                        control_signals[SIG_RAM_EN_N] <= 0;
+                        control_signals[SIG_REGB_LOAD_N] <= 0;
+                    end
+                    OP_LDA: begin
+                        control_signals[SIG_RAM_EN_N] <= 0;
+                        control_signals[SIG_REGA_LOAD_N] <= 0;
+                    end
+                    OP_STA: begin
+                        control_signals[SIG_REGA_EN] <= 1;
+                        control_signals[SIG_MAR_MEM_LOAD_N] <= 0;
+                    end
+                    default: begin
+                    // Do nothing (leave control_signals unchanged)
+                    end
+                endcase
+            end else begin
+                control_signals[SIG_RAM_LOAD_N] <= 0;
+                done_load <= 1;
+            end
         end
         T5: begin
-            case (opcode)
-                OP_ADD: begin
-                    control_signals[SIG_REGB_EN] <= 1;
-                    control_signals[SIG_REGA_LOAD_N] <= 0;
-                end
-                OP_SUB: begin
-                    control_signals[SIG_ADDER_SUB] <= 1;
-                    control_signals[SIG_REGB_EN] <= 1;
-                    control_signals[SIG_REGA_LOAD_N] <= 0;
-                end
-                OP_STA: begin
-                    control_signals[SIG_RAM_LOAD_N] <= 0;
-                end
-                default: begin
-                // Do nothing (leave control_signals unchanged)
-                end
-            endcase
+            if (!programming) begin
+                case (opcode)
+                    OP_ADD: begin
+                        control_signals[SIG_REGB_EN] <= 1;
+                        control_signals[SIG_REGA_LOAD_N] <= 0;
+                    end
+                    OP_SUB: begin
+                        control_signals[SIG_ADDER_SUB] <= 1;
+                        control_signals[SIG_REGB_EN] <= 1;
+                        control_signals[SIG_REGA_LOAD_N] <= 0;
+                    end
+                    OP_STA: begin
+                        control_signals[SIG_RAM_LOAD_N] <= 0;
+                    end
+                    default: begin
+                    // Do nothing (leave control_signals unchanged)
+                    end
+                endcase
+            end
         end
     endcase
 end
