@@ -54,7 +54,5 @@ module ProgramCounter (
   set_counter_bit set_bit_2(clr_n, lp, cp, bus[2], (counter[0] & counter[1]), clk, counter[2]);
   set_counter_bit set_bit_3(clr_n, lp, cp, bus[3], (counter[0] & counter[1] & counter[2]), clk, counter[3]);
 
-  reg enable;
-  always @ (posedge clk) enable <= ep;
-  assign bus = enable ? counter : 4'bZZZZ;
+  assign bus = ep ? counter : 4'bZZZZ;
 endmodule
