@@ -101,7 +101,7 @@ module tt_um_ece298a_8_bit_cpu_top (
         .clk(clk),                  //
         .resetn(rst_n),             //
         .opcode(opcode[3:0]),       //
-        .out(control_signals[14:0]) //
+        .out(control_signals[14:0]), //
         .programming(programming),
         .done_load(done_load),
         .read_ui_in(read_ui_in),
