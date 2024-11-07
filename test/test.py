@@ -233,7 +233,8 @@ async def test_add_instruction(dut):
     dut._log.info(f"Finished loading data into memory and A register")
 
     # Capture initial program counter value
-    initial_pc = int(dut.pc.value)
+    dut.user_project.pc.value = 0
+    initial_pc = int(dut.user_project.pc.value)
 
     # Initialize expected control signal values for each stage of the ADD instruction
     expected_control_signals = [
@@ -255,7 +256,7 @@ async def test_add_instruction(dut):
         dut._log.info(f"Stage T{stage} control signal verified: {hex(actual_signal)}")
 
     # After the ADD instruction cycle completes, verify that the PC has incremented by 1
-    final_pc = int(dut.pc.value)
+    final_pc = int(dut.user_project.pc.value)
     assert final_pc == initial_pc + 1, f"Expected PC to increment to {initial_pc + 1} at end of ADD, but got {final_pc}"
     dut._log.info(f"Program counter increment verified at end of ADD instruction: PC={final_pc}")
 
@@ -283,7 +284,8 @@ async def test_sub_instruction(dut):
     dut.user_project.accumulator_object.regA.value = 1
     
     # Capture initial program counter value
-    initial_pc = int(dut.pc.value)
+    dut.user_project.pc.value = 0
+    initial_pc = int(dut.user_project.pc.value)
 
     # Initialize expected control signal values for each stage of the ADD instruction
     expected_control_signals = [
@@ -305,7 +307,7 @@ async def test_sub_instruction(dut):
         dut._log.info(f"Stage T{stage} control signal verified: {hex(actual_signal)}")
 
     # After the SUB instruction cycle completes, verify that the PC has incremented by 1
-    final_pc = int(dut.pc.value)
+    final_pc = int(dut.user_project.pc.value)
     assert final_pc == initial_pc + 1, f"Expected PC to increment to {initial_pc + 1} at end of SUB, but got {final_pc}"
     dut._log.info(f"Program counter increment verified at end of SUB instruction: PC={final_pc}")
 
