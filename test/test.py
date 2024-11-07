@@ -228,7 +228,7 @@ async def test_add_instruction(dut):
     await load_ram(dut, data)
     await dumpRAM(dut)
     await mem_check(dut, data)
-    dut.reg_a.value = 1
+    dut.user_project.accumulator_object.regA.value = 1
 
     dut._log.info(f"Finished loading data into memory and A register")
 
@@ -262,7 +262,7 @@ async def test_add_instruction(dut):
     # Verify the result of the ADD operation
     await ClockCycles(dut.clk, 2)  # Allow time to finish idk how much 2 is good for T6 (blank stage)
     expected_result = 1 + 1
-    assert dut.reg_a.value == expected_result, f"Expected A = {expected_result}, got {dut.reg_a.value}"
+    assert dut.user_project.accumulator_object.regA.value == expected_result, f"Expected A = {expected_result}, got {dut.user_project.accumulator_object.regA.value}"
     dut._log.info("ADD operation result verified.")
 
 @cocotb.test()
@@ -280,7 +280,7 @@ async def test_sub_instruction(dut):
     await dumpRAM(dut)
     await mem_check(dut, data)
     await load_ram(dut, data)
-    dut.reg_a.value = 1
+    dut.user_project.accumulator_object.regA.value = 1
     
     # Capture initial program counter value
     initial_pc = int(dut.pc.value)
@@ -312,6 +312,6 @@ async def test_sub_instruction(dut):
     # Verify the result of the ADD operation
     await ClockCycles(dut.clk, 2)  # Allow time to finish idk how much 2 is good for T6 (blank stage)
     expected_result = 1 - 1
-    assert dut.reg_a.value == expected_result, f"Expected A = {expected_result}, got {dut.reg_a.value}"
+    assert dut.reg_a.value == expected_result, f"Expected A = {expected_result}, got {dut.user_project.accumulator_object.regA.value}"
     dut._log.info("SUB operation result verified.")
 
