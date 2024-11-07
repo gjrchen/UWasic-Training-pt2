@@ -91,7 +91,7 @@ always @(negedge clk) begin
             ready_reg <= 1;
         end 
         T1: begin
-            if (opcode != OP_HLT) begin
+            if (opcode != OP_HLT || programming) begin
                 control_signals[SIG_PC_INC] <= 1;
             end
         end
