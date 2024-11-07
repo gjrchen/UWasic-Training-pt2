@@ -113,12 +113,19 @@ async def load_ram(dut, data):
     await RisingEdge(dut.clk)
     dut.rst_n.value = 1
     for i in range(0, 16):
+        timeout = 0
         while not (retrieve_bit_from_8_wide_wire(dut.uio_out.value, uio_dict['ready_for_ui'])):
             await RisingEdge(dut.clk)
+            timeout += 1
+            if (timeout > 100):
+                assert False, (f"Timeout at Byte {i}")
         dut._log.info(f"Loading Byte {i}")
         dut.ui_in.value = data[i]
+        timeout = 0
         while not (retrieve_bit_from_8_wide_wire(dut.uio_out.value, uio_dict['done_load'])):
             await RisingEdge(dut.clk)
+            if (timeout > 100):
+                assert False, (f"Timeout at Byte {i}")
     dut.uio_in.value = setbit(dut.uio_in.value, 0, 0) # Stop programming
     dut._log.info("RAM Load Complete")
     dut._log.info("Reset")
