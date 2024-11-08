@@ -435,10 +435,11 @@ async def add_checker(dut, address):
     pc_beginning = get_pc(dut)
     val_a = get_regA_value(dut)
     val_b = get_ram(dut)[address]
-    expVal, expCF, expZF = await check_adder_operation(0, int(val_a), int(val_b))
-    dut._log.info(f"Adder Operation: {int(val_a)} + {int(val_b)} = {expVal}, CF={expCF}, ZF={expZF}")
-    dut._log.info(f"Adder Operation bin: {int(val_a):8b} + {int(val_b):8b} = {expVal:8b}, CF={expCF}, ZF={expZF}")
-    dut._log.info(f"Adder Operation hex: {int(val_a):02X} + {int(val_b):02X} = {expVal:02X}, CF={expCF}, ZF={expZF}")
+    dut._log.info()
+    expVal, expCF, expZF = await check_adder_operation(0, val_a.integer, val_b.integer)
+    dut._log.info(f"Adder Operation: {val_a.integer} + {val_b.integer} = {expVal}, CF={expCF}, ZF={expZF}")
+    dut._log.info(f"Adder Operation bin: {val_a.integer:8b} + {val_b.integer:8b} = {expVal:8b}, CF={expCF}, ZF={expZF}")
+    dut._log.info(f"Adder Operation hex: {val_a.integer:02X} + {val_b.integer:02X} = {expVal:02X}, CF={expCF}, ZF={expZF}")
     dut._log.info(f"PC={pc_beginning}")
     dut._log.info("T0")
     assert get_cb_stage(dut) == 0, f"Stage is not 0, stage={get_cb_stage(dut)}"
@@ -504,10 +505,10 @@ async def sub_checker(dut, address):
     pc_beginning = get_pc(dut)
     val_a = get_regA_value(dut)
     val_b = get_ram(dut)[address]
-    expVal, expCF, expZF = await check_adder_operation(1, int(val_a), int(val_b))
-    dut._log.info(f"Adder Operation: {int(val_a)} - {int(val_b)} = {expVal}, CF={expCF}, ZF={expZF}")
-    dut._log.info(f"Adder Operation bin: {int(val_a):8b} - {int(val_b):8b} = {expVal:8b}, CF={expCF}, ZF={expZF}")
-    dut._log.info(f"Adder Operation hex: {int(val_a):02X} - {int(val_b):02X} = {expVal:02X}, CF={expCF}, ZF={expZF}")
+    expVal, expCF, expZF = await check_adder_operation(1, val_a.integer, val_b.integer)
+    dut._log.info(f"Adder Operation: {val_a.integer} - {val_b.integer} = {expVal}, CF={expCF}, ZF={expZF}")
+    dut._log.info(f"Adder Operation bin: {val_a.integer:8b} - {val_b.integer:8b} = {expVal:8b}, CF={expCF}, ZF={expZF}")
+    dut._log.info(f"Adder Operation hex: {val_a.integer:02X} - {val_b.integer:02X} = {expVal:02X}, CF={expCF}, ZF={expZF}")
     dut._log.info(f"PC={pc_beginning}")
     dut._log.info("T0")
     assert get_cb_stage(dut) == 0, f"Stage is not 0, stage={get_cb_stage(dut)}"
