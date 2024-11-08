@@ -178,6 +178,21 @@ async def wait_until_next_t0_gltest(dut):
             await RisingEdge(dut.clk)
         dut._log.error("Cant wait until next T0 in GLTEST")
 
+async def wait_until_next_t3_gltest(dut):
+    if (not GLTEST):
+        timeout = 0
+        dut._log.info("Wait until next T3 in non-GLTEST")
+        while not (dut.user_project.cb.stage.value == 3):
+            await RisingEdge(dut.clk)
+            dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
+            timeout += 1
+            if (timeout > 7):
+                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
+    else:
+        for i in range(7):
+            await RisingEdge(dut.clk)
+        dut._log.error("Cant wait until next T3 in GLTEST")
+
 
 async def determine_gltest(dut):
     global GLTEST
@@ -362,61 +377,17 @@ async def test_control_signals_execution(dut):
 async def hlt_checker(dut):
     dut._log.info("HLT Checker Start")
     if (not GLTEST):
-        timeout = 0
-        while not (get_cb_stage(dut) == 0):
-            await RisingEdge(dut.clk)
-            dut._log.info(f"Stage={get_cb_stage(dut)}")
-            timeout += 1
-            if (timeout > 2):
-                assert False, (f"Timeout at {get_pc(dut)}")
-        pc_beginning = get_pc(dut)
+        pc_beginning = dut.user_project.pc.counter.value
         dut._log.info(f"PC={pc_beginning}")
-        dut._log.info("T0")
-        assert get_cb_stage(dut) == 0, f"Stage is not 0, stage={get_cb_stage(dut)}"
-        await log_control_signals(dut)
-        await log_uio_out(dut)
-        assert get_control_signal_array(dut) == LogicArray("010011111100011"), f"Control Signals are not correct, expected=010011111100011"
-        await RisingEdge(dut.clk)
-        dut._log.info("T1")
-        assert get_cb_stage(dut) == 1, f"Stage is not 1, stage={get_cb_stage(dut)}"
-        await log_control_signals(dut)
-        await log_uio_out(dut)
-        assert get_control_signal_array(dut) == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
-        assert retrieve_control_signal(get_control_signal_array(dut), 14) == 0, f"""Cp is not 0, Ep={retrieve_control_signal(get_control_signal_array(dut), 14)}"""
-        assert retrieve_bit_from_8_wide_wire(dut.uio_out.value, uio_dict['HF']) == 1, f"""HF is not 1, HF={retrieve_bit_from_8_wide_wire(dut.uio_out.value, uio_dict['HF'])}"""
-        await RisingEdge(dut.clk)
-        dut._log.info("T2")
-        assert get_cb_stage(dut) == 2, f"Stage is not 2, stage={get_cb_stage(dut)}"
-        await log_control_signals(dut)
-        await log_uio_out(dut)
-        assert get_control_signal_array(dut) == LogicArray("000110101100011"), f"Control Signals are not correct, expected=000110101100011"
-        await RisingEdge(dut.clk)
-        dut._log.info("T3")
-        assert get_cb_stage(dut) == 3, f"Stage is not 3, stage={get_cb_stage(dut)}"
-        await log_control_signals(dut)
-        await log_uio_out(dut)
-        assert get_control_signal_array(dut) == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
-        assert get_opcode(dut) == 0, f"Opcode is not HLT, opcode={get_opcode(dut)}"
-        await RisingEdge(dut.clk)
-        dut._log.info("T4")
-        assert get_cb_stage(dut) == 4, f"Stage is not 4, stage={get_cb_stage(dut)}"
-        await log_control_signals(dut)
-        await log_uio_out(dut)
-        assert get_control_signal_array(dut) == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
-        await RisingEdge(dut.clk)
-        dut._log.info("T5")
-        assert get_cb_stage(dut) == 5, f"Stage is not 5, stage={get_cb_stage(dut)}"
-        await log_control_signals(dut)
-        await log_uio_out(dut)
-        assert get_control_signal_array(dut) == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
-        await RisingEdge(dut.clk)
-        dut._log.info("T6")
-        assert get_cb_stage(dut) == 6, f"Stage is not 6, stage={get_cb_stage(dut)}"
-        await log_control_signals(dut)
-        await log_uio_out(dut)
-        assert get_control_signal_array(dut) == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
-        dut._log.info(f"PC={get_pc(dut)}")
-        assert pc_beginning == get_pc(dut), f"PC is not the same, pc_beginning={pc_beginning}, pc={get_pc(dut)}"
+        await wait_until_next_t3_gltest(dut)
+        for i in range(20):
+            await RisingEdge(dut.clk)
+            assert dut.user_project.cb.stage.value == 7, f"Stage is not 7, stage={dut.user_project.cb.stage.value}"
+            await log_control_signals(dut)
+            await log_uio_out(dut)
+            assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        dut._log.info(f"PC={dut.user_project.pc.counter.value}")
+        assert pc_beginning + 1 == dut.user_project.pc.counter.value, f"PC is not the same, pc_beginning={pc_beginning}, pc={dut.user_project.pc.counter.value}"
 
     else:
         for i in range(7):
@@ -921,8 +892,6 @@ async def test_operation_hlt(dut):
     await load_ram(dut, program_data)
     await dumpRAM(dut)
     await mem_check(dut, program_data)
-    await wait_until_next_t0_gltest(dut)
-    await hlt_checker(dut)
     await hlt_checker(dut)
     dut._log.info("Operation HLT Test Complete")
 
@@ -937,8 +906,6 @@ async def test_operation_jmp(dut):
     await dumpRAM(dut)
     await mem_check(dut, program_data)
     await jmp_checker(dut, program_data[0]&0xF)
-    await wait_until_next_t0_gltest(dut)
-    await hlt_checker(dut)
     await hlt_checker(dut)
     dut._log.info("Operation JMP Test Complete")
 
@@ -1020,9 +987,6 @@ async def test_operation_sub_add(dut):
     await sub_checker(dut, program_data[0]&0xF)
     await nop_checker(dut)
     await add_checker(dut, program_data[0]&0xF)
-    await wait_until_next_t0_gltest(dut)
-    await hlt_checker(dut)
-    await hlt_checker(dut)
     await hlt_checker(dut)
     dut._log.info("Operation SUB ADD Test Complete")
 
@@ -1039,7 +1003,6 @@ async def test_operation_lda(dut):
     await lda_checker(dut, program_data[0]&0xF)
     await add_checker(dut, program_data[1]&0xF)
     await nop_checker(dut)
-    await wait_until_next_t0_gltest(dut)
     await hlt_checker(dut)
     dut._log.info("Operation LDA Test Complete")
 
@@ -1056,7 +1019,6 @@ async def test_operation_out(dut):
     await lda_checker(dut, program_data[0]&0xF)
     await add_checker(dut, program_data[1]&0xF)
     await out_checker(dut)
-    await wait_until_next_t0_gltest(dut)
     await hlt_checker(dut)
     dut._log.info("Operation OUT Test Complete")
 
@@ -1074,7 +1036,6 @@ async def test_operation_sta(dut):
     await add_checker(dut, program_data[1]&0xF)
     await out_checker(dut)
     await sta_checker(dut, program_data[3]&0xF)
-    await wait_until_next_t0_gltest(dut)
     await hlt_checker(dut)
     await dumpRAM(dut)
     dut._log.info("Operation STA Test Complete")
