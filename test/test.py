@@ -1052,6 +1052,7 @@ async def get_ram(dut):
 
     return ram
 
+
 @cocotb.test()
 async def memory_load_and_verify_outputs(dut):
     # Define the program data (as per the layout specified above)
@@ -1076,6 +1077,9 @@ async def memory_load_and_verify_outputs(dut):
     # Initialize and load the program data into RAM
     await init(dut)
     await load_ram(dut, program_data)
+    dut._log.info("PLS PRINT EVERYTHING PLS")
+    ram = await get_ram(dut)  # Await the asynchronous function
+    dut._log.info(f"ram: {ram}")
     await dumpRAM(dut)
     await mem_check(dut, program_data)
 
