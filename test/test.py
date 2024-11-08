@@ -69,7 +69,7 @@ async def wait_until_next_t3_gltest(dut):
     if (not GLTEST):
         timeout = 0
         dut._log.info("Wait until next T3 in non-GLTEST")
-        while not (dut.user_project.cb.stage.value == 2):
+        while not (dut.user_project.cb.stage.value == 3):
             await RisingEdge(dut.clk)
             dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
             timeout += 1
@@ -267,11 +267,12 @@ async def hlt_checker(dut):
         pc_beginning = dut.user_project.pc.counter.value
         dut._log.info(f"PC={pc_beginning}")
         await wait_until_next_t3_gltest(dut)
-        await RisingEdge(dut.clk)
-        assert dut.user_project.cb.stage.value == 7, f"Stage is not 7, stage={dut.user_project.cb.stage.value}"
-        await log_control_signals(dut)
-        await log_uio_out(dut)
-        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        for i in range(20):
+            await RisingEdge(dut.clk)
+            assert dut.user_project.cb.stage.value == 7, f"Stage is not 7, stage={dut.user_project.cb.stage.value}"
+            await log_control_signals(dut)
+            await log_uio_out(dut)
+            assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
         dut._log.info(f"PC={dut.user_project.pc.counter.value}")
         assert pc_beginning == dut.user_project.pc.counter.value, f"PC is not the same, pc_beginning={pc_beginning}, pc={dut.user_project.pc.counter.value}"
 
@@ -779,7 +780,6 @@ async def test_operation_hlt(dut):
     await dumpRAM(dut)
     await mem_check(dut, program_data)
     await hlt_checker(dut)
-    await hlt_checker(dut)
     dut._log.info("Operation HLT Test Complete")
 
 @cocotb.test()
@@ -793,8 +793,6 @@ async def test_operation_jmp(dut):
     await dumpRAM(dut)
     await mem_check(dut, program_data)
     await jmp_checker(dut, program_data[0]&0xF)
-    await wait_until_next_t0_gltest(dut)
-    await hlt_checker(dut)
     await hlt_checker(dut)
     dut._log.info("Operation JMP Test Complete")
 
@@ -876,9 +874,6 @@ async def test_operation_sub_add(dut):
     await sub_checker(dut, program_data[0]&0xF)
     await nop_checker(dut)
     await add_checker(dut, program_data[0]&0xF)
-    await wait_until_next_t0_gltest(dut)
-    await hlt_checker(dut)
-    await hlt_checker(dut)
     await hlt_checker(dut)
     dut._log.info("Operation SUB ADD Test Complete")
 
@@ -895,7 +890,6 @@ async def test_operation_lda(dut):
     await lda_checker(dut, program_data[0]&0xF)
     await add_checker(dut, program_data[1]&0xF)
     await nop_checker(dut)
-    await wait_until_next_t0_gltest(dut)
     await hlt_checker(dut)
     dut._log.info("Operation LDA Test Complete")
 
@@ -912,7 +906,6 @@ async def test_operation_out(dut):
     await lda_checker(dut, program_data[0]&0xF)
     await add_checker(dut, program_data[1]&0xF)
     await out_checker(dut)
-    await wait_until_next_t0_gltest(dut)
     await hlt_checker(dut)
     dut._log.info("Operation OUT Test Complete")
 
@@ -930,7 +923,6 @@ async def test_operation_sta(dut):
     await add_checker(dut, program_data[1]&0xF)
     await out_checker(dut)
     await sta_checker(dut, program_data[3]&0xF)
-    await wait_until_next_t0_gltest(dut)
     await hlt_checker(dut)
     await dumpRAM(dut)
     dut._log.info("Operation STA Test Complete")
