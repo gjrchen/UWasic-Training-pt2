@@ -206,15 +206,12 @@ async def determine_gltest(dut):
         assert get_bus_value(dut) == get_bus_value(dut), "Something went terribly wrong"
 
 async def log_control_signals(dut):
-    if (GLTEST):
-        dut._log.error("GLTEST is TRUE, can't get control signals")
-    else:
-        control_signal_vals = get_control_signal_array(dut)
-        dut._log.info(f"Control Signals Array={control_signal_vals}")
-        result_string = ""
-        for signal in signal_dict:
-            result_string += f"{signal}={retrieve_control_signal(control_signal_vals, signal_dict[signal])}, "
-        dut._log.info(result_string)
+    control_signal_vals = get_control_signal_array(dut)
+    dut._log.info(f"Control Signals Array={control_signal_vals}")
+    result_string = ""
+    for signal in signal_dict:
+        result_string += f"{signal}={retrieve_control_signal(control_signal_vals, signal_dict[signal])}, "
+    dut._log.info(result_string)
 
 async def log_uio_out(dut):
     uio_vals = dut.uio_out.value
