@@ -73,7 +73,7 @@ always @(posedge clk) begin
             // Valid stages
             stage <= stage + 1; // Increment to the next stage
         end 
-        else begin
+        else if (!hlt_flag) begin
             // If the stage is not valid, set it to 6
             stage <= 6; // Set to stage 6 
         end
