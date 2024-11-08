@@ -108,7 +108,7 @@ def get_mar_addr(dut):
         addr = 0
         for i in range(4):
             addr |= (dut.user_project._id(f"\\input_mar_register.addr[{i}]", extended = False).value << i)
-        return addr
+        return to_8_bit_array(addr)
     else:
         return dut.user_project.input_mar_register.addr.value
 
@@ -117,7 +117,7 @@ def get_mar_data(dut):
         data = 0
         for i in range(8):
             data |= (dut.user_project._id(f"\\input_mar_register.data[{i}]", extended = False).value << i)
-        return data
+        return to_8_bit_array(data)
     else:
         return dut.user_project.input_mar_register.data.value
     
