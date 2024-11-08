@@ -962,7 +962,7 @@ async def test_operation_sta(dut):
     await dumpRAM(dut)
     dut._log.info("Operation STA Test Complete")
 
-async def get_ram(dut):
+def get_ram(dut):
     ram = []
     if (LocalTest):
         ram = dut.user_project.ram.RAM.value
