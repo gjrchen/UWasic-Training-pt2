@@ -33,9 +33,10 @@ def get_control_signal_array_gltest(dut):
     nLma = dut.user_project._id("\\input_mar_register.n_load_addr", extended = False).value
     Lp = dut.user_project._id("\\pc.lp", extended = False).value
     read_ui_in = dut.user_project._id("\\cb.read_ui_in", extended = False).value
-    Ep = int(not ((not nCE) or (not nEi) or Ea or Eu or read_ui_in))
+    Ep = dut.uio_out[6].value
     Cp = dut.user_project._id("\\pc.cp", extended = False).value
-    array = LogicArray(f"{nLo}{nLb}{Eu}{sub}{Ea}{nLa}{nEi}{nLi}{nLr}{nCE}{nLmd}{nLma}{Lp}{Ep}{Cp}")
+    #array = LogicArray(f"{nLo}{nLb}{Eu}{sub}{Ea}{nLa}{nEi}{nLi}{nLr}{nCE}{nLmd}{nLma}{Lp}{Ep}{Cp}")
+    array = LogicArray(f"{Cp}{Ep}{Lp}{nLma}{nLmd}{nCE}{nLr}{nLi}{nEi}{nLa}{Ea}{sub}{Eu}{nLb}{nLo}")
     return array
 
 
