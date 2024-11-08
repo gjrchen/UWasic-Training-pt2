@@ -18,6 +18,9 @@ LocalTest = False
 signal_dict = {'nLo': 0, 'nLb': 1, 'Eu': 2, 'sub': 3, 'Ea': 4, 'nLa' : 5, 'nEi': 6, 'nLi' : 7, 'nLr' : 8, 'nCE' : 9, 'nLmd' : 10, 'nLma' : 11, 'Lp' : 12, 'Ep' : 13, 'Cp' : 14}
 uio_dict = {'ready_for_ui' : 1, 'done_load' : 2, 'CF' : 3, 'ZF' : 4, 'HF' : 5}
 
+def to_8_bit_array(value):
+    return LogicArray(f'{value:8b}')
+
 def get_control_signal_array_gltest(dut):
     nLo = dut.user_project._id("\\output_register.n_load", extended = False).value
     nLb = dut.user_project._id("\\b_register.n_load", extended = False).value
@@ -50,7 +53,7 @@ def get_regA_value_gltest(dut):
     regA_int = 0
     for i in range(8):
         regA_int += (dut.user_project._id(f"\\alu_object.addsub.genblk1[{i}].fa.a", extended = False).value << i)
-    return LogicArray(regA_int)
+    return to_8_bit_array(regA_int)
 
 def get_regA_value(dut):
     if (GLTEST):
@@ -62,7 +65,7 @@ def get_regB_value_gltest(dut):
     regB_int = 0
     for i in range(8):
         regB_int += (dut.user_project._id(f"\\alu_object.addsub.op_b[{i}]", extended = False).value << i)
-    return LogicArray(regB_int)
+    return to_8_bit_array(regB_int)
 
 def get_regB_value(dut):
     if (GLTEST):
@@ -973,7 +976,7 @@ def get_ram(dut):
                 result = 0
                 for j in range(8):
                     result |= (dut.user_project._id(f"\\ram.RAM[{i}][{j}]", extended = False).value << j)
-                ram[i] = LogicArray(result)
+                ram[i] = to_8_bit_array(result)
         else: 
             for i in range(16):
                 ram[15 - i] = dut.user_project.ram.RAM.value[i]
