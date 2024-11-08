@@ -61,6 +61,8 @@ async def wait_until_next_t0_gltest(dut):
             if (timeout > 7):
                 assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
     else:
+        for i in range(7):
+            await RisingEdge(dut.clk)
         dut._log.error("Cant wait until next T0 in GLTEST")
 
 
@@ -304,6 +306,8 @@ async def hlt_checker(dut):
         assert pc_beginning == dut.user_project.pc.counter.value, f"PC is not the same, pc_beginning={pc_beginning}, pc={dut.user_project.pc.counter.value}"
 
     else:
+        for i in range(7):
+            await RisingEdge(dut.clk)
         dut._log.error("Cant check HLT in GLTEST")
     dut._log.info("HLT Checker Complete")
 
@@ -365,6 +369,8 @@ async def nop_checker(dut):
         dut._log.info(f"PC={dut.user_project.pc.counter.value}")
         assert dut.user_project.pc.counter.value == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={dut.user_project.pc.counter.value}, pc_beginning={pc_beginning}"
     else:
+        for i in range(7):
+            await RisingEdge(dut.clk)
         dut._log.error("Cant check NOP in GLTEST")
     dut._log.info("NOP Checker Complete")
 
@@ -440,6 +446,8 @@ async def add_checker(dut, address):
         dut._log.info(f"PC={dut.user_project.pc.counter.value}")
         assert dut.user_project.pc.counter.value == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={dut.user_project.pc.counter.value}, pc_beginning={pc_beginning}"
     else:
+        for i in range(7):
+            await RisingEdge(dut.clk)
         dut._log.error("Cant check ADD in GLTEST")
     dut._log.info("ADD Checker Complete")
 
@@ -515,6 +523,8 @@ async def sub_checker(dut, address):
         dut._log.info(f"PC={dut.user_project.pc.counter.value}")
         assert dut.user_project.pc.counter.value == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={dut.user_project.pc.counter.value}, pc_beginning={pc_beginning}"
     else:
+        for i in range(7):
+            await RisingEdge(dut.clk)
         dut._log.error("Cant check SUB in GLTEST")
     dut._log.info("SUB Checker Complete")
 
@@ -583,6 +593,8 @@ async def lda_checker(dut, address):
         dut._log.info(f"PC={dut.user_project.pc.counter.value}")
         assert dut.user_project.pc.counter.value == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={dut.user_project.pc.counter.value}, pc_beginning={pc_beginning}"
     else:
+        for i in range(7):
+            await RisingEdge(dut.clk)
         dut._log.error("Cant check LDA in GLTEST")
     dut._log.info("LDA Checker Complete")
 
@@ -647,6 +659,8 @@ async def out_checker(dut):
         dut._log.info(f"PC={dut.user_project.pc.counter.value}")
         assert dut.user_project.pc.counter.value == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={dut.user_project.pc.counter.value}, pc_beginning={pc_beginning}"
     else:
+        for i in range(7):
+            await RisingEdge(dut.clk)
         dut._log.error("Cant check OUT in GLTEST")
     dut._log.info("OUT Checker Complete")
 
@@ -715,6 +729,8 @@ async def sta_checker(dut, address):
         dut._log.info(f"PC={dut.user_project.pc.counter.value}")
         assert dut.user_project.pc.counter.value == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={dut.user_project.pc.counter.value}, pc_beginning={pc_beginning}"
     else:
+        for i in range(7):
+            await RisingEdge(dut.clk)
         dut._log.error("Cant check STA in GLTEST")
     dut._log.info("STA Checker Complete")
 
@@ -776,6 +792,8 @@ async def jmp_checker(dut, address):
         dut._log.info(f"PC={dut.user_project.pc.counter.value}")
         assert dut.user_project.pc.counter.value == address, f"PC is not address, pc={dut.user_project.pc.counter.value}, jmp_address={address}"
     else:
+        for i in range(7):
+            await RisingEdge(dut.clk)
         dut._log.error("Cant check JMP in GLTEST")
     dut._log.info("JMP Checker Complete")
 

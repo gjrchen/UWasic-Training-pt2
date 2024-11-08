@@ -1,0 +1,60 @@
+async def jmp_checker(dut, address):
+    dut._log.info(f"JMP Checker Start with jmp_address={address}, hex={address:01X}, bin={address:4b}")
+    if (not GLTEST):
+        timeout = 0
+        while not (dut.user_project.cb.stage.value == 0):
+            await RisingEdge(dut.clk)
+            dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
+            timeout += 1
+            if (timeout > 2):
+                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
+        pc_beginning = dut.user_project.pc.counter.value
+        dut._log.info(f"PC={pc_beginning}")
+        dut._log.info("T0")
+        assert dut.user_project.cb.stage.value == 0, f"Stage is not 0, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("010011111100011"), f"Control Signals are not correct, expected=010011111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T1")
+        assert dut.user_project.cb.stage.value == 1, f"Stage is not 1, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("100111111100011"), f"Control Signals are not correct, expected=100111111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T2")
+        assert dut.user_project.cb.stage.value == 2, f"Stage is not 2, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000110101100011"), f"Control Signals are not correct, expected=000110101100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T3")
+        assert dut.user_project.cb.stage.value == 3, f"Stage is not 3, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("001111110100011"), f"Control Signals are not correct, expected=001111110100011"
+        assert dut.user_project.cb.opcode.value == 7, f"Opcode is not JMP, opcode={dut.user_project.cb.opcode.value}"
+        await RisingEdge(dut.clk)
+        dut._log.info("T4")
+        assert dut.user_project.cb.stage.value == 4, f"Stage is not 4, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T5")
+        assert dut.user_project.cb.stage.value == 5, f"Stage is not 5, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info("T6")
+        assert dut.user_project.cb.stage.value == 6, f"Stage is not 6, stage={dut.user_project.cb.stage.value}"
+        await log_control_signals(dut)
+        await log_uio_out(dut)
+        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        await RisingEdge(dut.clk)
+        dut._log.info(f"PC={dut.user_project.pc.counter.value}")
+        assert dut.user_project.pc.counter.value == address, f"PC is not address, pc={dut.user_project.pc.counter.value}, jmp_address={address}"
+    else:
+        dut._log.error("Cant check JMP in GLTEST")
+    dut._log.info("JMP Checker Complete")
