@@ -19,7 +19,7 @@ signal_dict = {'nLo': 0, 'nLb': 1, 'Eu': 2, 'sub': 3, 'Ea': 4, 'nLa' : 5, 'nEi':
 uio_dict = {'ready_for_ui' : 1, 'done_load' : 2, 'CF' : 3, 'ZF' : 4, 'HF' : 5}
 
 def to_8_bit_array(value):
-    return LogicArray(f'{value:8b}')
+    return LogicArray(f'{value:08b}')
 
 def get_control_signal_array_gltest(dut):
     nLo = dut.user_project._id("\\output_register.n_load", extended = False).value
