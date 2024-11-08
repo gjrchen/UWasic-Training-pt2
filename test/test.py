@@ -38,11 +38,53 @@ def get_control_signal_array_gltest(dut):
     array = LogicArray(f"{nLo}{nLb}{Eu}{sub}{Ea}{nLa}{nEi}{nLi}{nLr}{nCE}{nLmd}{nLma}{Lp}{Ep}{Cp}")
     return array
 
+
 def get_control_signal_array(dut):
     if (GLTEST):
         return get_control_signal_array_gltest(dut)
     else:
         return dut.user_project.control_signals.value
+
+def get_regA_value_gltest(dut):
+    regA_int = 0
+    for i in range(8):
+        regA_int += (dut.user_project._id(f"\\alu_object.addsub.genblk1[{i}].fa.a", extended = False).value << i)
+    return LogicArray(regA_int)
+
+def get_regA_value(dut):
+    if (GLTEST):
+        return get_regA_value_gltest(dut)
+    else:
+        return dut.user_project.accumulator_object.regA.value
+    
+def get_regB_value_gltest(dut):
+    regB_int = 0
+    for i in range(8):
+        regB_int += (dut.user_project._id(f"\\alu_object.addsub.op_b[{i}]", extended = False).value << i)
+    return LogicArray(regB_int)
+
+def get_regB_value(dut):
+    if (GLTEST):
+        return get_regB_value_gltest(dut)
+    else:
+        return dut.user_project.b_register.value.value
+
+def get_bus_value_gltest(dut):
+    bus_int = 0
+    for i in range(8):
+        bus_int += (dut.user_project._id(f"\\accumulator_object.bus[{i}]", extended = False).value << i)
+    return LogicArray(bus_int)
+
+def get_bus_value(dut):
+    if (GLTEST):
+        return get_bus_value_gltest(dut)
+    else:
+        return dut.user_project.bus.value
+    
+def bus_check(dut):
+    bus = get_bus_value(dut)
+    for i in range(8):
+        assert bus[i] != 'x', f"Bus has X, bus[{i}]={bus[i]}"
 
 async def check_adder_operation(operation, a, b):
     if operation == 0:
