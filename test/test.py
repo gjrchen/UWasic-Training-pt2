@@ -18,6 +18,32 @@ LocalTest = False
 signal_dict = {'nLo': 0, 'nLb': 1, 'Eu': 2, 'sub': 3, 'Ea': 4, 'nLa' : 5, 'nEi': 6, 'nLi' : 7, 'nLr' : 8, 'nCE' : 9, 'nLmd' : 10, 'nLma' : 11, 'Lp' : 12, 'Ep' : 13, 'Cp' : 14}
 uio_dict = {'ready_for_ui' : 1, 'done_load' : 2, 'CF' : 3, 'ZF' : 4, 'HF' : 5}
 
+def get_control_signal_array_gltest(dut):
+    nLo = dut.user_project._id("\\output_register.n_load", extended = False).value
+    nLb = dut.user_project._id("\\b_register.n_load", extended = False).value
+    Eu = dut.user_project._id("\\alu_object.enable_output", extended = False).value
+    sub = dut.user_project._id("\\alu_object.addsub.genblk1[0].fa.cin", extended = False).value
+    Ea = dut.user_project._id("\\accumulator_object.enable_output", extended = False).value
+    nLa = dut.user_project._id("\\accumulator_object.load", extended = False).value
+    nEi = dut.user_project._id("\\instruction_register.n_enable", extended = False).value
+    nLi = dut.user_project._id("\\instruction_register.n_load", extended = False).value
+    nLr = dut.user_project._id("\\ram.lr_n", extended = False).value
+    nCE = dut.user_project._id("\\ram.ce_n", extended = False).value
+    nLmd = dut.user_project._id("\\input_mar_register.n_load_data", extended = False).value
+    nLma = dut.user_project._id("\\input_mar_register.n_load_addr", extended = False).value
+    Lp = dut.user_project._id("\\pc.lp", extended = False).value
+    read_ui_in = dut.user_project._id("\\cb.read_ui_in", extended = False).value
+    Ep = not ((not nCE) or (not nEi) or Ea or Eu or read_ui_in)
+    Cp = dut.user_project._id("\\pc.cp", extended = False).value
+    array = LogicArray(f"{nLo}{nLb}{Eu}{sub}{Ea}{nLa}{nEi}{nLi}{nLr}{nCE}{nLmd}{nLma}{Lp}{Ep}{Cp}")
+    return array
+
+def get_control_signal_array(dut):
+    if (GLTEST):
+        return get_control_signal_array_gltest(dut)
+    else:
+        return dut.user_project.control_signals.value
+
 async def check_adder_operation(operation, a, b):
     if operation == 0:
         expVal = (a + b) 
