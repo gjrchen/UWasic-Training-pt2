@@ -57,6 +57,14 @@ reg ready_reg;
 /* Micro-Operation Stages */
 parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5; 
 
+// Try initializing register value for simulation purposes
+    initial begin
+        hlt_flag = 0;  // Initialize to 0
+        stage = 3'b000;
+        control_signals = 15'b000111111100011;
+    end
+    
+
 /* Stage Transition Logic */
 always @(posedge clk) begin
     if (!resetn) begin           // Check if reset is asserted, if yes, put into a holding stage
