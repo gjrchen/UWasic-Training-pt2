@@ -435,7 +435,6 @@ async def add_checker(dut, address):
     pc_beginning = get_pc(dut)
     val_a = get_regA_value(dut)
     val_b = get_ram(dut)[address]
-    dut._log.info()
     expVal, expCF, expZF = await check_adder_operation(0, val_a.integer, val_b.integer)
     dut._log.info(f"Adder Operation: {val_a.integer} + {val_b.integer} = {expVal}, CF={expCF}, ZF={expZF}")
     dut._log.info(f"Adder Operation bin: {val_a.integer:8b} + {val_b.integer:8b} = {expVal:8b}, CF={expCF}, ZF={expZF}")
