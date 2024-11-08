@@ -1047,8 +1047,7 @@ async def get_ram(dut):
             for j in range(8):
                 ram[i] |= (dut.user_project._id(f"\\ram.RAM[{i}][{j}]", extended = False).value << j)
     else: 
-        for i in range(16):
-            ram[i] = dut.user_project.RAM.value[i]
+        ram = dut.user_project.ram.RAM.value
 
     return ram
 
