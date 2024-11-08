@@ -486,7 +486,7 @@ async def add_checker(dut, address):
     assert get_control_signal_array(dut) == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
     assert retrieve_bit_from_8_wide_wire(dut.uio_out.value, uio_dict['CF']) == expCF, f"Carry Out in ALU is not correct, alu_carry_out={retrieve_bit_from_8_wide_wire(dut.uio_out.value, uio_dict['CF'])}, expected={expCF}"
     assert retrieve_bit_from_8_wide_wire(dut.uio_out.value, uio_dict['ZF']) == expZF, f"Zero Flag in ALU is not correct, alu_zero_flag={retrieve_bit_from_8_wide_wire(dut.uio_out.value, uio_dict['ZF'])}, expected={expZF}"
-    assert get_regA_value(dut) == expVal, f"Value in Accumulator is not correct, accumulator={get_regA_value(dut)}, expected={expVal}"
+    assert get_regA_value(dut).integer == expVal, f"Value in Accumulator is not correct, accumulator={get_regA_value(dut)}, expected={expVal}"
     await RisingEdge(dut.clk)
     dut._log.info(f"PC={get_pc(dut)}")
     assert get_pc(dut) == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={get_pc(dut)}, pc_beginning={pc_beginning}"
@@ -555,7 +555,7 @@ async def sub_checker(dut, address):
     assert get_control_signal_array(dut) == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
     assert retrieve_bit_from_8_wide_wire(dut.uio_out.value, uio_dict['CF']) == expCF, f"Carry Out in ALU is not correct, alu_carry_out={retrieve_bit_from_8_wide_wire(dut.uio_out.value, uio_dict['CF'])}, expected={expCF}"
     assert retrieve_bit_from_8_wide_wire(dut.uio_out.value, uio_dict['ZF']) == expZF, f"Zero Flag in ALU is not correct, alu_zero_flag={retrieve_bit_from_8_wide_wire(dut.uio_out.value, uio_dict['ZF'])}, expected={expZF}"
-    assert get_regA_value(dut) == expVal, f"Value in Accumulator is not correct, accumulator={get_regA_value(dut)}, expected={expVal}"
+    assert get_regA_value(dut).integer == expVal, f"Value in Accumulator is not correct, accumulator={get_regA_value(dut)}, expected={expVal}"
     await RisingEdge(dut.clk)
     dut._log.info(f"PC={get_pc(dut)}")
     assert get_pc(dut) == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={get_pc(dut)}, pc_beginning={pc_beginning}"
