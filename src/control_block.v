@@ -49,6 +49,7 @@ localparam SIG_OUT_LOAD_N = 0;          // \L_O
 /* Internal Regs */
 reg [2:0] stage;
 reg [14:0] control_signals;
+reg hlt_flag;
 reg done_load_reg;
 reg read_ui_in_reg;
 reg ready_reg;
@@ -60,20 +61,25 @@ parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5;
 always @(posedge clk) begin
     if (!resetn) begin           // Check if reset is asserted, if yes, put into a holding stage
       stage <= 6;
+      hlt_flag <= 0;
     end
  	else begin                   // If reset is not asserted, do the stages sequentially
       if (stage == 6) begin        
           stage <= 0;
         end 
-        else if (stage == T0 || stage == T1 || 
+        else if ((stage == T0 || stage == T1 || 
                  stage == T2 || stage == T3 || 
-                 stage == T4 || stage == T5) begin
+            stage == T4 || stage == T5) && !hlt_flag) begin
             // Valid stages
             stage <= stage + 1; // Increment to the next stage
-        end else begin
+        end 
+        else begin
             // If the stage is not valid, set it to 6
             stage <= 6; // Set to stage 6 
         end
+    end
+    if (hlt_flag) begin
+        stage <= 7;
     end
 end
 
@@ -91,9 +97,8 @@ always @(negedge clk) begin
             ready_reg <= 1;
         end 
         T1: begin
-            if (opcode != OP_HLT || programming) begin
-                control_signals[SIG_PC_INC] <= 1;
-            end
+            control_signals[SIG_PC_INC] <= 1;
+            
         end
         T2: begin
             if (!programming) begin
@@ -102,6 +107,9 @@ always @(negedge clk) begin
             end
         end
         T3: begin
+            if (opcode == OP_HLT) begin
+                hlt_flag <= 1;
+            end
             if (!programming) begin
                 case (opcode)
                     OP_ADD, OP_SUB, OP_LDA, OP_STA: begin
@@ -169,6 +177,9 @@ always @(negedge clk) begin
                     end
                 endcase
             end
+        end
+        default: begin
+        // Do nothing (leave control_signals unchanged)
         end
     endcase
 end
