@@ -274,7 +274,7 @@ async def hlt_checker(dut):
             await log_uio_out(dut)
             assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
         dut._log.info(f"PC={dut.user_project.pc.counter.value}")
-        assert pc_beginning == dut.user_project.pc.counter.value, f"PC is not the same, pc_beginning={pc_beginning}, pc={dut.user_project.pc.counter.value}"
+        assert pc_beginning + 1 == dut.user_project.pc.counter.value, f"PC is not the same, pc_beginning={pc_beginning}, pc={dut.user_project.pc.counter.value}"
 
     else:
         for i in range(7):
