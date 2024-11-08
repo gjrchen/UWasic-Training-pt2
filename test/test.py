@@ -44,6 +44,16 @@ async def determine_gltest(dut):
         dut._log.info("VPWR is NOT Defined, GLTEST=False")
         assert dut.user_project.bus.value == dut.user_project.bus.value, "Something went terribly wrong"
 
+def get_attr(dut, value):
+    if not GLTEST:
+        value.split('.')
+        out = dut
+        for val in value:
+            out = getattr(out, val)
+        return out
+    else:
+        return dut._id(f"\\{value}", extended=False)
+
 async def log_control_signals(dut):
     if (GLTEST):
         dut._log.info("GLTEST is TRUE, can't get control signals")
@@ -200,40 +210,40 @@ async def test_control_signals_execution(dut):
 
 async def hlt_checker(dut):
     dut._log.info("HLT Checker Start")
-    if (not GLTEST):
-        pc_beginning = dut.user_project.pc.counter.value
+    if (not GLTEST or GLTEST):
+        pc_beginning = dut._id("\\user_project.pc.counter.value")
         await FallingEdge(dut.clk)
         await FallingEdge(dut.clk)
         dut._log.info("T0")
         await log_control_signals(dut)
-        assert dut.user_project.control_signals.value == LogicArray("010011111100011"), f"Control Signals are not correct, expected=010011111100011"
+        assert dut._id("\\user_project.control_signals.value") == LogicArray("010011111100011"), f"Control Signals are not correct, expected=010011111100011"
         await FallingEdge(dut.clk)
         dut._log.info("T1")
         await log_control_signals(dut)
-        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
-        assert retrieve_control_signal(dut.user_project.control_signals.value, 14) == 0, f"""Cp is not 0, Ep={retrieve_control_signal(dut.user_project.control_signals.value, 14)}"""
+        assert dut._id("\\user_project.control_signals.value") == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        assert retrieve_control_signal(dut._id("\\user_project.control_signals.value"), 14) == 0, f"""Cp is not 0, Ep={retrieve_control_signal(dut.user_project.control_signals.value, 14)}"""
         await FallingEdge(dut.clk)
         dut._log.info("T2")
         await log_control_signals(dut)
-        assert dut.user_project.control_signals.value == LogicArray("000110101100011"), f"Control Signals are not correct, expected=000110101100011"
+        assert dut._id("\\user_project.control_signals.value") == LogicArray("000110101100011"), f"Control Signals are not correct, expected=000110101100011"
         await FallingEdge(dut.clk)
         dut._log.info("T3")
         await log_control_signals(dut)
-        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        assert dut._id("\\user_project.control_signals.value") == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
         await FallingEdge(dut.clk)
         dut._log.info("T4")
         await log_control_signals(dut)
-        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        assert dut._id("\\user_project.control_signals.value") == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
         await FallingEdge(dut.clk)
         dut._log.info("T5")
         await log_control_signals(dut)
-        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        assert dut._id("\\user_project.control_signals.value") == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
         await FallingEdge(dut.clk)
         dut._log.info("T6")
         await log_control_signals(dut)
-        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        assert dut._id("\\user_project.control_signals.value") == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
         await FallingEdge(dut.clk)
-        assert pc_beginning == dut.user_project.pc.counter.value, f"PC is not the same, pc_beginning={pc_beginning}, pc={dut.user_project.pc.counter.value}"
+        assert pc_beginning == dut._id("\\user_project.pc.counter.value"), f"PC is not the same, pc_beginning={pc_beginning}, pc={dut.user_project.pc.counter.value}"
 
     else:
         dut._log.info("Cant check HLT in GLTEST")
