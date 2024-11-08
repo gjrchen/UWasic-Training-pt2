@@ -523,9 +523,8 @@ async def add_checker(dut, address):
         await log_control_signals(dut)
         await log_uio_out(dut)
         assert get_control_signal_array(dut) == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
-        if not GLTEST:
-            assert retrieve_bit_from_8_wide_wire(dut.uio_out, uio_dict["CF"]) == expCF, f"Carry Out in ALU is not correct, alu_carry_out={retrieve_bit_from_8_wide_wire(dut.uio_out, uio_dict["CF"])}, expected={expCF}"
-            assert retrieve_bit_from_8_wide_wire(dut.uio_out, uio_dict["ZF"]) == expZF, f"Zero Flag in ALU is not correct, alu_zero_flag={retrieve_bit_from_8_wide_wire(dut.uio_out, uio_dict["ZF"])}, expected={expZF}"
+        assert retrieve_bit_from_8_wide_wire(dut.uio_out, uio_dict['CF']) == expCF, f"Carry Out in ALU is not correct, alu_carry_out={retrieve_bit_from_8_wide_wire(dut.uio_out, uio_dict['CF'])}, expected={expCF}"
+        assert retrieve_bit_from_8_wide_wire(dut.uio_out, uio_dict['ZF']) == expZF, f"Zero Flag in ALU is not correct, alu_zero_flag={retrieve_bit_from_8_wide_wire(dut.uio_out, uio_dict['ZF'])}, expected={expZF}"
         assert get_regA_value(dut) == expVal, f"Value in Accumulator is not correct, accumulator={get_regA_value(dut)}, expected={expVal}"
         await RisingEdge(dut.clk)
         dut._log.info(f"PC={get_pc(dut)}")
