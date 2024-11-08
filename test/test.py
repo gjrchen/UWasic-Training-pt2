@@ -964,14 +964,16 @@ async def test_operation_sta(dut):
     dut._log.info("Operation STA Test Complete")
 
 def get_ram(dut):
-    ram = [0] * 16
+    ram = [LogicArray] * 16
     if (LocalTest):
         ram = dut.user_project.ram.RAM.value
     else:
         if (GLTEST):
             for i in range(16):
+                result = 0
                 for j in range(8):
-                    ram[i] |= (dut.user_project._id(f"\\ram.RAM[{i}][{j}]", extended = False).value << j)
+                    result |= (dut.user_project._id(f"\\ram.RAM[{i}][{j}]", extended = False).value << j)
+                ram[i] = LogicArray(result)
         else: 
             for i in range(16):
                 ram[15 - i] = dut.user_project.ram.RAM.value[i]
