@@ -963,7 +963,7 @@ async def test_operation_sta(dut):
     dut._log.info("Operation STA Test Complete")
 
 async def get_ram(dut):
-    ram = [0] * 16
+    ram = []
     if (LocalTest):
         ram = dut.user_project.ram.RAM.value
     else:
@@ -975,6 +975,7 @@ async def get_ram(dut):
             for i in range(16):
                 ram[15 - i] = dut.user_project.ram.RAM.value[i]
 
+    dut._log.error(f"RAM TYPE: {type(ram)}, VALUE: {ram}")
     return ram
 
 
