@@ -28,13 +28,12 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire [14:0] control_signals;        // Control Signals (15-bit), see below for the signal assignments
 
     // Programmer Wires //
-    wire programming = uio_in[0];
+    wire programming;
     wire ready_for_ui;
     wire done_load;
     wire read_ui_in;
 
-    assign uio_out[1] = ready_for_ui;
-    assign uio_out[2] = done_load;
+
 
     assign bus = (read_ui_in) ? ui_in : 8'bZZZZZZZZ;
     
@@ -44,9 +43,10 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire [7:0] reg_a;                   // value from Accumulator Register to ALU
     wire [7:0] reg_b;                   // value from B Register to ALU
     
-    // ALU Flags //
+    // Flags //
     wire CF;                            // Carry Flag
     wire ZF;                            // Zero Flag
+    wire HF;                            // Halt Flag
     
     // Wire between MAR and RAM //
     wire [7:0] mar_to_ram_data;         //
@@ -102,7 +102,8 @@ module tt_um_ece298a_8_bit_cpu_top (
         .programming(programming),
         .done_load(done_load),
         .read_ui_in(read_ui_in),
-        .ready(ready_for_ui)
+        .ready(ready_for_ui),
+        .HF(HF)
     );
     
 
@@ -115,7 +116,8 @@ module tt_um_ece298a_8_bit_cpu_top (
         .sub(sub),              // Perform addition when 0, perform subtraction when 1
         .bus(bus),              // Bus (8 bits)
         .CF(CF),                // Carry Flag
-        .ZF(ZF)                 // Zero Flag
+        .ZF(ZF),                // Zero Flag
+        .rst_n(rst_n)           // Reset (ACTIVE-LOW)
     );
     
     // Accumulator Register //
@@ -175,13 +177,19 @@ module tt_um_ece298a_8_bit_cpu_top (
         .lr_n(nLr),                 //
         .ce_n(nCE),                 // Connect the chip enable signal
         .clk(clk),                  // Connect the clock signal
-        .rst_n(1)               // Connect the reset signal
+        .rst_n(1'b1)               // Connect the reset signal
     );
+    assign programming = uio_in[0];
+    assign uio_out[1] = ready_for_ui;
+    assign uio_out[2] = done_load;
+    assign uio_out[3] = CF;
+    assign uio_out[4] = ZF;
+    assign uio_out[5] = HF;
     // Wires //
-    assign uio_out[7:3] = 5'b00000;         // Set the IO outputs to 0
+    assign uio_out[7:6] = 2'b00;         // Set the IO outputs to 0
     assign uio_out[0] = 1'b0;         // Set the IO outputs to 0
-    assign uio_oe = 8'b00000110;          // Configure the IO ports to be inputs
+    assign uio_oe = 8'b00111110;          // Configure the IO ports to be inputs
 
-    wire _unused = &{uio_in[7:3], ena, ZF, CF}; // Avoid unused variable warning
+    wire _unused = &{uio_in[7:6], ena}; // Avoid unused variable warning
 
 endmodule

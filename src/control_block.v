@@ -15,7 +15,8 @@ module control_block (
     input wire programming,
     output wire done_load,
     output wire read_ui_in,
-    output wire ready
+    output wire ready,
+    output wire HF
 );
 
 /* Supported Instructions' Opcodes */
@@ -52,7 +53,7 @@ reg [14:0] control_signals;
 reg done_load_reg;
 reg read_ui_in_reg;
 reg ready_reg;
-
+reg halt_flag_reg;
 /* Micro-Operation Stages */
 parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5; 
 
@@ -83,7 +84,7 @@ always @(negedge clk) begin
     done_load_reg <= 0;
     read_ui_in_reg <= 0;
     ready_reg <= 0;
-    
+    halt_flag_reg <= 0;
     case(stage)
         T0: begin
             control_signals[SIG_PC_EN] <= 1;
@@ -93,6 +94,8 @@ always @(negedge clk) begin
         T1: begin
             if (opcode != OP_HLT || programming) begin
                 control_signals[SIG_PC_INC] <= 1;
+            end else if (opcode == OP_HLT) begin
+                halt_flag_reg <= 1;
             end
         end
         T2: begin
@@ -177,5 +180,6 @@ assign out = control_signals;
 assign done_load = done_load_reg;
 assign read_ui_in = read_ui_in_reg;
 assign ready = ready_reg;
+assign HF = halt_flag_reg;
 
 endmodule
