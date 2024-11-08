@@ -1042,12 +1042,16 @@ async def test_operation_sta(dut):
 
 async def get_ram(dut):
     ram = [0] * 16
-    if (GLTEST):
-        for i in range(16):
-            for j in range(8):
-                ram[i] |= (dut.user_project._id(f"\\ram.RAM[{i}][{j}]", extended = False).value << j)
-    else: 
+    if (LocalTest):
         ram = dut.user_project.ram.RAM.value
+    else:
+        if (GLTEST):
+            for i in range(16):
+                for j in range(8):
+                    ram[15 - i] |= (dut.user_project._id(f"\\ram.RAM[{i}][{j}]", extended = False).value << j)
+        else: 
+            for i in range(16):
+                ram[15 - i] = dut.user_project.ram.RAM.value[i]
 
     return ram
 
