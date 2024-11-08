@@ -49,6 +49,15 @@ def retrieve_bit_from_8_wide_wire(wire, index):
         return wire[index]
     else:
         return wire[7-index]
+
+def get_pc(dut):
+    if GLTEST:
+        pc = 0
+        for i in range(4):
+            pc |= (dut.user_project._id(f"\\pc.set_bit_{i}.S", extended = False).value << i)
+        return pc
+    else:
+        return dut.user_project.pc.counter.value
     
 async def wait_until_next_t0_gltest(dut):
     if (not GLTEST):
@@ -59,7 +68,7 @@ async def wait_until_next_t0_gltest(dut):
             dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
             timeout += 1
             if (timeout > 7):
-                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
+                assert False, (f"Timeout at {get_pc(dut)}")
     else:
         for i in range(7):
             await RisingEdge(dut.clk)
@@ -255,8 +264,8 @@ async def hlt_checker(dut):
             dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
             timeout += 1
             if (timeout > 2):
-                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
-        pc_beginning = dut.user_project.pc.counter.value
+                assert False, (f"Timeout at {get_pc(dut)}")
+        pc_beginning = get_pc(dut)
         dut._log.info(f"PC={pc_beginning}")
         dut._log.info("T0")
         assert dut.user_project.cb.stage.value == 0, f"Stage is not 0, stage={dut.user_project.cb.stage.value}"
@@ -302,8 +311,8 @@ async def hlt_checker(dut):
         await log_control_signals(dut)
         await log_uio_out(dut)
         assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
-        dut._log.info(f"PC={dut.user_project.pc.counter.value}")
-        assert pc_beginning == dut.user_project.pc.counter.value, f"PC is not the same, pc_beginning={pc_beginning}, pc={dut.user_project.pc.counter.value}"
+        dut._log.info(f"PC={get_pc(dut)}")
+        assert pc_beginning == get_pc(dut), f"PC is not the same, pc_beginning={pc_beginning}, pc={get_pc(dut)}"
 
     else:
         for i in range(7):
@@ -320,8 +329,8 @@ async def nop_checker(dut):
             dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
             timeout += 1
             if (timeout > 2):
-                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
-        pc_beginning = dut.user_project.pc.counter.value
+                assert False, (f"Timeout at {get_pc(dut)}")
+        pc_beginning = get_pc(dut)
         dut._log.info(f"PC={pc_beginning}")
         dut._log.info("T0")
         assert dut.user_project.cb.stage.value == 0, f"Stage is not 0, stage={dut.user_project.cb.stage.value}"
@@ -366,8 +375,8 @@ async def nop_checker(dut):
         await log_uio_out(dut)
         assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
         await RisingEdge(dut.clk)
-        dut._log.info(f"PC={dut.user_project.pc.counter.value}")
-        assert dut.user_project.pc.counter.value == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={dut.user_project.pc.counter.value}, pc_beginning={pc_beginning}"
+        dut._log.info(f"PC={get_pc(dut)}")
+        assert get_pc(dut) == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={get_pc(dut)}, pc_beginning={pc_beginning}"
     else:
         for i in range(7):
             await RisingEdge(dut.clk)
@@ -383,8 +392,8 @@ async def add_checker(dut, address):
             dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
             timeout += 1
             if (timeout > 2):
-                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
-        pc_beginning = dut.user_project.pc.counter.value
+                assert False, (f"Timeout at {get_pc(dut)}")
+        pc_beginning = get_pc(dut)
         val_a = dut.user_project.accumulator_object.regA.value
         if LocalTest:
             val_b = dut.user_project.ram.RAM.value[address]
@@ -443,8 +452,8 @@ async def add_checker(dut, address):
         assert dut.user_project.alu_object.ZF.value == expZF, f"Zero Flag in ALU is not correct, alu_zero_flag={dut.user_project.alu_object.ZF.value}, expected={expZF}"
         assert dut.user_project.accumulator_object.regA.value == expVal, f"Value in Accumulator is not correct, accumulator={dut.user_project.accumulator_object.regA.value}, expected={expVal}"
         await RisingEdge(dut.clk)
-        dut._log.info(f"PC={dut.user_project.pc.counter.value}")
-        assert dut.user_project.pc.counter.value == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={dut.user_project.pc.counter.value}, pc_beginning={pc_beginning}"
+        dut._log.info(f"PC={get_pc(dut)}")
+        assert get_pc(dut) == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={get_pc(dut)}, pc_beginning={pc_beginning}"
     else:
         for i in range(7):
             await RisingEdge(dut.clk)
@@ -460,8 +469,8 @@ async def sub_checker(dut, address):
             dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
             timeout += 1
             if (timeout > 2):
-                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
-        pc_beginning = dut.user_project.pc.counter.value
+                assert False, (f"Timeout at {get_pc(dut)}")
+        pc_beginning = get_pc(dut)
         val_a = dut.user_project.accumulator_object.regA.value
         if LocalTest:
             val_b = dut.user_project.ram.RAM.value[address]
@@ -520,8 +529,8 @@ async def sub_checker(dut, address):
         assert dut.user_project.alu_object.ZF.value == expZF, f"Zero Flag in ALU is not correct, alu_zero_flag={dut.user_project.alu_object.ZF.value}, expected={expZF}"
         assert dut.user_project.accumulator_object.regA.value == expVal, f"Value in Accumulator is not correct, accumulator={dut.user_project.accumulator_object.regA.value}, expected={expVal}"
         await RisingEdge(dut.clk)
-        dut._log.info(f"PC={dut.user_project.pc.counter.value}")
-        assert dut.user_project.pc.counter.value == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={dut.user_project.pc.counter.value}, pc_beginning={pc_beginning}"
+        dut._log.info(f"PC={get_pc(dut)}")
+        assert get_pc(dut) == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={get_pc(dut)}, pc_beginning={pc_beginning}"
     else:
         for i in range(7):
             await RisingEdge(dut.clk)
@@ -537,12 +546,12 @@ async def lda_checker(dut, address):
             dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
             timeout += 1
             if (timeout > 2):
-                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
+                assert False, (f"Timeout at {get_pc(dut)}")
         if LocalTest:
             new_val_a = dut.user_project.ram.RAM.value[address]
         else:
             new_val_a = dut.user_project.ram.RAM.value[15-address]
-        pc_beginning = dut.user_project.pc.counter.value
+        pc_beginning = get_pc(dut)
         dut._log.info(f"PC={pc_beginning}")
         dut._log.info("T0")
         assert dut.user_project.cb.stage.value == 0, f"Stage is not 0, stage={dut.user_project.cb.stage.value}"
@@ -590,8 +599,8 @@ async def lda_checker(dut, address):
         assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
         assert dut.user_project.accumulator_object.regA.value == new_val_a, f"Value in Accumulator is not correct, accumulator={dut.user_project.accumulator_object.regA.value}, expected={new_val_a}"
         await RisingEdge(dut.clk)
-        dut._log.info(f"PC={dut.user_project.pc.counter.value}")
-        assert dut.user_project.pc.counter.value == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={dut.user_project.pc.counter.value}, pc_beginning={pc_beginning}"
+        dut._log.info(f"PC={get_pc(dut)}")
+        assert get_pc(dut) == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={get_pc(dut)}, pc_beginning={pc_beginning}"
     else:
         for i in range(7):
             await RisingEdge(dut.clk)
@@ -607,8 +616,8 @@ async def out_checker(dut):
             dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
             timeout += 1
             if (timeout > 2):
-                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
-        pc_beginning = dut.user_project.pc.counter.value
+                assert False, (f"Timeout at {get_pc(dut)}")
+        pc_beginning = get_pc(dut)
         val_a = dut.user_project.accumulator_object.regA.value
         dut._log.info(f"PC={pc_beginning}")
         dut._log.info("T0")
@@ -656,8 +665,8 @@ async def out_checker(dut):
         assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
         assert dut.uo_out.value == val_a, f"Value in UO_OUT is not correct, uo_out={dut.uo_out.value}, expected={val_a}"
         await RisingEdge(dut.clk)
-        dut._log.info(f"PC={dut.user_project.pc.counter.value}")
-        assert dut.user_project.pc.counter.value == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={dut.user_project.pc.counter.value}, pc_beginning={pc_beginning}"
+        dut._log.info(f"PC={get_pc(dut)}")
+        assert get_pc(dut) == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={get_pc(dut)}, pc_beginning={pc_beginning}"
     else:
         for i in range(7):
             await RisingEdge(dut.clk)
@@ -673,8 +682,8 @@ async def sta_checker(dut, address):
             dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
             timeout += 1
             if (timeout > 2):
-                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
-        pc_beginning = dut.user_project.pc.counter.value
+                assert False, (f"Timeout at {get_pc(dut)}")
+        pc_beginning = get_pc(dut)
         val_a = dut.user_project.accumulator_object.regA.value
         dut._log.info(f"PC={pc_beginning}")
         dut._log.info("T0")
@@ -726,8 +735,8 @@ async def sta_checker(dut, address):
         else:
             assert dut.user_project.ram.RAM.value[15-address] == val_a, f"Value in RAM is not correct, ram={dut.user_project.ram.RAM.value[15-address]}, expected={val_a}"
         await RisingEdge(dut.clk)
-        dut._log.info(f"PC={dut.user_project.pc.counter.value}")
-        assert dut.user_project.pc.counter.value == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={dut.user_project.pc.counter.value}, pc_beginning={pc_beginning}"
+        dut._log.info(f"PC={get_pc(dut)}")
+        assert get_pc(dut) == (int(pc_beginning)+1)%16, f"PC is not incremented, pc={get_pc(dut)}, pc_beginning={pc_beginning}"
     else:
         for i in range(7):
             await RisingEdge(dut.clk)
@@ -743,8 +752,8 @@ async def jmp_checker(dut, address):
             dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
             timeout += 1
             if (timeout > 2):
-                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
-        pc_beginning = dut.user_project.pc.counter.value
+                assert False, (f"Timeout at {get_pc(dut)}")
+        pc_beginning = get_pc(dut)
         dut._log.info(f"PC={pc_beginning}")
         dut._log.info("T0")
         assert dut.user_project.cb.stage.value == 0, f"Stage is not 0, stage={dut.user_project.cb.stage.value}"
@@ -789,8 +798,8 @@ async def jmp_checker(dut, address):
         await log_uio_out(dut)
         assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
         await RisingEdge(dut.clk)
-        dut._log.info(f"PC={dut.user_project.pc.counter.value}")
-        assert dut.user_project.pc.counter.value == address, f"PC is not address, pc={dut.user_project.pc.counter.value}, jmp_address={address}"
+        dut._log.info(f"PC={get_pc(dut)}")
+        assert get_pc(dut) == address, f"PC is not address, pc={get_pc(dut)}, jmp_address={address}"
     else:
         for i in range(7):
             await RisingEdge(dut.clk)
