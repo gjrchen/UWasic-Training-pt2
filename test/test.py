@@ -122,7 +122,7 @@ def get_opcode(dut):
     if GLTEST:
         opcode = 0
         for i in range(4, 8):
-            opcode |= (dut.user_project._id(f"\\instruction_register.instruction[{i}]", extended = False).value << i)
+            opcode |= (dut.user_project._id(f"\\instruction_register.instruction[{i}]", extended = False).value << (i - 4))
         return opcode
     else:
         return dut.user_project.cb.opcode.value
