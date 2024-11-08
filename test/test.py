@@ -287,7 +287,7 @@ async def dumpRAM(dut):
 async def mem_check(dut, data):
     dut._log.info("Memory Check Start")
     for i in range(0, 16):
-        assert get_ram(dut)[i] == data[i], f"RAM[{i}] is not equal to data[{i}], RAM[{i}]={get_ram(dut)[i]}, data[{i}]={data[i]}"
+        assert get_ram(dut)[i].integer == data[i], f"RAM[{i}] is not equal to data[{i}], RAM[{i}]={get_ram(dut)[i]}, data[{i}]={data[i]}"
     dut._log.info("Memory Check Complete")
 
 @cocotb.test()
