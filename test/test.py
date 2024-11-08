@@ -473,7 +473,7 @@ async def add_checker(dut, address):
     await log_control_signals(dut)
     await log_uio_out(dut)
     assert get_control_signal_array(dut) == LogicArray("000110111100001"), f"Control Signals are not correct, expected=000110111100001"
-    assert get_mar_addr(dut) == address, f"Address in MAR is not correct, mar_address={get_mar_addr(dut)}, expected={address}"
+    assert get_mar_addr(dut).integer == address, f"Address in MAR is not correct, mar_address={get_mar_addr(dut)}, expected={address}"
     await RisingEdge(dut.clk)
     dut._log.info("T5")
     assert get_cb_stage(dut) == 5, f"Stage is not 5, stage={get_cb_stage(dut)}"
@@ -542,7 +542,7 @@ async def sub_checker(dut, address):
     await log_control_signals(dut)
     await log_uio_out(dut)
     assert get_control_signal_array(dut) == LogicArray("000110111100001"), f"Control Signals are not correct, expected=000110111100001"
-    assert get_mar_addr(dut) == address, f"Address in MAR is not correct, mar_address={get_mar_addr(dut)}, expected={address}"
+    assert get_mar_addr(dut).integer == address, f"Address in MAR is not correct, mar_address={get_mar_addr(dut)}, expected={address}"
     await RisingEdge(dut.clk)
     dut._log.info("T5")
     assert get_cb_stage(dut) == 5, f"Stage is not 5, stage={get_cb_stage(dut)}"
@@ -606,7 +606,7 @@ async def lda_checker(dut, address):
     await log_control_signals(dut)
     await log_uio_out(dut)
     assert get_control_signal_array(dut) == LogicArray("000110111000011"), f"Control Signals are not correct, expected=000110111000011"
-    assert get_mar_addr(dut) == address, f"Address in MAR is not correct, mar_address={get_mar_addr(dut)}, expected={address}"
+    assert get_mar_addr(dut).integer == address, f"Address in MAR is not correct, mar_address={get_mar_addr(dut)}, expected={address}"
     await RisingEdge(dut.clk)
     dut._log.info("T5")
     assert get_cb_stage(dut) == 5, f"Stage is not 5, stage={get_cb_stage(dut)}"
@@ -729,7 +729,7 @@ async def sta_checker(dut, address):
     await log_control_signals(dut)
     await log_uio_out(dut)
     assert get_control_signal_array(dut) == LogicArray("000101111110011"), f"Control Signals are not correct, expected=000101111110011"
-    assert get_mar_addr(dut) == address, f"Address in MAR is not correct, mar_address={get_mar_addr(dut)}, expected={address}"
+    assert get_mar_addr(dut).integer == address, f"Address in MAR is not correct, mar_address={get_mar_addr(dut)}, expected={address}"
     await RisingEdge(dut.clk)
     dut._log.info("T5")
     assert get_cb_stage(dut) == 5, f"Stage is not 5, stage={get_cb_stage(dut)}"
