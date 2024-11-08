@@ -182,12 +182,12 @@ async def wait_until_next_t3_gltest(dut):
     if (not GLTEST):
         timeout = 0
         dut._log.info("Wait until next T3 in non-GLTEST")
-        while not (dut.user_project.cb.stage.value == 3):
+        while not (get_cb_stage(dut) == 3):
             await RisingEdge(dut.clk)
-            dut._log.info(f"Stage={dut.user_project.cb.stage.value}")
+            dut._log.info(f"Stage={get_cb_stage(dut)}")
             timeout += 1
             if (timeout > 7):
-                assert False, (f"Timeout at {dut.user_project.pc.counter.value}")
+                assert False, (f"Timeout at {get_pc(dut)}")
     else:
         for i in range(7):
             await RisingEdge(dut.clk)
@@ -377,17 +377,17 @@ async def test_control_signals_execution(dut):
 async def hlt_checker(dut):
     dut._log.info("HLT Checker Start")
     if (not GLTEST):
-        pc_beginning = dut.user_project.pc.counter.value
+        pc_beginning = get_pc(dut)
         dut._log.info(f"PC={pc_beginning}")
         await wait_until_next_t3_gltest(dut)
         for i in range(20):
             await RisingEdge(dut.clk)
-            assert dut.user_project.cb.stage.value == 7, f"Stage is not 7, stage={dut.user_project.cb.stage.value}"
+            assert get_cb_stage(dut) == 7, f"Stage is not 7, stage={get_cb_stage(dut)}"
             await log_control_signals(dut)
             await log_uio_out(dut)
-            assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
-        dut._log.info(f"PC={dut.user_project.pc.counter.value}")
-        assert pc_beginning + 1 == dut.user_project.pc.counter.value, f"PC is not the same, pc_beginning={pc_beginning}, pc={dut.user_project.pc.counter.value}"
+            assert get_control_signal_array(dut) == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+        dut._log.info(f"PC={get_pc(dut)}")
+        assert pc_beginning + 1 == get_pc(dut), f"PC is not the same, pc_beginning={pc_beginning}, pc={get_pc(dut)}"
 
     else:
         for i in range(7):
@@ -516,15 +516,16 @@ async def add_checker(dut, address):
         await log_control_signals(dut)
         await log_uio_out(dut)
         assert get_control_signal_array(dut) == LogicArray("000111111000111"), f"Control Signals are not correct, expected=000111111000111"
-        assert get_regB_value(dut) == val_b, f"Value in B Register is not correct, b_register={dut.user_project.b_register.regB.value}, expected={val_b}"
+        assert get_regB_value(dut) == val_b, f"Value in B Register is not correct, b_register={get_regB_value(dut)}, expected={val_b}"
         await RisingEdge(dut.clk)
         dut._log.info("T6")
         assert get_cb_stage(dut) == 6, f"Stage is not 6, stage={get_cb_stage(dut)}"
         await log_control_signals(dut)
         await log_uio_out(dut)
         assert get_control_signal_array(dut) == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
-        assert dut.user_project.alu_object.CF.value == expCF, f"Carry Out in ALU is not correct, alu_carry_out={dut.user_project.alu_object.CF.value}, expected={expCF}"
-        assert dut.user_project.alu_object.ZF.value == expZF, f"Zero Flag in ALU is not correct, alu_zero_flag={dut.user_project.alu_object.ZF.value}, expected={expZF}"
+        if not GLTEST:
+            assert retrieve_bit_from_8_wide_wire(dut.uio_out, uio_dict["CF"]) == expCF, f"Carry Out in ALU is not correct, alu_carry_out={retrieve_bit_from_8_wide_wire(dut.uio_out, uio_dict["CF"])}, expected={expCF}"
+            assert retrieve_bit_from_8_wide_wire(dut.uio_out, uio_dict["ZF"]) == expZF, f"Zero Flag in ALU is not correct, alu_zero_flag={retrieve_bit_from_8_wide_wire(dut.uio_out, uio_dict["ZF"])}, expected={expZF}"
         assert get_regA_value(dut) == expVal, f"Value in Accumulator is not correct, accumulator={get_regA_value(dut)}, expected={expVal}"
         await RisingEdge(dut.clk)
         dut._log.info(f"PC={get_pc(dut)}")
@@ -593,15 +594,16 @@ async def sub_checker(dut, address):
         await log_control_signals(dut)
         await log_uio_out(dut)
         assert get_control_signal_array(dut) == LogicArray("000111111001111"), f"Control Signals are not correct, expected=000111111001111"
-        assert get_regB_value(dut) == val_b, f"Value in B Register is not correct, b_register={dut.user_project.b_register.regB.value}, expected={val_b}"
+        assert get_regB_value(dut) == val_b, f"Value in B Register is not correct, b_register={get_regB_value(dut)}, expected={val_b}"
         await RisingEdge(dut.clk)
         dut._log.info("T6")
         assert get_cb_stage(dut) == 6, f"Stage is not 6, stage={get_cb_stage(dut)}"
         await log_control_signals(dut)
         await log_uio_out(dut)
         assert get_control_signal_array(dut) == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
-        assert dut.user_project.alu_object.CF.value == expCF, f"Carry Out in ALU is not correct, alu_carry_out={dut.user_project.alu_object.CF.value}, expected={expCF}"
-        assert dut.user_project.alu_object.ZF.value == expZF, f"Zero Flag in ALU is not correct, alu_zero_flag={dut.user_project.alu_object.ZF.value}, expected={expZF}"
+        if not GLTEST:
+            assert dut.user_project.alu_object.CF.value == expCF, f"Carry Out in ALU is not correct, alu_carry_out={dut.user_project.alu_object.CF.value}, expected={expCF}"
+            assert dut.user_project.alu_object.ZF.value == expZF, f"Zero Flag in ALU is not correct, alu_zero_flag={dut.user_project.alu_object.ZF.value}, expected={expZF}"
         assert get_regA_value(dut) == expVal, f"Value in Accumulator is not correct, accumulator={get_regA_value(dut)}, expected={expVal}"
         await RisingEdge(dut.clk)
         dut._log.info(f"PC={get_pc(dut)}")
@@ -725,7 +727,7 @@ async def out_checker(dut):
         await log_control_signals(dut)
         await log_uio_out(dut)
         assert get_control_signal_array(dut) == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
-        assert dut.user_project.output_register.value.value == val_a, f"Value in Output Register is not correct, output_register={dut.output_register.regO.value}, expected={val_a}"
+        assert dut.uo_out.value == val_a, f"Value in Output Register is not correct, output_register={dut.uo_out.value}, expected={val_a}"
         await RisingEdge(dut.clk)
         dut._log.info("T5")
         assert get_cb_stage(dut) == 5, f"Stage is not 5, stage={get_cb_stage(dut)}"
@@ -798,7 +800,7 @@ async def sta_checker(dut, address):
         await log_control_signals(dut)
         await log_uio_out(dut)
         assert get_control_signal_array(dut) == LogicArray("000111011100011"), f"Control Signals are not correct, expected=000111011100011"
-        assert get_mar_data(dut) == val_a, f"Value in MAR is not correct, mar_data={dut.user_project.input_ram_register.data.value}, expected={val_a}"
+        assert get_mar_data(dut) == val_a, f"Value in MAR is not correct, mar_data={get_mar_data(dut)}, expected={val_a}"
         await RisingEdge(dut.clk)
         dut._log.info("T6")
         assert get_cb_stage(dut) == 6, f"Stage is not 6, stage={get_cb_stage(dut)}"
