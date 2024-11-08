@@ -61,7 +61,6 @@ parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5;
 always @(posedge clk) begin
     if (!resetn) begin           // Check if reset is asserted, if yes, put into a holding stage
       stage <= 6;
-      hlt_flag <= 0;
     end
  	else begin                   // If reset is not asserted, do the stages sequentially
       if (stage == 6) begin        
@@ -89,6 +88,9 @@ always @(negedge clk) begin
     done_load_reg <= 0;
     read_ui_in_reg <= 0;
     ready_reg <= 0;
+    if (!resetn) begin           // Check if reset is asserted, if yes, init halt reg
+      hlt_flag <= 0;
+    end
     
     case(stage)
         T0: begin
