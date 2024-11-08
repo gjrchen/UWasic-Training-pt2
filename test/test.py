@@ -739,7 +739,7 @@ async def jmp_checker(dut, address):
         assert dut.user_project.cb.stage.value == 3, f"Stage is not 3, stage={dut.user_project.cb.stage.value}"
         await log_control_signals(dut)
         await log_uio_out(dut)
-        assert dut.user_project.control_signals.value == LogicArray("000111111100011"), f"Control Signals are not correct, expected=001111110100011"
+        assert dut.user_project.control_signals.value == LogicArray("001111110100011"), f"Control Signals are not correct, expected=001111110100011"
         assert dut.user_project.cb.opcode.value == 7, f"Opcode is not JMP, opcode={dut.user_project.cb.opcode.value}"
         await RisingEdge(dut.clk)
         dut._log.info("T4")
