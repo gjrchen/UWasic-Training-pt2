@@ -1039,3 +1039,54 @@ async def test_operation_sta(dut):
     await hlt_checker(dut)
     await dumpRAM(dut)
     dut._log.info("Operation STA Test Complete")
+
+async def get_ram(dut):
+    ram = [0] * 16
+    if (GLTEST):
+        for i in range(16):
+            for j in range(8):
+                ram[i] |= (dut.user_project._id(f"\\ram.RAM[{i}][{j}]", extended = False).value << j)
+    else: 
+        for i in range(16):
+            ram[i] = dut.user_project.RAM.value[i]
+
+    return ram
+
+@cocotb.test()
+async def memory_load_and_verify_outputs(dut):
+    # Define the program data (as per the layout specified above)
+    program_data = [
+        0x10,  # NOP
+        0x73,  # JMP 0x3
+        0x00,  # HLT
+        0x4F,  # LDA 0xF
+        0x2E,  # ADD 0xE
+        0x6D,  # STA 0xD
+        0x50,  # OUT
+        0x3F,  # SUB 0xF
+        0x50,  # OUT
+        0x4D,  # LDA 0xD
+        0x50,  # OUT
+        0x72,  # JMP 0x2
+        0x10,  # NOP
+        0x00,  # Padding/empty instruction
+        0x02,  # Constant 2 (data)
+        0x01   # Constant 1 (data)
+    ]
+    # Initialize and load the program data into RAM
+    await init(dut)
+    await load_ram(dut, program_data)
+    await dumpRAM(dut)
+    await mem_check(dut, program_data)
+
+    await nop_checker(dut)
+    await jmp_checker(dut, 0x3)
+    await lda_checker(dut, 0xF)
+    await add_checker(dut, 0xE)
+    await sta_checker(dut, 0xD)
+    await out_checker(dut)
+    await sub_checker(dut, 0xF)
+    await out_checker(dut)
+    await lda_checker(dut, 0xD)
+    await out_checker(dut)
+    await jmp_checker(dut, 0x2)
