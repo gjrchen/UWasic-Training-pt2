@@ -1077,12 +1077,13 @@ async def memory_load_and_verify_outputs(dut):
         0x02,  # Constant 2 (data)
         0x01   # Constant 1 (data)
     ]
+    dut._log.info(f"Comprehensive Test Start")
+    dut._log.info(f"data_bin={[str(bin(x)) for x in program_data]}")
+    dut._log.info(f"data_hex={[str(hex(x)) for x in program_data]}")
+    
     # Initialize and load the program data into RAM
     await init(dut)
     await load_ram(dut, program_data)
-    dut._log.info("PLS PRINT EVERYTHING PLS")
-    ram = await get_ram(dut)  # Await the asynchronous function
-    dut._log.info(f"ram: {ram}")
     await dumpRAM(dut)
     await mem_check(dut, program_data)
 
@@ -1097,3 +1098,5 @@ async def memory_load_and_verify_outputs(dut):
     await lda_checker(dut, 0xD)
     await out_checker(dut)
     await jmp_checker(dut, 0x2)
+    await dumpRAM(dut)
+    dut._log.info("Comprehensive Test Complete")
