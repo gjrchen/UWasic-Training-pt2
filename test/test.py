@@ -33,7 +33,7 @@ def get_control_signal_array_gltest(dut):
     nLma = dut.user_project._id("\\input_mar_register.n_load_addr", extended = False).value
     Lp = dut.user_project._id("\\pc.lp", extended = False).value
     read_ui_in = dut.user_project._id("\\cb.read_ui_in", extended = False).value
-    Ep = not ((not nCE) or (not nEi) or Ea or Eu or read_ui_in)
+    Ep = int(not ((not nCE) or (not nEi) or Ea or Eu or read_ui_in))
     Cp = dut.user_project._id("\\pc.cp", extended = False).value
     array = LogicArray(f"{nLo}{nLb}{Eu}{sub}{Ea}{nLa}{nEi}{nLi}{nLr}{nCE}{nLmd}{nLma}{Lp}{Ep}{Cp}")
     return array
@@ -975,7 +975,6 @@ def get_ram(dut):
             for i in range(16):
                 ram[15 - i] = dut.user_project.ram.RAM.value[i]
 
-    dut._log.error(f"RAM TYPE: {type(ram)}, VALUE: {ram}")
     return ram
 
 
