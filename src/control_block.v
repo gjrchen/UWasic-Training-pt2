@@ -15,7 +15,8 @@ module control_block (
     input wire programming,
     output wire done_load,
     output wire read_ui_in,
-    output wire ready
+    output wire ready,
+    output wire HF
 );
 
 /* Supported Instructions' Opcodes */
@@ -53,7 +54,6 @@ reg hlt_flag;
 reg done_load_reg;
 reg read_ui_in_reg;
 reg ready_reg;
-
 /* Micro-Operation Stages */
 parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5; 
 
@@ -190,5 +190,6 @@ assign out = control_signals;
 assign done_load = done_load_reg;
 assign read_ui_in = read_ui_in_reg;
 assign ready = ready_reg;
+assign HF = hlt_flag;
 
 endmodule
