@@ -83,7 +83,7 @@ always @(posedge clk) begin
 end
 
 /* Micro-Operation Logic */
-always @(negedge clk) begin
+always @(negedge clk or negedge resetn) begin
     control_signals <= 15'b000111111100011; // All signals are deasserted
     done_load_reg <= 0;
     read_ui_in_reg <= 0;
