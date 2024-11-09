@@ -15,11 +15,21 @@ The control block is implemented using a 6 stage sequential counter for sequenci
 
 The program counter enumerates all values between 0 and F (15) before looping back to 0 and starting again. The counter will clear back to 0 whenever the chip is reset.
 
+The Instruction register stores the curernt instructions and breaks it up into the opcode and address, which are passed into corresponding locations
+
 The 16 Byte memory module consists of 16 memory locations that store 1 byte each. The memory allows for both read and write operations, controlled by input signals, as well as data supplied by the MAR.
+
+The MAR is a register which handles RAM interactions, namely specifying the address for store/load, as well as the data to be stored.
 
 The 8-bit ripple carry adder assumes 2s complement inputs and thus supports addition and subtraction. It pushes the result to the bus via tri-state buffer. It also includes a zero flag and a carry flag to support conditional operation using an external microcontroller. These flags are synchronized to the rising edge of the clock and are updated when the adder outputs to the bus.
 
-The accumulator register functions to store the output of the adder. It is synchronized to the positive edge of the clock. The accumulator loads and outputs its value from the bus and is connected via tri-state buffer. The accumulator’s current value is always available as an ouput (and usually connected to the Register A input of the ALU)
+The Accumulator register functions to store the output of the adder. It is synchronized to the positive edge of the clock. The accumulator loads and outputs its value from the bus and is connected via tri-state buffer. The accumulator’s current value is always available as an ouput (and usually connected to the Register A input of the ALU)
+
+The B register stores the second operand for ALU operations which is loaded from RAM.
+
+The Output register outputs the value from register A onto the uo_out pins.
+
+The 8 Bit Bus is driven by various blocks. We allow multiple blocks that are able to write using tri-state buffers.
 
 ## Supported Instructions
 
@@ -40,23 +50,23 @@ The accumulator register functions to store the output of the adder. It is synch
 
 ## Control Signal Descriptions
 
-| **Control Signal** | **Control Signal Array Index** | **Component**    | **Function**                                        |
-| ------------------ | ------------------------------ | ---------------- | --------------------------------------------------- |
-| CP                 | 14                             | PC               | Increments the PC by 1                              |
-| EP                 | 13                             | PC               | Enable signal for PC to drive the bus               |
-| LP                 | 12                             | PC               | Tells PC to load value from the bus                 |
-| nLma               | 11                             | MAR              | Tells MAR when to load address from the bus         |
-| nLmd               | 10                             | MAR              | Tells MAR when to load memory from the bus          |
-| nCE                | 9                              | RAM              | Enable signal for RAM to drive the bus              |
-| nLr                | 8                              | RAM              | Tells RAM when to load memory from the MAR          |
-| nLi                | 7                              | Instruction Reg  | Tells IR when to load instruction from the bus      |
-| nEi                | 6                              | Instruction Reg  | Enable signal for IR to drive the bus               |
-| nLa                | 5                              | A Reg            | Tells A register to load data from the bus          |
-| Ea                 | 4                              | A Reg            | Enable signal for A register to drive the bus       |
-| Su                 | 3                              | Adder/Subtractor | Activate subtractor instead of adder                |
-| Eu                 | 2                              | B Reg / Adder    | Enable signal for Adder/Subtractor to drive the bus |
-| nLb                | 1                              | B Reg            | Tells B register to load data from the bus          |
-| nLo                | 0                              | Output Reg       | Tells Output register to load data from the bus     |
+| **Control Signal** | **Array Index** | **Component**    | **Function**                                        |
+| ------------------ | --------------- | ---------------- | --------------------------------------------------- |
+| CP                 | 14              | PC               | Increments the PC by 1                              |
+| EP                 | 13              | PC               | Enable signal for PC to drive the bus               |
+| LP                 | 12              | PC               | Tells PC to load value from the bus                 |
+| nLma               | 11              | MAR              | Tells MAR when to load address from the bus         |
+| nLmd               | 10              | MAR              | Tells MAR when to load memory from the bus          |
+| nCE                | 9               | RAM              | Enable signal for RAM to drive the bus              |
+| nLr                | 8               | RAM              | Tells RAM when to load memory from the MAR          |
+| nLi                | 7               | Instruction Reg  | Tells IR when to load instruction from the bus      |
+| nEi                | 6               | Instruction Reg  | Enable signal for IR to drive the bus               |
+| nLa                | 5               | A Reg            | Tells A register to load data from the bus          |
+| Ea                 | 4               | A Reg            | Enable signal for A register to drive the bus       |
+| Su                 | 3               | Adder/Subtractor | Activate subtractor instead of adder                |
+| Eu                 | 2               | Adder/Subtractor | Enable signal for Adder/Subtractor to drive the bus |
+| nLb                | 1               | B Reg            | Tells B register to load data from the bus          |
+| nLo                | 0               | Output Reg       | Tells Output register to load data from the bus     |
 
 ## Sequencing Details
 
@@ -104,7 +114,7 @@ The accumulator register functions to store the output of the adder. It is synch
 
 ### Detailed Overview
 
-T0: Control Signals the same as the typical default microinstruction – load the MAR with the address of the next instruction. Assert ready signal to alert MCU programmer (off chip) that CPU is ready to accept next line of RAM data.
+T0: Control Signals the same as the typical default microinstruction \– load the MAR with the address of the next instruction. Assert ready signal to alert MCU programmer (off chip) that CPU is ready to accept next line of RAM data.
 
 T1: Increment the PC, the same as the typical default microinstruction. De-assert ready signal since the MCU programmer is polling for the rising edge.
 
@@ -158,6 +168,24 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 - clr_n has precedence over all.
 - Lp takes precedence over Cp.
 
+## IO Table: Instruction Register (IR)
+
+| **Name** | **Verilog** | **Description**         | **I/O** | **Width (bits)** | **Trigger**  |
+| -------- | ----------- | ----------------------- | ------- | ---------------- | ------------ |
+| bus      | bus         | Connection to bus       | IO      | 8                | NA           |
+| clk      | clk         | Clock signal            | I       | 1                | Falling Edge |
+| clear    | \~rst_n     | Clear to 0              | I       | 1                | Active High  |
+| opcode   | opcode      | Opcode from IR          | O       | 4                | NA           |
+| n_load   | nLi         | Load from Bus           | I       | 1                | Active Low   |
+| n_enable | nEi         | Output to bus           | O       | 1                | Active Low   |
+
+### Instruction Register (IR) Notes
+
+- The A Register updates its value on the rising edge of the clock.
+- nEi controls whether the instruction is being output to the bus\[3\:0\]. If this signal is high, our output is high impedance (Tri-State Buffers).
+- nLi indicates that we want to load the value on the bus into the IR. When this is low, we will read from the bus and write to the register.
+- When clear is high, the opcode is cleared back to NOP.
+
 ## IO Table: RAM
 
 | **Name** | **Verilog**     | **Description**         | **I/O** | **Width (bits)** | **Trigger**  |
@@ -178,6 +206,24 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 - Output: Data is presented on the bus line when the chip is enabled for reading, and high-impedance (Z) otherwise.
 - RAM is never reset, rather, we always flash it.
 
+## IO Table: MAR
+
+| **Name** | **Verilog** | **Description**         | **I/O** | **Width (bits)** | **Trigger**  |
+| -------- | ----------- | ----------------------- | ------- | ---------------- | ------------ |
+| bus      | bus         | Connection to bus       | IO      | 8                | NA           |
+| clk      | clk         | Clock signal            | I       | 1                | Falling Edge |
+| clear    | \~rst_n     | Clear to 0              | I       | 1                | Active High  |
+| opcode   | opcode      | Opcode from IR          | O       | 4                | NA           |
+| n_load   | nLi         | Load from Bus           | I       | 1                | Active Low   |
+| n_enable | nEi         | Output to bus           | O       | 1                | Active Low   |
+
+### MAR Notes
+
+- The A Register updates its value on the rising edge of the clock.
+- nEi controls whether the instruction is being output to the bus\[3\:0\]. If this signal is high, our output is high impedance (Tri-State Buffers).
+- nLi indicates that we want to load the value on the bus into the IR. When this is low, we will read from the bus and write to the register.
+- When clear is high, the opcode is cleared back to NOP.
+
 ## IO Table: Accumulator (A) Register
 
 | **Name**      | **Verilog**      | **Description**      | **I/O**          | **Width (bits)** | **Trigger**      |
@@ -193,7 +239,7 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 
 - The A Register updates its value on the rising edge of the clock.
 - Ea controls whether the counter is being output to the bus. If this signal is low, our output is high impedance (Tri-State Buffers).
-- nLa indicates that we want to load the value on the bus into the counter (used for jump instructions). When this is low, we will read from the bus and write to the register.
+- nLa indicates that we want to load the value on the bus into the A Register. When this is low, we will read from the bus and write to the register.
 - When CLR is low, the register is cleared back to 0.
 - (Register A) always outputs the current value of the register.
 
