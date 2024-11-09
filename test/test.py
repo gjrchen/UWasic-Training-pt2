@@ -22,7 +22,7 @@ def to_8_bit_array(value):
     return LogicArray(f'{value:08b}')
 
 def get_control_signal_array_gltest(dut):
-    nLo = dut.user_project._id("\\cb.control_signals[0]", extended = False).value             // Use the output of the control signal block because it is exactly the same wire
+    nLo = dut.user_project._id("\\cb.control_signals[0]", extended = False).value             # Use the output of the control signal block because it is exactly the same wire
     nLb = dut.user_project._id("\\b_register.n_load", extended = False).value
     Eu = dut.user_project._id("\\alu_object.enable_output", extended = False).value
     sub = dut.user_project._id("\\alu_object.addsub.genblk1[0].fa.cin", extended = False).value
