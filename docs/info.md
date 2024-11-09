@@ -109,8 +109,8 @@ The 8 Bit Bus is driven by various blocks. We allow multiple blocks that are abl
 | **T1** | Cp                  | ready \= 0                      |
 | **T2** | \-                  | \-                              |
 | **T3** | nLmd                | read_ui_in  \= 1                |
-| **T4** | nLr                 | nread_ui_in = 0, done_load \= 1 |
-| **T5** | \-                  | ndone_load \= 0                 |
+| **T4** | nLr                 | read_ui_in = 0, done_load \= 1 |
+| **T5** | \-                  | done_load \= 0                 |
 
 ### Detailed Overview
 
@@ -297,3 +297,105 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 ## How to test
 
 Provide input of op-code. Check that the correct output bits are being asserted/deasserted properly.
+
+### Setup
+
+1. **Power Supply**: Connect the chip to a stable power supply as per the voltage specifications.
+2. **Clock Signal**: Provide a stable clock signal to the `clk` pin.
+3. **Reset**: Ensure the `rst_n` pin is properly connected to allow resetting the chip.
+
+### Testing Steps
+
+1. **Initial Reset**:
+    - Perform a sync reset by pulling the `rst_n` pin low, waiting for 1 clock signal, and then pulling pulling the `rst_n` high to initialize the chip.
+
+2. **Load Program into RAM**:
+    - Use the `ui_in` pins to load a test program into the RAM. Ensure the `programming` pin is high during this process.
+    - Perform a sync reset by pulling the `rst_n` pin low, waiting for 1 clock signal, and then pulling pulling the `rst_n` high to initialize the chip.
+    - Wait for the ready_for_ui signal to go high, indicating that the CPU is ready to accept data.
+    - Provide the first byte of data on the ui_in pins.
+    - Wait for the done_load signal to go high, indicating that the data has been successfully loaded into the RAM.
+    - Repeat the process for each byte of data:
+        - Wait for ready_for_ui to go high.
+        - Provide the next byte of data on the ui_in pins.
+        - Wait for done_load to go high.
+    - Example program data:
+
+        ```plaintext
+            0x10,  # NOP
+            0x73,  # JMP 0x3
+            0x00,  # HLT
+            0x4F,  # LDA 0xF
+            0x2E,  # ADD 0xE
+            0x6D,  # STA 0xD
+            0x50,  # OUT
+            0x3F,  # SUB 0xF
+            0x50,  # OUT
+            0x4D,  # LDA 0xD
+            0x50,  # OUT
+            0x72,  # JMP 0x2
+            0x10,  # NOP
+            0x00,  # Padding/empty instruction
+            0x02,  # Constant 2 (data)
+            0x01   # Constant 1 (data)
+        ```
+
+3. **Run Test Program**:
+    - Set the `programming` pin low to exit programming mode.
+    - Perform a sync reset by pulling the `rst_n` pin low, waiting for 1 clock signal, and then pulling pulling the `rst_n` high to initialize the chip.
+    - Monitor the `uo_out` and `uio_out` pins for expected outputs.
+    - Verify the control signals and data outputs at each clock cycle.
+
+4. **Functional Tests**:
+    - Perform specific functional tests for each instruction (e.g., ADD, SUB, LDA, STA, JMP, HLT).
+    - Verify the correct execution of each instruction by checking the output and control signals.
+
+### Example Test Cases
+
+- **HLT Instruction**:
+    Example program data:
+
+    ```plaintext
+        0x4E,  # LDA 0xE
+        0x50,  # OUT
+        0x00,  # HLT
+        0x4F,  # LDA 0xF
+        0x50,  # OUT
+        0x00,  # HLT
+        0x00,  # Padding/empty instruction
+        0x00,  # Padding/empty instruction
+        0x00,  # Padding/empty instruction
+        0x00,  # Padding/empty instruction
+        0x00,  # Padding/empty instruction
+        0x00,  # Padding/empty instruction
+        0x00,  # Padding/empty instruction
+        0x00,  # Padding/empty instruction
+        0x09,  # Constant 9 (data)
+        0xFF   # Constant 255 (data)
+    ```
+
+    This program should first output 9 and then NOT change that to 255. HF should be set to 1
+
+- **NOP Instruction**:
+    Example program data:
+
+    ```plaintext
+        0x42,  # LDA 0x2
+        0x50,  # OUT
+        0x10,  # NOP / Constant 16 (data)
+        0x1F,  # NOP
+        0x1F,  # NOP
+        0x1F,  # NOP
+        0x1F,  # NOP
+        0x1F,  # NOP
+        0x1F,  # NOP
+        0x1F,  # NOP
+        0x1F,  # NOP
+        0x1F,  # NOP
+        0x4E,  # LDA 0xF
+        0x50,  # OUT
+        0x1F,  # NOP
+        0x1F,  # NOP / Constant 31 (data)
+    ```
+
+    This program should flash the lower 4 bits of the output register on and off with different on/off times
