@@ -28,10 +28,10 @@ def get_control_signal_array_gltest(dut):
     sub = dut.user_project._id("\\alu_object.addsub.genblk1[0].fa.cin", extended = False).value
     Ea = dut.user_project._id("\\cb.control_signals[4]", extended = False).value & dut.rst_n.value
     nLa = dut.user_project._id("\\accumulator_object.load", extended = False).value
-    nEi = dut.user_project._id("\\cb.control_signals[6]", extended = False).value | not (dut.rst_n.value)
+    nEi = dut.user_project._id("\\cb.control_signals[6]", extended = False).value | (~dut.rst_n.value)
     nLi = dut.user_project._id("\\cb.control_signals[7]", extended = False).value
     nLr = dut.user_project._id("\\cb.control_signals[8]", extended = False).value
-    nCE = dut.user_project._id("\\cb.control_signals[9]", extended = False).value | not (dut.rst_n.value)
+    nCE = dut.user_project._id("\\cb.control_signals[9]", extended = False).value | (~dut.rst_n.value)
     nLmd = dut.user_project._id("\\cb.control_signals[10]", extended = False).value
     nLma = dut.user_project._id("\\cb.control_signals[11]", extended = False).value
     Lp = dut.user_project._id("\\pc.lp", extended = False).value
