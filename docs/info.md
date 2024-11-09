@@ -136,7 +136,7 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 
 | **Name**    | **Verilog**     | **Description**           | **I/O** | **Width** | **Trigger**     |
 | ----------- | --------------- | ------------------------- | ------- | --------- | --------------- |
-| clk         | clk             | Clock signal              | I       | 1         | Enge Transition |
+| clk         | clk             | Clock signal              | I       | 1         | Edge Transition |
 | resetn      | rst_n           | Set stage to 0            | I       | 1         | Active Low      |
 | opcode      | opcode          | Opcode from IR            | I       | 4         | NA              |
 | out         | control_signals | Control Signal Array      | O       | 15        | NA              |
