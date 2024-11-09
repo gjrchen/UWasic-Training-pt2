@@ -399,3 +399,140 @@ Provide input of op-code. Check that the correct output bits are being asserted/
     ```
 
     This program should flash the lower 4 bits of the output register on and off with different on/off times
+
+- **NOP Instruction**:
+    Example program data:
+
+    ```plaintext
+        0x42,  # LDA 0x2
+        0x50,  # OUT
+        0x10,  # NOP / Constant 16 (data)
+        0x1F,  # NOP
+        0x1F,  # NOP
+        0x1F,  # NOP
+        0x1F,  # NOP
+        0x1F,  # NOP
+        0x1F,  # NOP
+        0x1F,  # NOP
+        0x1F,  # NOP
+        0x1F,  # NOP
+        0x4E,  # LDA 0xF
+        0x50,  # OUT
+        0x1F,  # NOP
+        0x1F,  # NOP / Constant 31 (data)
+    ```
+
+    This program should flash the lower 4 bits of the output register on and off with different on/off times
+
+- **ADD Instruction**
+    Example program data:
+
+    ```plaintext
+        0x50,  # OUT
+        0x2E,  # ADD 0xE
+        0x70,  # JMP 0x0
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0x01,  # Constant 1 (data)
+        0xFF,  # Padding/empty instruction
+    ```
+
+    This program should add 1 to the A register, display it and loop back to the start. The output should be a counter from 0 to 255, then repeat.
+
+    CF should be set to 1 when the A register overflows, and 0 when it doesn't. CF=1 happens when the A register is 255 and 1 is added to it.
+
+    ZF should be set to 1 when the A register is 0, and 0 otherwise.
+
+- **SUB Instruction**
+    Example program data:
+
+    ```plaintext
+        0x50,  # OUT
+        0x3E,  # SUB 0xE
+        0x70,  # JMP 0x0
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0x01,  # Constant 1 (data)
+        0xFF,  # Padding/empty instruction
+    ```
+
+    This program should subtract 1 to the A register, display it and loop back to the start. The output should be a counter from 255 to 0, then repeat.
+
+    CF should be set to 1 when the A register overflows, and 0 when it doesn't. ZF=0 happens when the A register is 0 and 1 is subtracted from it.
+
+    ZF should be set to 1 when the A register is 0, and 0 otherwise.
+
+- **LDA Instruction**
+
+    See above for example program data.
+
+- **OUT Instruction**
+
+    See above for example program data.
+
+- **STA Instruction**
+
+    Example program data:
+
+    ```plaintext
+        0x4E,  # LDA 0xE
+        0x2F,  # ADD 0xF
+        0x5F,  # OUT
+        0x6E,  # STA 0xF
+        0x2F,  # ADD 0xE
+        0x5F,  # OUT
+        0x00,  # HLT
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0x09,  # Constant 9 (data)
+        0xFF   # Constant 255 (data) -> Constant 8 (data)
+    ```
+
+    This program should load 9 to the A register, add 255 to it, resulting in 8 (CF should set to 1) display it, store it in 0xF, add 9 to it, resulting in 17 (CF should set to 0) and display it. Then, it shoul halt, and set HF to 1.
+
+- **JMP Instruction**
+
+    Example program data:
+
+    ```plaintext
+        0x44,  # LDA 0x4
+        0x5F   # OUT
+        0x7D,  # JMP 0xD
+        0x0F,  # HLT
+        0x00,  # Constant 0 (data)
+        0xFF,  # Constant 5 (data)
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0xFF,  # Padding/empty instruction
+        0x45,  # LDA 0x5
+        0x5F   # OUT
+        0x0F,  # HLT
+    ```
+
+    This program should load 0x4 (0) to the A register, display it, NOT HALT, jump to 0xD, then load 0x5 (255) to the A register, display it, and halt. HF should be set to 1.
