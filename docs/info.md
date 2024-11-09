@@ -15,7 +15,7 @@ The control block is implemented using a 6 stage sequential counter for sequenci
 
 The counter enumerates all values between 0 and F (15) before looping back to 0 and starting again. The counter will clear back to 0 whenever the chip is reset.
 
-The 8-bit ripple carry adder assumes 2s complement inputs and thus supports addition and subtraction. It pushes the result to the bus via tri-state buffer. It also includes a zero flag to support conditional operation as well as a carry flag. These flags are synchronized to the rising edge of the clock and are updated when the adder outputs to the bus.
+The 8-bit ripple carry adder assumes 2s complement inputs and thus supports addition and subtraction. It pushes the result to the bus via tri-state buffer. It also includes a zero flag and a carry flag to support conditional operation using an external microcontroller. These flags are synchronized to the rising edge of the clock and are updated when the adder outputs to the bus.
 
 The accumulator register functions to store the output of the adder. It is synchronized to the positive edge of the clock. The accumulator loads and outputs its value from the bus and is connected via tri-state buffer. The accumulator’s current value is always available as an ouput (and usually connected to the Register A input of the ALU)
 
@@ -32,7 +32,7 @@ The accumulator register functions to store the output of the adder. It is synch
 | STA {address} | 0x6        | Store A register data in RAM at {address}                |
 | JMP {address} | 0x7        | Change PC to {address}                                   |
 
-### Instruction Notes:
+### Instruction Notes
 
 - All instructions consist of an opcode (most significant 4 bits), and an address (least significant 4 bits, where applicable)
 
@@ -82,7 +82,7 @@ The accumulator register functions to store the output of the adder. It is synch
 | **T4** | nCE, nLa  | nCE, nLb  | nCE, nLb    | \-       |
 | **T5** | \-        | Eu, nLa   | Su, Eu, nLa | \-       |
 
-### Instruction Micro-Operations Notes:
+### Instruction Micro-Operations Notes
 
 - First three micro-operations are common to all instructions.  
 - NOP operation executes only the first three micro-operations.  
@@ -131,7 +131,7 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 | ep       | Cp          | Output to Bus           | I       | 1                | Active High  |
 | lp       | Lp          | Load from bus           | I       | 1                | Active High  |
 
-### PC (Program Counter) Notes:
+### PC (Program Counter) Notes
 
 - Counter increments only when Cp is asserted, otherwise it will stay at the current value.
 - Ep controls whether the counter is being output to the bus. If this signal is low, our output is high impedance (Tri-State Buffers).
@@ -153,13 +153,13 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 | Register A    | regA             | Accumulator Register | Output           | 8                | NA               |
 | clear         | rst_n            | Clear Signal         | Input            | 1                | Active Low       |
 
-### Accumulator (A) Register Notes:
+### Accumulator (A) Register Notes
 
+- The A Register updates its value on the rising edge of the clock.
 - Ea controls whether the counter is being output to the bus. If this signal is low, our output is high impedance (Tri-State Buffers).
 - nLa indicates that we want to load the value on the bus into the counter (used for jump instructions). When this is low, we will read from the bus and write to the register.
 - When CLR is low, the register is cleared back to 0.
 - (Register A) always outputs the current value of the register.
-
 
 ## IO Table: ALU (Adder/Subtractor)
 
@@ -174,14 +174,13 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 | Carry Out     | CF               | Carry-out flag       | Output           | 1                | Active High      |
 | Result Zero   | ZF               | Zero flag            | Output           | 1                | Active High      |
 
-### ALU (Adder/Subtractor) Notes:
+### ALU (Adder/Subtractor) Notes
 
 - Eu controls whether the counter is being output to the bus. If this signal is low, our output is high impedance (Tri-State Buffers).
 - A Register and B Register always provide the ALU with their current values.
 - When sub is not asserted, the ALU will perform addition: Result = A + B
 - When sub is asserted, the ALU will perform subtraction by taking 2s complement of operand B: Result = A - B = A + !B + 1
 - Carry Out and Result Zero flags are updated on rising clock edge
-
 
 ## How to test
 
