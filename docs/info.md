@@ -134,28 +134,28 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 
 ## IO Table: CB (Control Block)
 
-| **Name**    | **Verilog**     | **Description**           | **I/O** | **Width (bits)** | **Trigger**     |
-| ----------- | --------------- | ------------------------- | ------- | ---------------- | --------------- |
-| clk         | clk             | Clock signal              | I       | 1                | Enge Transition |
-| resetn      | rst_n           | Set stage to 0            | I       | 1                | Active Low      |
-| opcode      | opcode          | Opcode from IR            | I       | 4                | NA              |
-| out         | control_signals | Control Signal Array      | O       | 15               | NA              |
-| programming | programming     | Programming mode          | I       | 1                | Active High     |
-| done_load   | done_load       | Executed Load during prog | O       | 1                | Active High     |
-| read_ui_in  | read_ui_in      | Push ui_in onto bus       | O       | 1                | Active High     |
-| ready       | ready           | Ready to prog next byte   | O       | 1                | Active High     |
-| HF          | HF              | Halting flag              | O       | 1                | Active High     |
+| **Name**    | **Verilog**     | **Description**           | **I/O** | **Width** | **Trigger**     |
+| ----------- | --------------- | ------------------------- | ------- | --------- | --------------- |
+| clk         | clk             | Clock signal              | I       | 1         | Enge Transition |
+| resetn      | rst_n           | Set stage to 0            | I       | 1         | Active Low      |
+| opcode      | opcode          | Opcode from IR            | I       | 4         | NA              |
+| out         | control_signals | Control Signal Array      | O       | 15        | NA              |
+| programming | programming     | Programming mode          | I       | 1         | Active High     |
+| done_load   | done_load       | Executed Load during prog | O       | 1         | Active High     |
+| read_ui_in  | read_ui_in      | Push ui_in onto bus       | O       | 1         | Active High     |
+| ready       | ready_for_ui    | Ready to prog next byte   | O       | 1         | Active High     |
+| HF          | HF              | Halting flag              | O       | 1         | Active High     |
 
 ## IO Table: PC (Program Counter)
 
-| **Name** | **Verilog** | **Description**         | **I/O** | **Width (bits)** | **Trigger**  |
-| -------- | ----------- | ----------------------- | ------- | ---------------- | ------------ |
-| bus      | bus\[3\:0\] | Connection to bus       | IO      | 4                | NA           |
-| clk      | clk         | Clock signal            | I       | 1                | Falling Edge |
-| clr_n    | rst_n       | Clear to 0              | I       | 1                | Active Low   |
-| cp       | Ep          | Allow counter increment | I       | 1                | Active High  |
-| ep       | Cp          | Output to bus           | I       | 1                | Active High  |
-| lp       | Lp          | Load from bus           | I       | 1                | Active High  |
+| **Name** | **Verilog** | **Description**         | **I/O** | **Width** | **Trigger**  |
+| -------- | ----------- | ----------------------- | ------- | --------- | ------------ |
+| bus      | bus\[3\:0\] | Connection to bus       | IO      | 4         | NA           |
+| clk      | clk         | Clock signal            | I       | 1         | Falling Edge |
+| clr_n    | rst_n       | Clear to 0              | I       | 1         | Active Low   |
+| cp       | Ep          | Allow counter increment | I       | 1         | Active High  |
+| ep       | Cp          | Output to bus           | I       | 1         | Active High  |
+| lp       | Lp          | Load from bus           | I       | 1         | Active High  |
 
 ### PC (Program Counter) Notes
 
@@ -170,14 +170,14 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 
 ## IO Table: Instruction Register (IR)
 
-| **Name** | **Verilog** | **Description**         | **I/O** | **Width (bits)** | **Trigger**  |
-| -------- | ----------- | ----------------------- | ------- | ---------------- | ------------ |
-| bus      | bus         | Connection to bus       | IO      | 8                | NA           |
-| clk      | clk         | Clock signal            | I       | 1                | Rising Edge  |
-| clear    | \~rst_n     | Clear to 0              | I       | 1                | Active High  |
-| opcode   | opcode      | Opcode from IR          | O       | 4                | NA           |
-| n_load   | nLi         | Load from Bus           | I       | 1                | Active Low   |
-| n_enable | nEi         | Output to bus           | O       | 1                | Active Low   |
+| **Name** | **Verilog** | **Description**         | **I/O** | **Width** | **Trigger**  |
+| -------- | ----------- | ----------------------- | ------- | --------- | ------------ |
+| bus      | bus         | Connection to bus       | IO      | 8         | NA           |
+| clk      | clk         | Clock signal            | I       | 1         | Rising Edge  |
+| clear    | \~rst_n     | Clear to 0              | I       | 1         | Active High  |
+| opcode   | opcode      | Opcode from IR          | O       | 4         | NA           |
+| n_load   | nLi         | Load from Bus           | I       | 1         | Active Low   |
+| n_enable | nEi         | Output to bus           | O       | 1         | Active Low   |
 
 ### Instruction Register (IR) Notes
 
@@ -189,15 +189,15 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 
 ## IO Table: RAM
 
-| **Name** | **Verilog**     | **Description**         | **I/O** | **Width (bits)** | **Trigger**  |
-| -------- | --------------- | ----------------------- | ------- | ---------------- | ------------ |
-| addr     | mar_to_ram_addr | Address for read/write  | I       | 4                | NA           |
-| data_in  | mar_to_ram_data | Data for write          | I       | 8                | NA           |
-| data_out | bus             | Connection to bus       | O       | 8                | NA           |
-| lr_n     | nLr             | Load data from MAR      | I       | 1                | Active Low   |
-| ce_n     | nCE             | Output to bus           | I       | 1                | Active Low   |
-| clk      | clk             | Clock Signal            | I       | 1                | Rising edge  |
-| rst_n    | \'1\'           | Clear RAM               | I       | 1                | Active Low   |
+| **Name** | **Verilog**     | **Description**         | **I/O** | **Width** | **Trigger**  |
+| -------- | --------------- | ----------------------- | ------- | --------- | ------------ |
+| addr     | mar_to_ram_addr | Address for read/write  | I       | 4         | NA           |
+| data_in  | mar_to_ram_data | Data for write          | I       | 8         | NA           |
+| data_out | bus             | Connection to bus       | O       | 8         | NA           |
+| lr_n     | nLr             | Load data from MAR      | I       | 1         | Active Low   |
+| ce_n     | nCE             | Output to bus           | I       | 1         | Active Low   |
+| clk      | clk             | Clock Signal            | I       | 1         | Rising edge  |
+| rst_n    | \'1\'           | Clear RAM               | I       | 1         | Active Low   |
 
 ### RAM Notes
 
@@ -209,14 +209,14 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 
 ## IO Table: MAR
 
-| **Name**    | **Verilog**     | **Description**         | **I/O** | **Width (bits)** | **Trigger**  |
-| ----------- | --------------- | ----------------------- | ------- | ---------------- | ------------ |
-| bus         | bus             | Connection to bus       | IO      | 8                | NA           |
-| clk         | clk             | Clock signal            | I       | 1                | Rising Edge  |
-| addr        | mar_to_ram_addr | Address for read/write  | O       | 4                | NA           |
-| data        | mar_to_ram_data | Data for write          | O       | 8                | NA           |
-| n_load_data | nLmd            | Load data from Bus      | I       | 1                | Active Low   |
-| n_load_addr | nLma            | Load address from Bus   | I       | 1                | Active Low   |
+| **Name**    | **Verilog**     | **Description**         | **I/O** | **Width** | **Trigger**  |
+| ----------- | --------------- | ----------------------- | ------- | --------- | ------------ |
+| bus         | bus             | Connection to bus       | IO      | 8         | NA           |
+| clk         | clk             | Clock signal            | I       | 1         | Rising Edge  |
+| addr        | mar_to_ram_addr | Address for read/write  | O       | 4         | NA           |
+| data        | mar_to_ram_data | Data for write          | O       | 8         | NA           |
+| n_load_data | nLmd            | Load data from Bus      | I       | 1         | Active Low   |
+| n_load_addr | nLma            | Load address from Bus   | I       | 1         | Active Low   |
 
 ### MAR Notes
 
@@ -227,14 +227,14 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 
 ## IO Table: Accumulator (A) Register
 
-| **Name**      | **Verilog**      | **Description**      | **I/O**          | **Width (bits)** | **Trigger**      |
-| ------------- | ---------------- | -------------------- | ---------------- | ---------------- | ---------------- |
-| clk           | clk              | Clock Signal         | I                | 1                | Rising edge      |
-| bus           | bus              | Connection to bus    | IO               | 8                | NA               |
-| load          | nLa              | Load from bus        | I                | 1                | Active Low       |
-| enable_out    | Ea               | Output to bus        | I                | 1                | Active High      |
-| Register A    | reg_a            | Accumulator Register | O                | 8                | NA               |
-| clear         | rst_n            | Clear Signal         | I                | 1                | Active Low       |
+| **Name**      | **Verilog**      | **Description**      | **I/O**          | **Width** | **Trigger**      |
+| ------------- | ---------------- | -------------------- | ---------------- | --------- | ---------------- |
+| clk           | clk              | Clock Signal         | I                | 1         | Rising edge      |
+| bus           | bus              | Connection to bus    | IO               | 8         | NA               |
+| load          | nLa              | Load from bus        | I                | 1         | Active Low       |
+| enable_out    | Ea               | Output to bus        | I                | 1         | Active High      |
+| Register A    | reg_a            | Accumulator Register | O                | 8         | NA               |
+| clear         | rst_n            | Clear Signal         | I                | 1         | Active Low       |
 
 ### Accumulator (A) Register Notes
 
@@ -246,16 +246,16 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 
 ## IO Table: ALU (Adder/Subtractor)
 
-| **Name**      | **Verilog**      | **Description**      | **I/O**          | **Width (bits)** | **Trigger**      |
-| ------------- | ---------------- | -------------------- | ---------------- | ---------------- | ---------------- |
-| clk           | clk              | Clock Signal         | I                | 1                | Rising edge      |
-| enable_out    | Eu               | Output to bus        | I                | 1                | Active High      |
-| Register A    | reg_a            | Accumulator Register | I                | 8                | NA               |
-| Register B    | reg_b            | Register B           | I                | 8                | NA               |
-| subtract      | sub              | Perform Subtraction  | I                | 1                | Active High      |
-| bus           | bus              | Connection to bus    | O                | 8                | NA               |
-| Carry Out     | CF               | Carry-out flag       | O                | 1                | Active High      |
-| Result Zero   | ZF               | Zero flag            | O                | 1                | Active High      |
+| **Name**      | **Verilog**      | **Description**      | **I/O**          | **Width** | **Trigger**      |
+| ------------- | ---------------- | -------------------- | ---------------- | --------- | ---------------- |
+| clk           | clk              | Clock Signal         | I                | 1         | Rising edge      |
+| enable_out    | Eu               | Output to bus        | I                | 1         | Active High      |
+| Register A    | reg_a            | Accumulator Register | I                | 8         | NA               |
+| Register B    | reg_b            | Register B           | I                | 8         | NA               |
+| subtract      | sub              | Perform Subtraction  | I                | 1         | Active High      |
+| bus           | bus              | Connection to bus    | O                | 8         | NA               |
+| Carry Out     | CF               | Carry-out flag       | O                | 1         | Active High      |
+| Result Zero   | ZF               | Zero flag            | O                | 1         | Active High      |
 
 ### ALU (Adder/Subtractor) Notes
 
@@ -267,12 +267,12 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 
 ## IO Table: B Register
 
-| **Name**      | **Verilog**      | **Description**      | **I/O**          | **Width (bits)** | **Trigger**      |
-| ------------- | ---------------- | -------------------- | ---------------- | ---------------- | ---------------- |
-| bus           | bus              | Connection to bus    | IO               | 8                | NA               |
-| clk           | clk              | Clock Signal         | I                | 1                | Rising edge      |
-| n_load        | nLb              | Load from bus        | I                | 1                | Active Low       |
-| value         | reg_b            | B Register value     | O                | 8                | NA               |
+| **Name**      | **Verilog**      | **Description**      | **I/O**          | **Width** | **Trigger**      |
+| ------------- | ---------------- | -------------------- | ---------------- | --------- | ---------------- |
+| bus           | bus              | Connection to bus    | IO               | 8         | NA               |
+| clk           | clk              | Clock Signal         | I                | 1         | Rising edge      |
+| n_load        | nLb              | Load from bus        | I                | 1         | Active Low       |
+| value         | reg_b            | B Register value     | O                | 8         | NA               |
 
 ### B Register Notes
 
@@ -282,12 +282,12 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 
 ## IO Table: Output Register
 
-| **Name**      | **Verilog**      | **Description**      | **I/O**          | **Width (bits)** | **Trigger**      |
-| ------------- | ---------------- | -------------------- | ---------------- | ---------------- | ---------------- |
-| bus           | bus              | Connection to bus    | IO               | 8                | NA               |
-| clk           | clk              | Clock Signal         | I                | 1                | Rising edge      |
-| n_load        | nLo              | Load from bus        | I                | 1                | Active Low       |
-| value         | uo_out           | B Register value     | O                | 8                | NA               |
+| **Name**      | **Verilog**      | **Description**      | **I/O**          | **Width** | **Trigger**      |
+| ------------- | ---------------- | -------------------- | ---------------- | --------- | ---------------- |
+| bus           | bus              | Connection to bus    | IO               | 8         | NA               |
+| clk           | clk              | Clock Signal         | I                | 1         | Rising edge      |
+| n_load        | nLo              | Load from bus        | I                | 1         | Active Low       |
+| value         | uo_out           | B Register value     | O                | 8         | NA               |
 
 ### Output Register Notes
 
