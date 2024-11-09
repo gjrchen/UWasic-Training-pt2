@@ -18,14 +18,6 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire [7:0] bus;                 // Bus (8-bit) (High impedance when not in use)
     wire outputting_to_bus;         // Signal to determine if something is outputting to the bus   
 
-    // Control Signals for the Bus Initialization //
-    assign outputting_to_bus = (Ep | (!nCE) | (!nEi) | Ea | Eu | read_ui_in); // Figure out if something is outputting to the bus   
-    
-    assign bus = (read_ui_in) ? ui_in : 8'bZZZZZZZZ;
-    
-    // Tri-state buffer to initialize the bus with a known value //
-    assign bus = (outputting_to_bus & rst_n) ? 8'bZZZZZZZZ : 8'b00000000; // Initialize the bus with a known value if nothing is outputting to the bus
-
     // Control Signals //
     wire [14:0] control_signals;    // Control Signals (15-bit), see below for the signal assignments
 
@@ -79,6 +71,14 @@ module tt_um_ece298a_8_bit_cpu_top (
     
     // Control Signals for the Output Register //
     wire nLo = control_signals[0];      // enable Output Register load from bus (ACTIVE-LOW)
+
+     // Control Signals for the Bus Initialization //
+    assign outputting_to_bus = (Ep | (!nCE) | (!nEi) | Ea | Eu | read_ui_in); // Figure out if something is outputting to the bus   
+    
+    assign bus = (read_ui_in) ? ui_in : 8'bZZZZZZZZ;
+    
+    // Tri-state buffer to initialize the bus with a known value //
+    assign bus = (outputting_to_bus & rst_n) ? 8'bZZZZZZZZ : 8'b00000000; // Initialize the bus with a known value if nothing is outputting to the bus
 
     // Program Counter //
     ProgramCounter pc(
