@@ -225,25 +225,6 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 - nLma indicates that we want to load the value on the bus\[3\:0\] into the address register. When this is low, we will read from the bus and write to the register.
 - MAR always outputs the current value of the data and address registers to the RAM module.
 
-## IO Table: Accumulator (A) Register
-
-| **Name**      | **Verilog**      | **Description**      | **I/O**          | **Width** | **Trigger**      |
-| ------------- | ---------------- | -------------------- | ---------------- | --------- | ---------------- |
-| clk           | clk              | Clock Signal         | I                | 1         | Rising edge      |
-| bus           | bus              | Connection to bus    | IO               | 8         | NA               |
-| load          | nLa              | Load from bus        | I                | 1         | Active Low       |
-| enable_out    | Ea               | Output to bus        | I                | 1         | Active High      |
-| Register A    | reg_a            | Accumulator Register | O                | 8         | NA               |
-| clear         | rst_n            | Clear Signal         | I                | 1         | Active Low       |
-
-### Accumulator (A) Register Notes
-
-- The A Register updates its value on the rising edge of the clock.
-- Ea controls whether the counter is being output to the bus. If this signal is low, our output is high impedance (Tri-State Buffers).
-- nLa indicates that we want to load the value on the bus into the A Register. When this is low, we will read from the bus and write to the register.
-- When CLR is low, the register is cleared back to 0.
-- (Register A) always outputs the current value of the register to the ALU.
-
 ## IO Table: ALU (Adder/Subtractor)
 
 | **Name**      | **Verilog**      | **Description**      | **I/O**          | **Width** | **Trigger**      |
@@ -264,6 +245,25 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 - When sub is not asserted, the ALU will perform addition: Result = A + B
 - When sub is asserted, the ALU will perform subtraction by taking 2s complement of operand B: Result = A - B = A + !B + 1
 - Carry Out and Result Zero flags are updated on rising clock edge.
+
+## IO Table: Accumulator (A) Register
+
+| **Name**      | **Verilog**      | **Description**      | **I/O**          | **Width** | **Trigger**      |
+| ------------- | ---------------- | -------------------- | ---------------- | --------- | ---------------- |
+| clk           | clk              | Clock Signal         | I                | 1         | Rising edge      |
+| bus           | bus              | Connection to bus    | IO               | 8         | NA               |
+| load          | nLa              | Load from bus        | I                | 1         | Active Low       |
+| enable_out    | Ea               | Output to bus        | I                | 1         | Active High      |
+| Register A    | reg_a            | Accumulator Register | O                | 8         | NA               |
+| clear         | rst_n            | Clear Signal         | I                | 1         | Active Low       |
+
+### Accumulator (A) Register Notes
+
+- The A Register updates its value on the rising edge of the clock.
+- Ea controls whether the counter is being output to the bus. If this signal is low, our output is high impedance (Tri-State Buffers).
+- nLa indicates that we want to load the value on the bus into the A Register. When this is low, we will read from the bus and write to the register.
+- When CLR is low, the register is cleared back to 0.
+- (Register A) always outputs the current value of the register to the ALU.
 
 ## IO Table: B Register
 
