@@ -19,10 +19,14 @@ module tt_um_ece298a_8_bit_cpu_top (
 );
     // Bus //
     wire [7:0] bus;                 // Bus (8-bit) (High impedance when not in use)
-    wire outputting_to_bus;         // Signal to determine when nothing is outputting to the bus
+    wire outputting_to_bus;         // Signal to determine if something is outputting to the bus   
 
+    // Control Signals for the Bus Initialization //
+    assign outputting_to_bus = (Ep | (!nCE) | (!nEi) | Ea | Eu | read_ui_in); // Figure out if something is outputting to the bus   
+    assign bus = (read_ui_in) ? ui_in : 8'bZZZZZZZZ;
+    
     // Tri-state buffer to initialize the bus with a known value //
-    assign bus = (outputting_to_bus) ? 8'bZZZZZZZZ : 8'b00000000; // Initialize the bus with a known value if nothing is outputting to the bus
+    assign bus = (outputting_to_bus & rst_n) ? 8'bZZZZZZZZ : 8'b00000000; // Initialize the bus with a known value if nothing is outputting to the bus
 
     // Control Signals //
     wire [14:0] control_signals;        // Control Signals (15-bit), see below for the signal assignments
@@ -32,10 +36,6 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire ready_for_ui;
     wire done_load;
     wire read_ui_in;
-
-
-
-    assign bus = (read_ui_in) ? ui_in : 8'bZZZZZZZZ;
     
 
     // Wires //
@@ -54,35 +54,32 @@ module tt_um_ece298a_8_bit_cpu_top (
 
     // Control Signals for the Program Counter //
     wire Cp = control_signals[14];      // 
-    wire Ep = control_signals[13];      // 
+    wire Ep = control_signals[13] & rst_n;      // 
     wire Lp = control_signals[12];      // 
 
     // Control Signals for the RAM //
     wire nLma = control_signals[11];    // 
     wire nLmd = control_signals[10];    // 
-    wire nCE = control_signals[9];      // 
+    wire nCE = control_signals[9] | !rst_n;      // 
     wire nLr = control_signals[8];      // 
 
     // Control Signals for the Instruction Register //
     wire nLi = control_signals[7];      // enable Instruction Register load from bus (ACTIVE-LOW)
-    wire nEi = control_signals[6];      // enable Instruction Register output to the bus (ACTIVE-LOW)
+    wire nEi = control_signals[6] | !rst_n;      // enable Instruction Register output to the bus (ACTIVE-LOW)
     
     // Control Signals for the Accumulator Register //
     wire nLa = control_signals[5];      // enable Accumulator Register load from bus (ACTIVE-LOW)
-    wire Ea = control_signals[4];       // enable Accumulator Register output to the bus (ACTIVE-HIGH)
+    wire Ea = control_signals[4] & rst_n;       // enable Accumulator Register output to the bus (ACTIVE-HIGH)
 
     // Control Signals for the ALU //
     wire sub = control_signals[3];      // perform addition when 0, perform subtraction when 1
-    wire Eu = control_signals[2];       // enable ALU output to the bus (ACTIVE-HIGH)
+    wire Eu = control_signals[2] & rst_n;       // enable ALU output to the bus (ACTIVE-HIGH)
     
     // Control Signals for the B Register //
     wire nLb = control_signals[1];      // enable B Register load from bus (ACTIVE-LOW)
     
     // Control Signals for the Output Register //
     wire nLo = control_signals[0];      // 
-
-    // Control Signals for the Bus Initialization //
-    assign outputting_to_bus = (Ep | (!nCE) | (!nEi) | Ea | Eu | read_ui_in); // Figure out when nothing is outputting to the bus   
 
     // Program Counter //
     ProgramCounter pc(
