@@ -15,7 +15,7 @@ The control block is implemented using a 6 stage sequential counter for sequenci
 
 The program counter enumerates all values between 0 and F (15) before looping back to 0 and starting again. The counter will clear back to 0 whenever the chip is reset.
 
-The Instruction register stores the curernt instructions and breaks it up into the opcode and address, which are passed into corresponding locations
+The Instruction register stores the current instructions and breaks it up into the opcode and address, which are passed into corresponding locations
 
 The 16 Byte memory module consists of 16 memory locations that store 1 byte each. The memory allows for both read and write operations, controlled by input signals, as well as data supplied by the MAR.
 
@@ -23,7 +23,7 @@ The MAR is a register which handles RAM interactions, namely specifying the addr
 
 The 8-bit ripple carry adder assumes 2s complement inputs and thus supports addition and subtraction. It pushes the result to the bus via tri-state buffer. It also includes a zero flag and a carry flag to support conditional operation using an external microcontroller. These flags are synchronized to the rising edge of the clock and are updated when the adder outputs to the bus.
 
-The Accumulator register functions to store the output of the adder. It is synchronized to the positive edge of the clock. The accumulator loads and outputs its value from the bus and is connected via tri-state buffer. The accumulator’s current value is always available as an ouput (and usually connected to the Register A input of the ALU)
+The Accumulator register functions to store the output of the adder. It is synchronized to the positive edge of the clock. The accumulator loads and outputs its value from the bus and is connected via tri-state buffer. The accumulator’s current value is always available as an output (and usually connected to the Register A input of the ALU)
 
 The B register stores the second operand for ALU operations which is loaded from RAM.
 
@@ -296,7 +296,7 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 
 ## How to test
 
-Provide input of op-code. Check that the correct output bits are being asserted/deasserted properly.
+Provide input of op-code. Check that the correct output bits are being asserted/de-asserted properly.
 
 ### Setup
 
@@ -474,7 +474,7 @@ Provide input of op-code. Check that the correct output bits are being asserted/
 
     This program should subtract 1 to the A register, display it and loop back to the start. The output should be a counter from 255 to 0, then repeat.
 
-    CF should be set to 1 when the A register overflows, and 0 when it doesn't. ZF=0 happens when the A register is 0 and 1 is subtracted from it.
+    CF should be set to 1 when the A register overflows, and 0 when it doesn't. CF=0 happens when the A register is 0 and 1 is subtracted from it.
 
     ZF should be set to 1 when the A register is 0, and 0 otherwise.
 
@@ -510,7 +510,7 @@ Provide input of op-code. Check that the correct output bits are being asserted/
         0xFF   # Constant 255 (data) -> Constant 8 (data)
     ```
 
-    This program should load 9 to the A register, add 255 to it, resulting in 8 (CF should set to 1) display it, store it in 0xF, add 9 to it, resulting in 17 (CF should set to 0) and display it. Then, it shoul halt, and set HF to 1.
+    This program should load 9 to the A register, add 255 to it, resulting in 8 (CF should set to 1) display it, store it in 0xF, add 9 to it, resulting in 17 (CF should set to 0) and display it. Then, it should halt, and set HF to 1.
 
 - **JMP Instruction**
 
