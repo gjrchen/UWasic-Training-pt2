@@ -50,23 +50,23 @@ The 8 Bit Bus is driven by various blocks. We allow multiple blocks that are abl
 
 ## Control Signal Descriptions
 
-| **Control Signal** | **Array Index** | **Component**    | **Function**                                        |
-| ------------------ | --------------- | ---------------- | --------------------------------------------------- |
-| CP                 | 14              | PC               | Increments the PC by 1                              |
-| EP                 | 13              | PC               | Enable signal for PC to drive the bus               |
-| LP                 | 12              | PC               | Tells PC to load value from the bus                 |
-| nLma               | 11              | MAR              | Tells MAR when to load address from the bus         |
-| nLmd               | 10              | MAR              | Tells MAR when to load memory from the bus          |
-| nCE                | 9               | RAM              | Enable signal for RAM to drive the bus              |
-| nLr                | 8               | RAM              | Tells RAM when to load memory from the MAR          |
-| nLi                | 7               | Instruction Reg  | Tells IR when to load instruction from the bus      |
-| nEi                | 6               | Instruction Reg  | Enable signal for IR to drive the bus               |
-| nLa                | 5               | A Reg            | Tells A register to load data from the bus          |
-| Ea                 | 4               | A Reg            | Enable signal for A register to drive the bus       |
-| Su                 | 3               | Adder/Subtractor | Activate subtractor instead of adder                |
-| Eu                 | 2               | Adder/Subtractor | Enable signal for Adder/Subtractor to drive the bus |
-| nLb                | 1               | B Reg            | Tells B register to load data from the bus          |
-| nLo                | 0               | Output Reg       | Tells Output register to load data from the bus     |
+| **Control Signal** | **Array** | **Component**    | **Function**                                        |
+| ------------------ | --------- | ---------------- | --------------------------------------------------- |
+| CP                 | 14        | PC               | Increments the PC by 1                              |
+| EP                 | 13        | PC               | Enable signal for PC to drive the bus               |
+| LP                 | 12        | PC               | Tells PC to load value from the bus                 |
+| nLma               | 11        | MAR              | Tells MAR when to load address from the bus         |
+| nLmd               | 10        | MAR              | Tells MAR when to load memory from the bus          |
+| nCE                | 9         | RAM              | Enable signal for RAM to drive the bus              |
+| nLr                | 8         | RAM              | Tells RAM when to load memory from the MAR          |
+| nLi                | 7         | IR               | Tells IR when to load instruction from the bus      |
+| nEi                | 6         | IR               | Enable signal for IR to drive the bus               |
+| nLa                | 5         | A Reg            | Tells A register to load data from the bus          |
+| Ea                 | 4         | A Reg            | Enable signal for A register to drive the bus       |
+| Su                 | 3         | ALU              | Activate subtractor instead of adder                |
+| Eu                 | 2         | ALU              | Enable signal for Adder/Subtractor to drive the bus |
+| nLb                | 1         | B Reg            | Tells B register to load data from the bus          |
+| nLo                | 0         | Output Reg       | Tells Output register to load data from the bus     |
 
 ## Sequencing Details
 
