@@ -173,7 +173,7 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 | **Name** | **Verilog** | **Description**         | **I/O** | **Width (bits)** | **Trigger**  |
 | -------- | ----------- | ----------------------- | ------- | ---------------- | ------------ |
 | bus      | bus         | Connection to bus       | IO      | 8                | NA           |
-| clk      | clk         | Clock signal            | I       | 1                | Falling Edge |
+| clk      | clk         | Clock signal            | I       | 1                | Rising Edge  |
 | clear    | \~rst_n     | Clear to 0              | I       | 1                | Active High  |
 | opcode   | opcode      | Opcode from IR          | O       | 4                | NA           |
 | n_load   | nLi         | Load from Bus           | I       | 1                | Active Low   |
@@ -185,6 +185,7 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 - nEi controls whether the instruction is being output to the bus\[3\:0\]. If this signal is high, our output is high impedance (Tri-State Buffers).
 - nLi indicates that we want to load the value on the bus into the IR. When this is low, we will read from the bus and write to the register.
 - When clear is high, the opcode is cleared back to NOP.
+- IR always outputs the current value of the register to CB.
 
 ## IO Table: RAM
 
@@ -208,21 +209,21 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 
 ## IO Table: MAR
 
-| **Name** | **Verilog** | **Description**         | **I/O** | **Width (bits)** | **Trigger**  |
-| -------- | ----------- | ----------------------- | ------- | ---------------- | ------------ |
-| bus      | bus         | Connection to bus       | IO      | 8                | NA           |
-| clk      | clk         | Clock signal            | I       | 1                | Falling Edge |
-| clear    | \~rst_n     | Clear to 0              | I       | 1                | Active High  |
-| opcode   | opcode      | Opcode from IR          | O       | 4                | NA           |
-| n_load   | nLi         | Load from Bus           | I       | 1                | Active Low   |
-| n_enable | nEi         | Output to bus           | O       | 1                | Active Low   |
+| **Name**    | **Verilog**     | **Description**         | **I/O** | **Width (bits)** | **Trigger**  |
+| ----------- | --------------- | ----------------------- | ------- | ---------------- | ------------ |
+| bus         | bus             | Connection to bus       | IO      | 8                | NA           |
+| clk         | clk             | Clock signal            | I       | 1                | Rising Edge  |
+| addr        | mar_to_ram_addr | Address for read/write  | O       | 4                | NA           |
+| data        | mar_to_ram_data | Data for write          | O       | 8                | NA           |
+| n_load_data | nLmd            | Load data from Bus      | I       | 1                | Active Low   |
+| n_load_addr | nLma            | Load address from Bus   | I       | 1                | Active Low   |
 
 ### MAR Notes
 
-- The A Register updates its value on the rising edge of the clock.
-- nEi controls whether the instruction is being output to the bus\[3\:0\]. If this signal is high, our output is high impedance (Tri-State Buffers).
-- nLi indicates that we want to load the value on the bus into the IR. When this is low, we will read from the bus and write to the register.
-- When clear is high, the opcode is cleared back to NOP.
+- The MAR updates its value on the rising edge of the clock.
+- nLmd indicates that we want to load the value on the bus into the data register. When this is low, we will read from the bus and write to the register.
+- nLma indicates that we want to load the value on the bus\[3\:0\] into the address register. When this is low, we will read from the bus and write to the register.
+- MAR always outputs the current value of the data and address registers to the RAM module.
 
 ## IO Table: Accumulator (A) Register
 
@@ -232,7 +233,7 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 | bus           | bus              | Connection to bus    | IO               | 8                | NA               |
 | load          | nLa              | Load from bus        | I                | 1                | Active Low       |
 | enable_out    | Ea               | Output to bus        | I                | 1                | Active High      |
-| Register A    | regA             | Accumulator Register | O                | 8                | NA               |
+| Register A    | reg_a            | Accumulator Register | O                | 8                | NA               |
 | clear         | rst_n            | Clear Signal         | I                | 1                | Active Low       |
 
 ### Accumulator (A) Register Notes
@@ -241,7 +242,7 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 - Ea controls whether the counter is being output to the bus. If this signal is low, our output is high impedance (Tri-State Buffers).
 - nLa indicates that we want to load the value on the bus into the A Register. When this is low, we will read from the bus and write to the register.
 - When CLR is low, the register is cleared back to 0.
-- (Register A) always outputs the current value of the register.
+- (Register A) always outputs the current value of the register to the ALU.
 
 ## IO Table: ALU (Adder/Subtractor)
 
@@ -262,7 +263,36 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 - A Register and B Register always provide the ALU with their current values.
 - When sub is not asserted, the ALU will perform addition: Result = A + B
 - When sub is asserted, the ALU will perform subtraction by taking 2s complement of operand B: Result = A - B = A + !B + 1
-- Carry Out and Result Zero flags are updated on rising clock edge
+- Carry Out and Result Zero flags are updated on rising clock edge.
+
+## IO Table: B Register
+
+| **Name**      | **Verilog**      | **Description**      | **I/O**          | **Width (bits)** | **Trigger**      |
+| ------------- | ---------------- | -------------------- | ---------------- | ---------------- | ---------------- |
+| bus           | bus              | Connection to bus    | IO               | 8                | NA               |
+| clk           | clk              | Clock Signal         | I                | 1                | Rising edge      |
+| n_load        | nLb              | Load from bus        | I                | 1                | Active Low       |
+| value         | reg_b            | B Register value     | O                | 8                | NA               |
+
+### B Register Notes
+
+- The B Register updates its value on the rising edge of the clock.
+- nLb indicates that we want to load the value on the bus into the B Register. When this is low, we will read from the bus and write to the register.
+- B Register always outputs the current value of the register to the ALU.
+
+## IO Table: Output Register
+
+| **Name**      | **Verilog**      | **Description**      | **I/O**          | **Width (bits)** | **Trigger**      |
+| ------------- | ---------------- | -------------------- | ---------------- | ---------------- | ---------------- |
+| bus           | bus              | Connection to bus    | IO               | 8                | NA               |
+| clk           | clk              | Clock Signal         | I                | 1                | Rising edge      |
+| n_load        | nLo              | Load from bus        | I                | 1                | Active Low       |
+| value         | uo_out           | B Register value     | O                | 8                | NA               |
+
+### Output Register Notes
+
+- The Output Register updates its value on the rising edge of the clock.
+- nLo indicates that we want to load the value on the bus into the B Register. When this is low, we will read from the bus and write to the register.
 
 ## How to test
 
