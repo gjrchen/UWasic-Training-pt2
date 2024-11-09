@@ -13,7 +13,9 @@ This project is a basic 8-bit CPU design building off the SAP-1. It is a combina
 
 The control block is implemented using a 6 stage sequential counter for sequencing micro-instructions, and a LUT for corresponding op-code to operation(s).
 
-The counter enumerates all values between 0 and F (15) before looping back to 0 and starting again. The counter will clear back to 0 whenever the chip is reset.
+The program counter enumerates all values between 0 and F (15) before looping back to 0 and starting again. The counter will clear back to 0 whenever the chip is reset.
+
+The 16 Byte memory module consists of 16 memory locations that store 1 byte each. The memory allows for both read and write operations, controlled by input signals, as well as data supplied by the MAR.
 
 The 8-bit ripple carry adder assumes 2s complement inputs and thus supports addition and subtraction. It pushes the result to the bus via tri-state buffer. It also includes a zero flag and a carry flag to support conditional operation using an external microcontroller. These flags are synchronized to the rising edge of the clock and are updated when the adder outputs to the bus.
 
@@ -38,23 +40,23 @@ The accumulator register functions to store the output of the adder. It is synch
 
 ## Control Signal Descriptions
 
-| **Control Signal** | **Component**    | **Function**                                        |
-| ------------------ | ---------------- | --------------------------------------------------- |
-| CP                 | PC               | Increments the PC by 1                              |
-| EP                 | PC               | Enable signal for PC to drive the bus               |
-| LP                 | PC               | Tells PC to load value from the bus                 |
-| nLma               | MAR              | Tells MAR when to load address from the bus         |
-| nLmd               | MAR              | Tells MAR when to load memory from the bus          |
-| nCE                | RAM              | Enable signal for RAM to drive the bus              |
-| nLr                | RAM              | Tells RAM when to load memory from the MAR          |
-| nLi                | Instruction Reg  | Tells IR when to load instruction from the bus      |
-| nEi                | Instruction Reg  | Enable signal for IR to drive the bus               |
-| nLa                | A Reg            | Tells A register to load data from the bus          |
-| Ea                 | A Reg            | Enable signal for A register to drive the bus       |
-| Su                 | Adder/Subtractor | Activate subtractor instead of adder                |
-| Eu                 | B Reg / Adder    | Enable signal for Adder/Subtractor to drive the bus |
-| nLb                | B Reg            | Tells B register to load data from the bus          |
-| nLo                | Output Reg       | Tells Output register to load data from the bus     |
+| **Control Signal** | **Control Signal Array Index** | **Component**    | **Function**                                        |
+| ------------------ | ------------------------------ | ---------------- | --------------------------------------------------- |
+| CP                 | 14                             | PC               | Increments the PC by 1                              |
+| EP                 | 13                             | PC               | Enable signal for PC to drive the bus               |
+| LP                 | 12                             | PC               | Tells PC to load value from the bus                 |
+| nLma               | 11                             | MAR              | Tells MAR when to load address from the bus         |
+| nLmd               | 10                             | MAR              | Tells MAR when to load memory from the bus          |
+| nCE                | 9                              | RAM              | Enable signal for RAM to drive the bus              |
+| nLr                | 8                              | RAM              | Tells RAM when to load memory from the MAR          |
+| nLi                | 7                              | Instruction Reg  | Tells IR when to load instruction from the bus      |
+| nEi                | 6                              | Instruction Reg  | Enable signal for IR to drive the bus               |
+| nLa                | 5                              | A Reg            | Tells A register to load data from the bus          |
+| Ea                 | 4                              | A Reg            | Enable signal for A register to drive the bus       |
+| Su                 | 3                              | Adder/Subtractor | Activate subtractor instead of adder                |
+| Eu                 | 2                              | B Reg / Adder    | Enable signal for Adder/Subtractor to drive the bus |
+| nLb                | 1                              | B Reg            | Tells B register to load data from the bus          |
+| nLo                | 0                              | Output Reg       | Tells Output register to load data from the bus     |
 
 ## Sequencing Details
 
@@ -120,15 +122,29 @@ The MCU must be able to provide the data to the ui_in pins (steady) between rece
 
 Therefore, the MCU must be able to provide the data at a maximum of 2 clock periods.
 
+## IO Table: CB (Control Block)
+
+| **Name**    | **Verilog**     | **Description**           | **I/O** | **Width (bits)** | **Trigger**     |
+| ----------- | --------------- | ------------------------- | ------- | ---------------- | --------------- |
+| clk         | clk             | Clock signal              | I       | 1                | Enge Transition |
+| resetn      | rst_n           | Set stage to 0            | I       | 1                | Active Low      |
+| opcode      | opcode          | Opcode from IR            | I       | 4                | NA              |
+| out         | control_signals | Control Signal Array      | O       | 15               | NA              |
+| programming | programming     | Programming mode          | I       | 1                | Active High     |
+| done_load   | done_load       | Executed Load during prog | O       | 1                | Active High     |
+| read_ui_in  | read_ui_in      | Push ui_in onto bus       | O       | 1                | Active High     |
+| ready       | ready           | Ready to prog next byte   | O       | 1                | Active High     |
+| HF          | HF              | Halting flag              | O       | 1                | Active High     |
+
 ## IO Table: PC (Program Counter)
 
 | **Name** | **Verilog** | **Description**         | **I/O** | **Width (bits)** | **Trigger**  |
 | -------- | ----------- | ----------------------- | ------- | ---------------- | ------------ |
-| bus      | bus         | Connection to bus       | IO      | 4                | NA           |
+| bus      | bus\[3\:0\] | Connection to bus       | IO      | 4                | NA           |
 | clk      | clk         | Clock signal            | I       | 1                | Falling Edge |
 | clr_n    | rst_n       | Clear to 0              | I       | 1                | Active Low   |
 | cp       | Ep          | Allow counter increment | I       | 1                | Active High  |
-| ep       | Cp          | Output to Bus           | I       | 1                | Active High  |
+| ep       | Cp          | Output to bus           | I       | 1                | Active High  |
 | lp       | Lp          | Load from bus           | I       | 1                | Active High  |
 
 ### PC (Program Counter) Notes
@@ -142,16 +158,36 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 - clr_n has precedence over all.
 - Lp takes precedence over Cp.
 
+## IO Table: RAM
+
+| **Name** | **Verilog**     | **Description**         | **I/O** | **Width (bits)** | **Trigger**  |
+| -------- | --------------- | ----------------------- | ------- | ---------------- | ------------ |
+| addr     | mar_to_ram_addr | Address for read/write  | I       | 4                | NA           |
+| data_in  | mar_to_ram_data | Data for write          | I       | 8                | NA           |
+| data_out | bus             | Connection to bus       | O       | 8                | NA           |
+| lr_n     | nLr             | Load data from MAR      | I       | 1                | Active Low   |
+| ce_n     | nCE             | Output to bus           | I       | 1                | Active Low   |
+| clk      | clk             | Clock Signal            | I       | 1                | Rising edge  |
+| rst_n    | \'1\'           | Clear RAM               | I       | 1                | Active Low   |
+
+### RAM Notes
+
+- Addressing: The memory is 4-bit addressable, where the address specifies which register (out of 16) is being accessed for reading or writing.
+- Write operation: A byte of data is written to specific register in RAM, where the location is determined by the address. Requires write enable lr_n signal as active (low) and the clock edge to occur.
+- Read operation: Data can be read from a specific register in RAM determined by the input address. Requires chip enable ce_n signal as active (low). The data is output on the bus, and it is updated on the clock edge.
+- Output: Data is presented on the bus line when the chip is enabled for reading, and high-impedance (Z) otherwise.
+- RAM is never reset, rather, we always flash it.
+
 ## IO Table: Accumulator (A) Register
 
 | **Name**      | **Verilog**      | **Description**      | **I/O**          | **Width (bits)** | **Trigger**      |
 | ------------- | ---------------- | -------------------- | ---------------- | ---------------- | ---------------- |
-| clk           | clk              | Clock Signal         | Input            | 1                | Rising edge      |
+| clk           | clk              | Clock Signal         | I                | 1                | Rising edge      |
 | bus           | bus              | Connection to bus    | IO               | 8                | NA               |
-| load          | nLa              | Load from Bus        | Input            | 1                | Active Low       |
-| enable_out    | Ea               | Output to Bus        | Input            | 1                | Active High      |
-| Register A    | regA             | Accumulator Register | Output           | 8                | NA               |
-| clear         | rst_n            | Clear Signal         | Input            | 1                | Active Low       |
+| load          | nLa              | Load from bus        | I                | 1                | Active Low       |
+| enable_out    | Ea               | Output to bus        | I                | 1                | Active High      |
+| Register A    | regA             | Accumulator Register | O                | 8                | NA               |
+| clear         | rst_n            | Clear Signal         | I                | 1                | Active Low       |
 
 ### Accumulator (A) Register Notes
 
@@ -165,14 +201,14 @@ Therefore, the MCU must be able to provide the data at a maximum of 2 clock peri
 
 | **Name**      | **Verilog**      | **Description**      | **I/O**          | **Width (bits)** | **Trigger**      |
 | ------------- | ---------------- | -------------------- | ---------------- | ---------------- | ---------------- |
-| clk           | clk              | Clock Signal         | Input            | 1                | Rising edge      |
-| enable_out    | Eu               | Output to Bus        | Input            | 1                | Active High      |
-| Register A    | reg_a            | Accumulator Register | Input            | 8                | NA               |
-| Register B    | reg_b            | Register B           | Input            | 8                | NA               |
-| subtract      | sub              | Perform Subtraction  | Input            | 1                | Active High      |
-| bus           | bus              | Connection to bus    | Output           | 8                | NA               |
-| Carry Out     | CF               | Carry-out flag       | Output           | 1                | Active High      |
-| Result Zero   | ZF               | Zero flag            | Output           | 1                | Active High      |
+| clk           | clk              | Clock Signal         | I                | 1                | Rising edge      |
+| enable_out    | Eu               | Output to bus        | I                | 1                | Active High      |
+| Register A    | reg_a            | Accumulator Register | I                | 8                | NA               |
+| Register B    | reg_b            | Register B           | I                | 8                | NA               |
+| subtract      | sub              | Perform Subtraction  | I                | 1                | Active High      |
+| bus           | bus              | Connection to bus    | O                | 8                | NA               |
+| Carry Out     | CF               | Carry-out flag       | O                | 1                | Active High      |
+| Result Zero   | ZF               | Zero flag            | O                | 1                | Active High      |
 
 ### ALU (Adder/Subtractor) Notes
 
