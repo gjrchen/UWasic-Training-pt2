@@ -52,9 +52,9 @@ The 8 Bit Bus is driven by various blocks. We allow multiple blocks that are abl
 
 | **Control Signal** | **Array** | **Component**    | **Function**                                        |
 | ------------------ | --------- | ---------------- | --------------------------------------------------- |
-| CP                 | 14        | PC               | Increments the PC by 1                              |
-| EP                 | 13        | PC               | Enable signal for PC to drive the bus               |
-| LP                 | 12        | PC               | Tells PC to load value from the bus                 |
+| Cp                 | 14        | PC               | Increments the PC by 1                              |
+| Ep                 | 13        | PC               | Enable signal for PC to drive the bus               |
+| Lp                 | 12        | PC               | Tells PC to load value from the bus                 |
 | nLma               | 11        | MAR              | Tells MAR when to load address from the bus         |
 | nLmd               | 10        | MAR              | Tells MAR when to load memory from the bus          |
 | nCE                | 9         | RAM              | Enable signal for RAM to drive the bus              |
