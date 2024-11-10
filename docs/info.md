@@ -52,9 +52,9 @@ The 8 Bit Bus is driven by various blocks. We allow multiple blocks that are abl
 
 | **Control Signal** | **Array** | **Component**    | **Function**                                        |
 | ------------------ | --------- | ---------------- | --------------------------------------------------- |
-| CP                 | 14        | PC               | Increments the PC by 1                              |
-| EP                 | 13        | PC               | Enable signal for PC to drive the bus               |
-| LP                 | 12        | PC               | Tells PC to load value from the bus                 |
+| Cp                 | 14        | PC               | Increments the PC by 1                              |
+| Ep                 | 13        | PC               | Enable signal for PC to drive the bus               |
+| Lp                 | 12        | PC               | Tells PC to load value from the bus                 |
 | nLma               | 11        | MAR              | Tells MAR when to load address from the bus         |
 | nLmd               | 10        | MAR              | Tells MAR when to load memory from the bus          |
 | nCE                | 9         | RAM              | Enable signal for RAM to drive the bus              |
@@ -536,3 +536,12 @@ Provide input of op-code. Check that the correct output bits are being asserted/
     ```
 
     This program should load 0x4 (0) to the A register, display it, NOT HALT, jump to 0xD, then load 0x5 (255) to the A register, display it, and halt. HF should be set to 1.
+
+## Acknowledgements
+
+- Darius Rudaitis, Eshann Mehta: RAM
+- Evan Armoogan, Catherine Ye: PC
+- Damir Gazizullin, Owen Golden: ALU, Accumulator
+- Roni Kant, Jeremy Kam: MAR, B Register, Output Register, Instruction Register
+- Gerry Chen, Siddharth Nema: Control Block and Programmer
+- ECE 298A Course Staff: Prof. John Long, Prof. Vincent Gaudet, Refik Yalcin
