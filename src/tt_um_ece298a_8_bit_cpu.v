@@ -184,9 +184,9 @@ module tt_um_ece298a_8_bit_cpu_top (
 
     // Wires //
     assign uio_out[7] = 1'b0;           // Set the IO outputs to 0
-    assign uio_out[6] = 1'b0;
+    assign uio_out[6] = 1'b0;           // Set the IO outputs to 0
     assign uio_out[0] = 1'b0;           // Set the IO outputs to 0
-    assign uio_oe = 8'b01111110;        // Configure the IO ports [6:1] as outputs and [0],[7] as input
+    assign uio_oe = 8'b00111110;        // Configure the IO ports [5:1] as outputs and [0], [6],[7] as input
 
     wire _unused = &{uio_in[7:6], ena}; // Avoid unused variable warning
 
