@@ -75,7 +75,7 @@ module tt_um_ece298a_8_bit_cpu_top (
      // Control Signals for the Bus Initialization //
     assign outputting_to_bus = (Ep | (!nCE) | (!nEi) | Ea | Eu | read_ui_in);     // Figure out if something is outputting to the bus   
     
-    assign bus = (read_ui_in) ? ui_in : 8'bZZZZZZZZ;                      // read_ui_in is a signal driven by CB and should be mutually exclusive with outputting to bus
+    assign bus = (read_ui_in & rst_n) ? ui_in : 8'bZZZZZZZZ;                      // read_ui_in is a signal driven by CB and should be mutually exclusive with outputting to bus
     
     // Tri-state buffer to initialize the bus with a known value //
     assign bus = (outputting_to_bus) ? 8'bZZZZZZZZ : 8'b00000000;         // Initialize the bus with a known value if nothing is outputting to the bus
