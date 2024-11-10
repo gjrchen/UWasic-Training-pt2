@@ -181,9 +181,10 @@ module tt_um_ece298a_8_bit_cpu_top (
     assign uio_out[3] = CF;             // Carry Flag (ALU) (ACTIVE-HIGH) to the UIO output 3
     assign uio_out[4] = ZF;             // Zero Flag (ALU) (ACTIVE-HIGH) to the UIO output 4
     assign uio_out[5] = HF;             // Halt Flag (CB) (ACTIVE-HIGH) to the UIO output 5
-    assign uio_out[6] = Ep;             // Enable Program Counter output to the bus (ACTIVE-HIGH) to the UIO output 6
+
     // Wires //
     assign uio_out[7] = 1'b0;           // Set the IO outputs to 0
+    assign uio_out[6] = 1'b0;
     assign uio_out[0] = 1'b0;           // Set the IO outputs to 0
     assign uio_oe = 8'b01111110;        // Configure the IO ports [6:1] as outputs and [0],[7] as input
 
