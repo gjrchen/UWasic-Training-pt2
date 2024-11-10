@@ -42,43 +42,43 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire [3:0] mar_to_ram_addr;         // MAR to RAM address wire
 
     // Control Signals for the Program Counter //
-    wire Cp = control_signals[14];      // allow the Program Counter to increment (ACTIVE-HIGH)
-    wire Ep = control_signals[13] & rst_n;      // enable Program Counter output to the bus (ACTIVE-HIGH)
-    wire Lp = control_signals[12];      // enable Program Counter load from the bus (ACTIVE-HIGh)
+    wire Cp = control_signals[14];                  // allow the Program Counter to increment (ACTIVE-HIGH)
+    wire Ep = control_signals[13] & rst_n;          // enable Program Counter output to the bus (ACTIVE-HIGH)
+    wire Lp = control_signals[12];                  // enable Program Counter load from the bus (ACTIVE-HIGh)
 
     // Control Signals for the MAR //
-    wire nLma = control_signals[11];    // enable loading of the MAR address from the bus (ACTIVE-LOW)
-    wire nLmd = control_signals[10];    // enable loading of the MAR data from the bus (ACTIVE-LOW)
+    wire nLma = control_signals[11];                // enable loading of the MAR address from the bus (ACTIVE-LOW)
+    wire nLmd = control_signals[10];                // enable loading of the MAR data from the bus (ACTIVE-LOW)
 
     // Control Signals for the RAM //
-    wire nCE = control_signals[9] | !rst_n;      // enable the RAM output to the bus (ACTIVE-LOW)
-    wire nLr = control_signals[8];      // enable the RAM load from the bus (ACTIVE-LOW)
+    wire nCE = control_signals[9] | !rst_n;         // enable the RAM output to the bus (ACTIVE-LOW)
+    wire nLr = control_signals[8];                  // enable the RAM load from the bus (ACTIVE-LOW)
 
     // Control Signals for the Instruction Register //
-    wire nLi = control_signals[7];      // enable Instruction Register load from bus (ACTIVE-LOW)
-    wire nEi = control_signals[6] | !rst_n;      // enable Instruction Register output to the bus (ACTIVE-LOW)
+    wire nLi = control_signals[7];                  // enable Instruction Register load from bus (ACTIVE-LOW)
+    wire nEi = control_signals[6] | !rst_n;         // enable Instruction Register output to the bus (ACTIVE-LOW)
     
     // Control Signals for the Accumulator Register //
-    wire nLa = control_signals[5];      // enable Accumulator Register load from bus (ACTIVE-LOW)
-    wire Ea = control_signals[4] & rst_n;       // enable Accumulator Register output to the bus (ACTIVE-HIGH)
+    wire nLa = control_signals[5];                  // enable Accumulator Register load from bus (ACTIVE-LOW)
+    wire Ea = control_signals[4] & rst_n;           // enable Accumulator Register output to the bus (ACTIVE-HIGH)
 
     // Control Signals for the ALU //
-    wire sub = control_signals[3];      // perform addition when 0, perform subtraction when 1 (ACTIVE-HIGH)
-    wire Eu = control_signals[2] & rst_n;       // enable ALU output to the bus (ACTIVE-HIGH)
+    wire sub = control_signals[3];                  // perform addition when 0, perform subtraction when 1 (ACTIVE-HIGH)
+    wire Eu = control_signals[2] & rst_n;           // enable ALU output to the bus (ACTIVE-HIGH)
     
     // Control Signals for the B Register //
-    wire nLb = control_signals[1];      // enable B Register load from bus (ACTIVE-LOW)
+    wire nLb = control_signals[1];                  // enable B Register load from bus (ACTIVE-LOW)
     
     // Control Signals for the Output Register //
-    wire nLo = control_signals[0];      // enable Output Register load from bus (ACTIVE-LOW)
+    wire nLo = control_signals[0];                  // enable Output Register load from bus (ACTIVE-LOW)
 
      // Control Signals for the Bus Initialization //
-    assign outputting_to_bus = (Ep | (!nCE) | (!nEi) | Ea | Eu | read_ui_in); // Figure out if something is outputting to the bus   
+    assign outputting_to_bus = (Ep | (!nCE) | (!nEi) | Ea | Eu | read_ui_in);     // Figure out if something is outputting to the bus   
     
-    assign bus = (read_ui_in) ? ui_in : 8'bZZZZZZZZ;
+    assign bus = (read_ui_in & rst_n) ? ui_in : 8'bZZZZZZZZ;                      // read_ui_in is a signal driven by CB and should be mutually exclusive with outputting to bus
     
     // Tri-state buffer to initialize the bus with a known value //
-    assign bus = (outputting_to_bus & rst_n) ? 8'bZZZZZZZZ : 8'b00000000; // Initialize the bus with a known value if nothing is outputting to the bus
+    assign bus = (outputting_to_bus & rst_n) ? 8'bZZZZZZZZ : 8'b00000000;         // Initialize the bus with a known value if nothing is outputting to the bus
 
     // Program Counter //
     ProgramCounter pc(
