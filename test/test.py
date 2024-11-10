@@ -22,22 +22,22 @@ def to_8_bit_array(value):
     return LogicArray(f'{value:08b}')
 
 def get_control_signal_array_gltest(dut):
-    nLo = dut.user_project._id("\\output_register.n_load", extended = False).value
+    nLo = dut.user_project._id("\\cb.control_signals[0]", extended = False).value             # Use the output of the control signal block because it is exactly the same wire
     nLb = dut.user_project._id("\\b_register.n_load", extended = False).value
-    Eu = dut.user_project._id("\\alu_object.enable_output", extended = False).value
+    Eu = int(dut.user_project._id("\\cb.control_signals[2]", extended = False).value and dut.rst_n.value)
     sub = dut.user_project._id("\\alu_object.addsub.genblk1[0].fa.cin", extended = False).value
-    Ea = dut.user_project._id("\\accumulator_object.enable_output", extended = False).value
+    Ea = int(dut.user_project._id("\\cb.control_signals[4]", extended = False).value and dut.rst_n.value)
     nLa = dut.user_project._id("\\accumulator_object.load", extended = False).value
-    nEi = dut.user_project._id("\\instruction_register.n_enable", extended = False).value
-    nLi = dut.user_project._id("\\instruction_register.n_load", extended = False).value
-    nLr = dut.user_project._id("\\ram.lr_n", extended = False).value
-    nCE = dut.user_project._id("\\ram.ce_n", extended = False).value
-    nLmd = dut.user_project._id("\\input_mar_register.n_load_data", extended = False).value
-    nLma = dut.user_project._id("\\input_mar_register.n_load_addr", extended = False).value
-    Lp = dut.user_project._id("\\pc.lp", extended = False).value
-    read_ui_in = dut.user_project._id("\\cb.read_ui_in", extended = False).value
-    Ep = dut.uio_out[6].value
-    Cp = dut.user_project._id("\\pc.cp", extended = False).value
+    nEi = int(dut.user_project._id("\\cb.control_signals[6]", extended = False).value or (not dut.rst_n.value))
+    nLi = dut.user_project._id("\\cb.control_signals[7]", extended = False).value
+    nLr = dut.user_project._id("\\cb.control_signals[8]", extended = False).value
+    nCE = int(dut.user_project._id("\\cb.control_signals[9]", extended = False).value or (not dut.rst_n.value))
+    nLmd = dut.user_project._id("\\cb.control_signals[10]", extended = False).value
+    nLma = dut.user_project._id("\\cb.control_signals[11]", extended = False).value
+    Lp = dut.user_project._id("\\cb.control_signals[12]", extended = False).value
+    #read_ui_in = dut.user_project._id("\\cb.read_ui_in", extended = False).value
+    Ep = int(dut.user_project._id("\\cb.control_signals[13]", extended = False).value and dut.rst_n.value)
+    Cp = dut.user_project._id("\\cb.control_signals[14]", extended = False).value
     #array = LogicArray(f"{nLo}{nLb}{Eu}{sub}{Ea}{nLa}{nEi}{nLi}{nLr}{nCE}{nLmd}{nLma}{Lp}{Ep}{Cp}")
     array = LogicArray(f"{Cp}{Ep}{Lp}{nLma}{nLmd}{nCE}{nLr}{nLi}{nEi}{nLa}{Ea}{sub}{Eu}{nLb}{nLo}")
     return array
