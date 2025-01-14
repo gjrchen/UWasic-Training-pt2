@@ -6,7 +6,7 @@
 `default_nettype none
 
 module control_block (
-    input wire clk,
+    output wire clk,
     input wire resetn,
     input wire [3:0] opcode,
     output wire [14: 0] out,    
@@ -49,7 +49,7 @@ localparam SIG_OUT_LOAD_N = 0;          // \L_O
 
 /* Internal Regs */
 reg [2:0] stage;
-reg [14:0] control_signals;
+reg [16:0] control_signals; // a 15 bit wide register
 reg hlt_flag;
 reg done_load_reg;
 reg read_ui_in_reg;
@@ -57,7 +57,7 @@ reg ready_reg;
 /* Micro-Operation Stages */
 parameter T0 = 0, T1 = 1, T2 = 2, T3 = 3, T4 = 4, T5 = 5; 
 
-/* Stage Transition Logic */
+/* Stage Transition Logic  - THIS PART IS CORRECT, NOTHING IS WRONG IN HERE */
 always @(posedge clk) begin
     if (!resetn) begin           // Check if reset is asserted, if yes, put into a holding stage
       stage <= 6;
@@ -82,12 +82,14 @@ always @(posedge clk) begin
     end
 end
 
+
+// What is the difference between <= and = ...????
 /* Micro-Operation Logic */
 always @(negedge clk) begin
-    control_signals <= 15'b000111111100011; // All signals are deasserted
-    done_load_reg <= 0;
-    read_ui_in_reg <= 0;
-    ready_reg <= 0;
+    control_signals = 15'b000111111100011; // All signals are deasserted
+    done_load_reg = 0;
+    read_ui_in_reg = 0;
+    ready_reg = 0;
     if (!resetn) begin           // Check if reset is asserted, if yes, init halt reg
       hlt_flag <= 0;
     end
@@ -189,7 +191,7 @@ end
 assign out = control_signals;
 assign done_load = done_load_reg;
 assign read_ui_in = read_ui_in_reg;
-assign ready = ready_reg;
+assign ready = read_ui_in_reg;
 assign HF = hlt_flag;
 
 endmodule
