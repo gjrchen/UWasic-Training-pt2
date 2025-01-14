@@ -5,13 +5,13 @@
 `default_nettype none
 
 module tt_um_ece298a_8_bit_cpu_top (
-    input  wire [7:0] ui_in,        // Dedicated inputs
-    output wire [7:0] uo_out,       // Dedicated outputs
-    input  wire [7:0] uio_in,       // IOs: Input path
-    output wire [7:0] uio_out,      // IOs: Output path
-    output wire [7:0] uio_oe,       // IOs: Enable path (active high: 0=input, 1=output)
-    input  wire       ena,          // always 1 when the design is powered, so you can ignore it
-    input  wire       clk,          // clock
+    input  wire [7:0] ui_in        // Dedicated inputs
+    output wire [7:0] uo_out       // Dedicated outputs
+    input  wire [7:0] uio_in       // IOs: Input path
+    output wire [7:0] uio_out      // IOs: Output path
+    output wire [7:0] uio_oe       // IOs: Enable path (active high: 0=input, 1=output)
+    input  wire       ena          // always 1 when the design is powered, so you can ignore it
+    input  wire       clk          // clock
     input  wire       rst_n         // reset_n - low to reset
 );
     // Bus //
@@ -73,12 +73,18 @@ module tt_um_ece298a_8_bit_cpu_top (
     wire nLo = control_signals[0];                  // enable Output Register load from bus (ACTIVE-LOW)
 
      // Control Signals for the Bus Initialization //
-    assign outputting_to_bus = (Ep | (!nCE) | (!nEi) | Ea | Eu | read_ui_in);     // Figure out if something is outputting to the bus   
+    assign outputting_to_bus = (Ep | nCE | nEi | Ea | Eu | read_ui_in);     // *** Figure out if something is outputting to the bus - is this right?? "idk bro"
     
     assign bus = (read_ui_in & rst_n) ? ui_in : 8'bZZZZZZZZ;                      // read_ui_in is a signal driven by CB and should be mutually exclusive with outputting to bus
     
     // Tri-state buffer to initialize the bus with a known value //
     assign bus = (outputting_to_bus) ? 8'bZZZZZZZZ : 8'b00000000;         // Initialize the bus with a known value if nothing is outputting to the bus
+
+    // *** Why is this tristate configuration neccesary? What happens if you just straight up drive the bus with the other modules?
+
+
+
+    // *** Everything below here is error free! //
 
     // Program Counter //
     ProgramCounter pc(
