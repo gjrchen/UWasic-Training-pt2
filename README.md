@@ -1,41 +1,32 @@
-![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
+# Introduction and Important Notes
+This is pt 2.
 
-# Tiny Tapeout Verilog Project Template
+We highly encourage you to **ask questions** as they come up in the team Discord. It's likely that other people have the same problem(s). Plus, it's a first chance for us to work together. You can also go to the tiny tapeout website, which has lots of FAQs under FAQ.
 
-- [Read the documentation for project](docs/info.md)
+This is by no means mandatory. If you really wanted to, you can see what bugs I added through the commit history. That isn't the point, rather it is a chance for you to get acquainted with some of the tools we will be using.
 
-## What is Tiny Tapeout?
+⭐ Please **DO NOT** make your edits directly to this repository, or try to commit them / make a PR. Rather, **fork it** and play around with your repo as much as you want.
 
-Tiny Tapeout is an educational project that aims to make it easier and cheaper than ever to get your digital and analog designs manufactured on a real chip.
+### 📖 Current Version / Version History:
+v1.0 - Just starting out!
 
-To learn more and get started, visit https://tinytapeout.com.
+### Contributors
+Gerry Chen
 
-## Set up your Verilog project
+## Instructions
 
-1. Add your Verilog files to the `src` folder.
-2. Edit the [info.yaml](info.yaml) and update information about your project, paying special attention to the `source_files` and `top_module` properties. If you are upgrading an existing Tiny Tapeout project, check out our [online info.yaml migration tool](https://tinytapeout.github.io/tt-yaml-upgrade-tool/).
-3. Edit [docs/info.md](docs/info.md) and add a description of your project.
-4. Adapt the testbench to your design. See [test/README.md](test/README.md) for more information.
+1. If Actions are not enabled for this repo, follow the same step(s) you followed in pt 1 to enable.
 
-The GitHub action will automatically build the ASIC files using [OpenLane](https://www.zerotoasiccourse.com/terminology/openlane/).
+2. Observe the failing workflow runs (most recent ones, or make a random commit yourself and use those runs).
 
-## Enable GitHub actions to build the results page
+3. Check the top verilog file, control_block.v, alu.v for errors. Many are Verilog syntax errors. Some are more involved than that.
 
-- [Enabling GitHub Pages](https://tinytapeout.com/faq/#my-github-action-is-failing-on-the-pages-part)
+4. You may also want to check out info.yaml. Is everything correct?
 
-## Resources
+5 (super optional). I want my info.md under docs to be more interesting, not as boring as it is now (Sorry Damir!). Add some pictures maybe (whatever you want).
 
-- [FAQ](https://tinytapeout.com/faq/)
-- [Digital design lessons](https://tinytapeout.com/digital_design/)
-- [Learn how semiconductors work](https://tinytapeout.com/siliwiz/)
-- [Join the community](https://tinytapeout.com/discord)
-- [Build your design locally](https://www.tinytapeout.com/guides/local-hardening/)
+6. go under /test. Look over tb.v. This is the verilog testbench (instantiation of the top module) that cocotb uses to test.
 
-## What next?
+7. Check test.py. There are comments in the script that describe how cocotb works. Write a super simple assert - there aren't really any syntax errors. Read through to get an idea of how cocotb works.
 
-- [Submit your design to the next shuttle](https://app.tinytapeout.com/).
-- Edit [this README](README.md) and explain your design, how it works, and how to test it.
-- Share your project on your social network of choice:
-  - LinkedIn [#tinytapeout](https://www.linkedin.com/search/results/content/?keywords=%23tinytapeout) [@TinyTapeout](https://www.linkedin.com/company/100708654/)
-  - Mastodon [#tinytapeout](https://chaos.social/tags/tinytapeout) [@matthewvenn](https://chaos.social/@matthewvenn)
-  - X (formerly Twitter) [#tinytapeout](https://twitter.com/hashtag/tinytapeout) [@tinytapeout](https://twitter.com/tinytapeout)
+Done! (for now) - hope this got you excited instead of wanting to quit. Feel free to let me know any changes that should be made / improvements.
