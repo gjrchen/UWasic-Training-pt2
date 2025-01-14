@@ -15,6 +15,8 @@ CLOCK_UNITS = "ns"
 GLTEST = False
 LocalTest = False
 
+# Bunch of helper functions, assume these are correct, skip to line 303
+
 signal_dict = {'nLo': 0, 'nLb': 1, 'Eu': 2, 'sub': 3, 'Ea': 4, 'nLa' : 5, 'nEi': 6, 'nLi' : 7, 'nLr' : 8, 'nCE' : 9, 'nLmd' : 10, 'nLma' : 11, 'Lp' : 12, 'Ep' : 13, 'Cp' : 14}
 uio_dict = {'ready_for_ui' : 1, 'done_load' : 2, 'CF' : 3, 'ZF' : 4, 'HF' : 5}
 
@@ -298,6 +300,11 @@ async def check_gl_test(dut):
     dut._log.info("Checking if the test is being run for GLTEST")
     await determine_gltest(dut)
 
+# -------------------------------------------------------
+#-----------------THERE IS NOTHING WRONG WITH MOST OF THESE TESTS, just look at them to get an idea of how cocotb works --------------------------
+# fix the function at line 362...
+
+
 @cocotb.test()
 async def empty_ram_test(dut):
     dut._log.info("Empty RAM Test Start")
@@ -353,6 +360,7 @@ async def test_control_signals_execution(dut):
     ##
     dut._log.info("Control Signals during Execution Test Complete")
 
+# FIX THIS FUNCTION
 async def hlt_checker(dut):
     dut._log.info("HLT Checker Start")
     pc_beginning = get_pc(dut)
@@ -364,10 +372,14 @@ async def hlt_checker(dut):
         await log_control_signals(dut)
         await log_uio_out(dut)
         assert get_control_signal_array(dut) == LogicArray("000111111100011"), f"Control Signals are not correct, expected=000111111100011"
+    # this is one whole cycle later, pc has incremented by one....
     dut._log.info(f"PC={get_pc(dut)}")
-    assert pc_beginning + 1 == get_pc(dut), f"PC is not the same, pc_beginning={pc_beginning}, pc={get_pc(dut)}"
+    # fix this logic... we are trying to check if the pc_beginning value against the current pc value
+    assert 1=1, f"PC is not the same, pc_beginning={pc_beginning}, pc={get_pc(dut)}"
     dut._log.info("HLT Checker Complete")
 
+
+# see here to see how tests are chained together... that's it, nothing else is wrong below here
 async def nop_checker(dut):
     dut._log.info(f"NOP Checker Start")
     timeout = 0
